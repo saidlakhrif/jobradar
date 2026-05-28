@@ -1,10 +1,7 @@
 {
-  "functions": {
-    "server.js": {
-      "runtime": "nodejs20.x",
-      "includeFiles": "server.js"
-    }
-  },
+  "builds": [
+    { "src": "server.js", "use": "@vercel/node" }
+  ],
   "routes": [
     { "src": "/api/search", "dest": "/server.js" },
     { "src": "/api/adapt", "dest": "/server.js" },
