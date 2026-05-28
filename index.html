@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="JobRadar">
+<meta name="theme-color" content="#0D1B3E">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<title>JobRadar — Said Lakhrif</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0D1B3E;--navy2:#1B3A6B;--blue:#2B5BA8;
+  --gold:#C9A84C;--gold2:#E8C97A;
+  --cream:#F7F4EE;--cream2:#EDE8DC;
+  --ink:#0D1117;--ink2:#3A3F4B;--ink3:#6B7280;
+  --white:#fff;
+  --ok:#16A34A;--ok-bg:#DCFCE7;
+  --warn:#D97706;--warn-bg:#FEF3C7;
+  --err:#DC2626;--err-bg:#FEE2E2;
+  --info:#1D4ED8;--info-bg:#DBEAFE;
+  --bd:rgba(13,27,62,.1);--bd2:rgba(13,27,62,.18);
+  --sh:0 2px 12px rgba(13,27,62,.08);
+  --sh2:0 8px 32px rgba(13,27,62,.14);
+  --r:10px;--rl:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;font-size:15px;}
+
+/* Layout */
+.app{display:grid;grid-template-columns:280px 1fr;min-height:100vh;}
+
+/* Sidebar */
+.sb{background:var(--navy);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;}
+.sb-top{padding:1.4rem 1.4rem 1rem;border-bottom:1px solid rgba(255,255,255,.07);}
+.logo{display:flex;align-items:center;gap:9px;margin-bottom:1.1rem;}
+.logo-icon{width:32px;height:32px;background:var(--gold);border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;color:var(--navy);}
+.logo-name{font-family:'Syne',sans-serif;font-weight:700;font-size:16px;color:#fff;}
+.logo-sub{font-size:10px;color:rgba(255,255,255,.35);}
+.profile{background:rgba(255,255,255,.06);border-radius:9px;padding:.7rem;display:flex;align-items:center;gap:9px;}
+.av{width:36px;height:36px;background:linear-gradient(135deg,var(--gold),var(--blue));border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;color:#fff;flex-shrink:0;}
+.pname{font-size:12.5px;font-weight:500;color:#fff;}
+.prole{font-size:10.5px;color:rgba(255,255,255,.38);}
+
+/* Config */
+.sb-cfg{padding:.9rem 1.4rem;border-bottom:1px solid rgba(255,255,255,.07);}
+.cfg-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:rgba(255,255,255,.32);margin-bottom:7px;display:flex;justify-content:space-between;align-items:center;}
+.cfg-edit{font-size:10px;color:var(--gold);background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.cfg-tags{display:flex;flex-wrap:wrap;gap:4px;min-height:22px;}
+.ctag{font-size:10.5px;padding:2px 8px;border-radius:99px;background:rgba(201,168,76,.15);color:var(--gold2);border:1px solid rgba(201,168,76,.2);}
+.ctag.city{background:rgba(74,128,212,.15);color:#93C5FD;border-color:rgba(74,128,212,.2);}
+.cfg-form{display:none;margin-top:8px;}
+.cfg-form.open{display:block;}
+.cfg-inp{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:7px;padding:6px 9px;color:#fff;font-size:11.5px;font-family:'DM Sans',sans-serif;margin-bottom:5px;outline:none;}
+.cfg-inp::placeholder{color:rgba(255,255,255,.28);}
+.cfg-save{background:var(--gold);color:var(--navy);border:none;border-radius:7px;padding:5px 13px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Syne',sans-serif;}
+
+/* Stats */
+.sb-stats{padding:.9rem 1.4rem;display:grid;grid-template-columns:repeat(2,1fr);gap:6px;border-bottom:1px solid rgba(255,255,255,.07);}
+.mstat{background:rgba(255,255,255,.05);border-radius:7px;padding:.55rem .7rem;text-align:center;}
+.mstat-v{font-family:'Syne',sans-serif;font-size:19px;font-weight:700;color:var(--gold);line-height:1;}
+.mstat-l{font-size:9.5px;color:rgba(255,255,255,.35);margin-top:2px;text-transform:uppercase;letter-spacing:.04em;}
+
+/* Nav */
+.sb-nav{padding:.9rem 1.4rem;flex:1;}
+.nav-lbl{font-size:9.5px;text-transform:uppercase;letter-spacing:.07em;color:rgba(255,255,255,.28);margin-bottom:6px;}
+.ni{display:flex;align-items:center;justify-content:space-between;padding:.5rem .65rem;border-radius:7px;cursor:pointer;margin-bottom:2px;color:rgba(255,255,255,.52);font-size:13px;transition:background .15s;}
+.ni:hover{background:rgba(255,255,255,.06);color:#fff;}
+.ni.active{background:rgba(201,168,76,.15);color:var(--gold2);}
+.ni-l{display:flex;align-items:center;gap:7px;}
+.nc{font-size:10.5px;background:rgba(255,255,255,.1);padding:1px 6px;border-radius:99px;}
+.ni.active .nc{background:rgba(201,168,76,.25);color:var(--gold2);}
+
+/* Scan btn */
+.sb-bot{padding:.9rem 1.4rem;border-top:1px solid rgba(255,255,255,.07);}
+.scan-btn{width:100%;background:var(--gold);color:var(--navy);border:none;border-radius:9px;padding:.65rem;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:background .15s,transform .1s;}
+.scan-btn:hover{background:var(--gold2);}
+.scan-btn:active{transform:scale(.98);}
+.scan-btn:disabled{opacity:.6;cursor:default;transform:none;}
+
+/* Main */
+.main{padding:1.8rem 2.1rem;overflow-y:auto;}
+.mhdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.4rem;gap:1rem;flex-wrap:wrap;}
+.mtitle{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--navy);letter-spacing:-.3px;}
+.msub{font-size:12px;color:var(--ink3);margin-top:3px;}
+.search-bar{display:flex;gap:7px;align-items:center;background:#fff;border:1.5px solid var(--bd2);border-radius:9px;padding:.4rem .8rem;min-width:220px;box-shadow:var(--sh);}
+.search-bar input{border:none;outline:none;font-size:13px;color:var(--ink);background:transparent;flex:1;font-family:'DM Sans',sans-serif;}
+
+/* Cards */
+.jobs-grid{display:flex;flex-direction:column;gap:8px;}
+.jcard{background:#fff;border:1.5px solid var(--bd);border-radius:var(--rl);padding:1rem 1.3rem;cursor:pointer;transition:border-color .15s,box-shadow .15s,transform .1s;position:relative;overflow:hidden;}
+.jcard::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:transparent;transition:background .15s;}
+.jcard:hover{border-color:var(--bd2);box-shadow:var(--sh);transform:translateY(-1px);}
+.jcard.sel{border-color:var(--blue);box-shadow:0 0 0 3px rgba(43,91,168,.1);}
+.jcard.sel::before{background:var(--blue);}
+.jc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+.jc-title{font-family:'Syne',sans-serif;font-size:13.5px;font-weight:700;color:var(--navy);margin-bottom:2px;}
+.jc-co{font-size:12px;color:var(--ink3);}
+.jc-r{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;}
+.ring{width:40px;height:40px;position:relative;display:flex;align-items:center;justify-content:center;}
+.ring svg{position:absolute;top:0;left:0;transform:rotate(-90deg);}
+.ring-num{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--navy);z-index:1;}
+.tags{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap;}
+.tag{font-size:10.5px;font-weight:500;padding:2px 8px;border-radius:99px;}
+.tnew{background:var(--info-bg);color:var(--info);}
+.tadapted{background:var(--warn-bg);color:var(--warn);}
+.tapplied{background:var(--ok-bg);color:var(--ok);}
+.tdismissed{background:var(--cream2);color:var(--ink3);}
+.ttype{background:var(--cream2);color:var(--ink2);border:1px solid var(--bd);}
+.tcv{background:#EEF2FF;color:#3730A3;}
+
+/* Detail */
+.dp{background:#fff;border:1.5px solid var(--bd);border-radius:var(--rl);padding:1.5rem;margin-top:9px;box-shadow:var(--sh);}
+.dp-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--navy);letter-spacing:-.2px;}
+.dp-co{font-size:12px;color:var(--ink3);margin-top:3px;}
+.dp-sec{margin-top:1rem;}
+.dp-sec-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);margin-bottom:6px;display:flex;align-items:center;gap:5px;}
+.dp-sec-lbl::after{content:'';flex:1;height:1px;background:var(--bd);}
+.dp-desc{font-size:13.5px;color:var(--ink2);line-height:1.75;}
+.kw-grid{display:flex;flex-wrap:wrap;gap:5px;}
+.kw{font-size:11px;font-weight:500;padding:3px 10px;border-radius:99px;}
+.kw-ok{background:var(--ok-bg);color:var(--ok);}
+.kw-miss{background:var(--warn-bg);color:#92400E;}
+
+/* Salary badge */
+.salary{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;padding:4px 11px;border-radius:99px;background:#F0FDF4;color:#166534;border:1px solid #BBF7D0;margin-top:8px;}
+
+/* Actions */
+.acts{display:flex;gap:7px;margin-top:1.25rem;flex-wrap:wrap;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:.52rem 1rem;border-radius:9px;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;border:none;text-decoration:none;}
+.btn-navy{background:var(--navy);color:#fff;}
+.btn-navy:hover{background:var(--navy2);}
+.btn-gold{background:var(--gold);color:var(--navy);font-weight:600;}
+.btn-gold:hover{background:var(--gold2);}
+.btn-out{background:transparent;color:var(--ink2);border:1.5px solid var(--bd2);}
+.btn-out:hover{background:var(--cream);}
+.btn-li{background:#0A66C2;color:#fff;}
+.btn-li:hover{background:#0856A8;}
+.btn-err{background:transparent;color:var(--err);border:1.5px solid rgba(220,38,38,.25);}
+.btn-err:hover{background:var(--err-bg);}
+.btn:disabled{opacity:.45;cursor:default;}
+.btn:active:not(:disabled){transform:scale(.98);}
+
+/* AI Panel */
+.ai-panel{background:#F0F4FF;border:1.5px solid #BFCFEF;border-radius:var(--rl);padding:1.25rem;margin-top:9px;display:none;}
+.ai-panel.open{display:block;}
+.ai-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem;}
+.ai-hdr-l{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:500;color:var(--info);}
+.ai-body{background:#fff;border:1px solid #BFCFEF;border-radius:8px;padding:1rem;font-size:13px;color:var(--ink2);line-height:1.8;white-space:pre-wrap;min-height:50px;max-height:320px;overflow-y:auto;}
+.cursor{display:inline-block;width:2px;height:13px;background:var(--blue);animation:blink 1s infinite;vertical-align:middle;margin-left:2px;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.ai-acts{display:flex;gap:7px;margin-top:.9rem;flex-wrap:wrap;}
+
+/* PDF Preview */
+.pdf-panel{background:#FFFBF0;border:1.5px solid #E8C97A;border-radius:var(--rl);padding:1.2rem;margin-top:9px;display:none;}
+.pdf-panel.open{display:block;}
+.pdf-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:.7rem;}
+.pdf-hdr-l{font-size:13px;font-weight:500;color:#92400E;display:flex;align-items:center;gap:6px;}
+.pdf-prev{background:#fff;border:1px solid #E8C97A;border-radius:8px;padding:1.1rem;font-size:12px;color:var(--ink2);line-height:1.7;}
+.pdf-job-title{font-weight:600;color:var(--navy);font-size:13px;}
+.pdf-co{color:var(--blue);font-size:12px;margin-bottom:6px;}
+.pdf-bullet{display:flex;gap:5px;margin-bottom:3px;font-size:11.5px;}
+.pdf-bullet::before{content:'▸';color:var(--gold);flex-shrink:0;}
+.pdf-acts{display:flex;gap:7px;margin-top:.9rem;flex-wrap:wrap;}
+
+/* Log */
+.log{background:var(--navy);border-radius:var(--rl);padding:.9rem 1.2rem;margin-top:9px;max-height:130px;overflow-y:auto;display:none;}
+.log.open{display:block;}
+.log-lbl{font-family:'Syne',sans-serif;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:rgba(255,255,255,.28);margin-bottom:.5rem;}
+.log-line{font-size:11px;color:rgba(255,255,255,.58);padding:2px 0;display:flex;gap:9px;font-family:monospace;}
+.log-t{color:var(--gold);opacity:.6;flex-shrink:0;}
+.log-ok{color:#4ADE80;}
+.log-warn{color:#FCD34D;}
+
+/* Spinner */
+.spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.25);border-top-color:currentColor;border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Toast */
+.toast-wrap{position:fixed;bottom:1.2rem;right:1.2rem;z-index:99;display:flex;flex-direction:column;gap:6px;pointer-events:none;}
+.toast{background:var(--navy);color:#fff;padding:.6rem 1rem;border-radius:9px;font-size:12.5px;box-shadow:var(--sh2);display:flex;align-items:center;gap:7px;opacity:0;transform:translateY(8px);transition:opacity .25s,transform .25s;}
+.toast.show{opacity:1;transform:none;}
+.tdot{width:6px;height:6px;border-radius:50%;background:var(--gold);flex-shrink:0;}
+
+/* Empty */
+.empty{text-align:center;padding:3rem 1rem;color:var(--ink3);}
+.empty-ico{font-size:36px;margin-bottom:9px;opacity:.25;}
+
+/* Mobile */
+.bnav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--navy);border-top:1px solid rgba(255,255,255,.1);padding:.45rem 0 calc(.45rem + env(safe-area-inset-bottom));z-index:50;grid-template-columns:repeat(5,1fr);}
+.bn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:.3rem 0;cursor:pointer;color:rgba(255,255,255,.42);font-size:10px;}
+.bn.active{color:var(--gold);}
+.bn svg{width:19px;height:19px;}
+.bn-ico{position:relative;}
+.bn-badge{position:absolute;top:-2px;right:-4px;background:var(--gold);color:var(--navy);font-size:8.5px;font-weight:700;width:14px;height:14px;border-radius:50%;display:none;align-items:center;justify-content:center;}
+.bn-badge.show{display:flex;}
+
+/* Bottom sheet */
+.sheet-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:55;}
+.sheet-ov.open{display:block;}
+.sheet{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--navy);border-radius:18px 18px 0 0;padding:1.2rem 1.2rem calc(1.2rem + env(safe-area-inset-bottom));z-index:60;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);}
+.sheet.open{display:block;transform:translateY(0);}
+.sheet-handle{width:36px;height:4px;background:rgba(255,255,255,.2);border-radius:2px;margin:0 auto 1.1rem;}
+.sheet-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:.9rem;}
+
+@media(max-width:760px){
+  .app{grid-template-columns:1fr;}
+  .sb{position:static;height:auto;}
+  .sb-nav,.sb-bot{display:none;}
+  .sb-stats{grid-template-columns:repeat(4,1fr);}
+  .main{padding:1rem;padding-bottom:75px;}
+  .bnav{display:grid;}
+  .toast-wrap{bottom:5rem;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<aside class="sb">
+  <div class="sb-top">
+    <div class="logo">
+      <div class="logo-icon">JR</div>
+      <div><div class="logo-name">JobRadar</div><div class="logo-sub">Surveillance d'offres · Maroc</div></div>
+    </div>
+    <div class="profile">
+      <div class="av">SL</div>
+      <div><div class="pname">Said Lakhrif</div><div class="prole">CSM · SDM · CX Manager</div></div>
+    </div>
+  </div>
+
+  <div class="sb-cfg">
+    <div class="cfg-lbl">Mots-clés & villes <button class="cfg-edit" onclick="toggleCfg()">✎ Modifier</button></div>
+    <div class="cfg-tags" id="cfgTags"></div>
+    <div class="cfg-form" id="cfgForm">
+      <input class="cfg-inp" id="cfgKw" placeholder="Mots-clés (virgule)">
+      <input class="cfg-inp" id="cfgCi" placeholder="Villes (virgule)">
+      <button class="cfg-save" onclick="saveCfg()">Enregistrer & Scanner</button>
+    </div>
+  </div>
+
+  <div class="sb-stats">
+    <div class="mstat"><div class="mstat-v" id="sT">0</div><div class="mstat-l">Offres</div></div>
+    <div class="mstat"><div class="mstat-v" id="sN">0</div><div class="mstat-l">Nouvelles</div></div>
+    <div class="mstat"><div class="mstat-v" id="sA">0</div><div class="mstat-l">CV prêts</div></div>
+    <div class="mstat"><div class="mstat-v" id="sP">0</div><div class="mstat-l">Postulé</div></div>
+  </div>
+
+  <div class="sb-nav">
+    <div class="nav-lbl">Statut</div>
+    <div class="ni active" onclick="setF('all',this)"><div class="ni-l"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Toutes</div><span class="nc" id="nc-all">0</span></div>
+    <div class="ni" onclick="setF('new',this)"><div class="ni-l"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>Nouvelles</div><span class="nc" id="nc-new">0</span></div>
+    <div class="ni" onclick="setF('adapted',this)"><div class="ni-l"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>CV adapté</div><span class="nc" id="nc-adapted">0</span></div>
+    <div class="ni" onclick="setF('applied',this)"><div class="ni-l"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Postulé</div><span class="nc" id="nc-applied">0</span></div>
+    <div class="ni" onclick="setF('dismissed',this)"><div class="ni-l"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>Ignorées</div><span class="nc" id="nc-dismissed">0</span></div>
+  </div>
+
+  <div class="sb-bot">
+    <button class="scan-btn" id="scanBtn" onclick="scan()">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/></svg>
+      Scanner les offres
+    </button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="mhdr">
+    <div><div class="mtitle" id="mTitle">Toutes les offres</div><div class="msub" id="mSub">Lancez un scan pour démarrer</div></div>
+    <div class="search-bar">
+      <svg width="13" height="13" fill="none" stroke="#9CA3AF" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+      <input type="text" placeholder="Rechercher..." id="searchQ" oninput="render()">
+    </div>
+  </div>
+
+  <div class="jobs-grid" id="grid">
+    <div class="empty"><div class="empty-ico">🎯</div><div>Cliquez sur "Scanner les offres" pour démarrer</div></div>
+  </div>
+
+  <div id="dpWrap"></div>
+
+  <div class="ai-panel" id="aiPanel">
+    <div class="ai-hdr">
+      <div class="ai-hdr-l">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        Contenu adapté — vérifiez avant de générer le CV
+      </div>
+      <button class="btn btn-out" style="font-size:11px;padding:3px 9px;" onclick="closeAI()">✕</button>
+    </div>
+    <div class="ai-body" id="aiBody"></div>
+    <div class="ai-acts" id="aiActs"></div>
+  </div>
+
+  <div class="pdf-panel" id="pdfPanel">
+    <div class="pdf-hdr">
+      <div class="pdf-hdr-l">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Aperçu du CV adapté
+      </div>
+      <button class="btn btn-out" style="font-size:11px;padding:3px 9px;" onclick="closePDF()">✕</button>
+    </div>
+    <div class="pdf-prev" id="pdfPrev"></div>
+    <div class="pdf-acts" id="pdfActs"></div>
+  </div>
+
+  <div class="log" id="logEl">
+    <div class="log-lbl">— Journal —</div>
+    <div id="logLines"></div>
+  </div>
+</main>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bnav">
+  <div class="bn active" id="bn-all" onclick="mF('all',this)"><div class="bn-ico"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div><span>Toutes</span></div>
+  <div class="bn" id="bn-new" onclick="mF('new',this)"><div class="bn-ico"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg><span class="bn-badge" id="bb-new">0</span></div><span>Nouvelles</span></div>
+  <div class="bn" onclick="scan()"><div class="bn-ico"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/></svg></div><span>Scanner</span></div>
+  <div class="bn" id="bn-adapted" onclick="mF('adapted',this)"><div class="bn-ico"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><span>CV prêts</span></div>
+  <div class="bn" onclick="openSheet()"><div class="bn-ico"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M21 12h-2M19.07 19.07l-1.41-1.41M12 21v-2M4.93 19.07l1.41 1.41M3 12h2M4.93 4.93l1.41 1.41"/></svg></div><span>Config</span></div>
+</nav>
+
+<!-- BOTTOM SHEET -->
+<div class="sheet-ov" id="sheetOv" onclick="closeSheet()"></div>
+<div class="sheet" id="sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-title">Mots-clés & villes</div>
+  <input class="cfg-inp" id="shKw" placeholder="Mots-clés (virgule)" style="width:100%;margin-bottom:7px;">
+  <input class="cfg-inp" id="shCi" placeholder="Villes (virgule)" style="width:100%;margin-bottom:11px;">
+  <div style="display:flex;gap:7px;">
+    <button class="cfg-save" style="flex:1;padding:9px;" onclick="saveSheet()">Enregistrer & Scanner</button>
+    <button class="btn btn-out" style="border-color:rgba(255,255,255,.2);color:#fff;" onclick="closeSheet()">Annuler</button>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toasts"></div>
+
+<script>
+// ── Config ─────────────────────────────────────────────────────────────────────
+const BASE = window.location.origin; // pointe vers votre serveur
+
+let CFG = {
+  kw: ['Customer Success Manager','Delivery Manager','Service Delivery Manager','CX Manager','Head of Customer Success'],
+  ci: ['Casablanca','Rabat']
+};
+let JOBS = [];
+let selId = null, filter = 'all';
+
+// ── Config UI ──────────────────────────────────────────────────────────────────
+function renderCfgTags() {
+  document.getElementById('cfgTags').innerHTML =
+    CFG.kw.map(k=>`<span class="ctag">${k}</span>`).join('') +
+    CFG.ci.map(c=>`<span class="ctag city">${c}</span>`).join('');
+}
+function toggleCfg() {
+  const f = document.getElementById('cfgForm');
+  if(f.classList.toggle('open')) {
+    document.getElementById('cfgKw').value = CFG.kw.join(', ');
+    document.getElementById('cfgCi').value = CFG.ci.join(', ');
+  }
+}
+function saveCfg() {
+  const kw = document.getElementById('cfgKw').value.split(',').map(s=>s.trim()).filter(Boolean);
+  const ci = document.getElementById('cfgCi').value.split(',').map(s=>s.trim()).filter(Boolean);
+  if(kw.length) CFG.kw = kw;
+  if(ci.length) CFG.ci = ci;
+  document.getElementById('cfgForm').classList.remove('open');
+  renderCfgTags();
+  toast('Configuration mise à jour — scan en cours...');
+  setTimeout(scan, 400);
+}
+
+// ── Render ─────────────────────────────────────────────────────────────────────
+function getList() {
+  const q = document.getElementById('searchQ').value.toLowerCase();
+  let list = filter==='all' ? JOBS : JOBS.filter(j=>j.status===filter);
+  if(q) list = list.filter(j=>j.title.toLowerCase().includes(q)||j.company.toLowerCase().includes(q));
+  return list;
+}
+
+function scColor(n){ return n>=85?'#16A34A':n>=70?'#D97706':'#DC2626'; }
+function sLbl(s){ return {new:'Nouvelle',adapted:'CV prêt',applied:'Postulé',dismissed:'Ignorée'}[s]||s; }
+function sCls(s){ return {new:'tnew',adapted:'tadapted',applied:'tapplied',dismissed:'tdismissed'}[s]||''; }
+
+function render() {
+  const g = document.getElementById('grid');
+  const list = getList();
+  if(!list.length){ g.innerHTML='<div class="empty"><div class="empty-ico">📭</div><div>Aucune offre</div></div>'; return; }
+  const C=2*Math.PI*17;
+  g.innerHTML = list.map(j=>`
+    <div class="jcard${selId===j.id?' sel':''}" onclick="sel(${j.id})">
+      <div class="jc-top">
+        <div style="flex:1;min-width:0;">
+          <div class="jc-title">${j.title}</div>
+          <div class="jc-co">${j.company} · ${j.location}</div>
+          ${j.salary?`<div class="salary">💰 ${j.salary}</div>`:''}
+        </div>
+        <div class="jc-r">
+          <div class="ring">
+            <svg width="40" height="40" viewBox="0 0 40 40">
+              <circle cx="20" cy="20" r="17" fill="none" stroke="#E5E7EB" stroke-width="3"/>
+              <circle cx="20" cy="20" r="17" fill="none" stroke="${scColor(j.score)}" stroke-width="3"
+                stroke-dasharray="${((j.score/100)*C).toFixed(1)} ${C.toFixed(1)}" stroke-linecap="round"/>
+            </svg>
+            <span class="ring-num">${j.score}%</span>
+          </div>
+          <span class="tag ${sCls(j.status)}">${sLbl(j.status)}</span>
+        </div>
+      </div>
+      <div class="tags">
+        <span class="tag ttype">${j.type}</span>
+        <span class="tag ttype">${j.source}</span>
+        ${j.cvFile?'<span class="tag tcv">📄 CV prêt</span>':''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function stats() {
+  const active = JOBS.filter(j=>j.status!=='dismissed');
+  document.getElementById('sT').textContent = active.length;
+  document.getElementById('sN').textContent = JOBS.filter(j=>j.status==='new').length;
+  document.getElementById('sA').textContent = JOBS.filter(j=>j.cvFile).length;
+  document.getElementById('sP').textContent = JOBS.filter(j=>j.status==='applied').length;
+  ['all','new','adapted','applied','dismissed'].forEach(f=>{
+    document.getElementById('nc-'+f).textContent = f==='all'?JOBS.length:JOBS.filter(j=>j.status===f).length;
+  });
+  const nb = document.getElementById('bb-new');
+  const n = JOBS.filter(j=>j.status==='new').length;
+  nb.textContent = n; nb.classList.toggle('show', n>0);
+  document.getElementById('mSub').textContent =
+    `${active.length} offres actives · ${JOBS.filter(j=>j.status==='new').length} nouvelles · Mots-clés : ${CFG.kw.slice(0,2).join(', ')}...`;
+}
+
+function setF(f, el) {
+  filter=f; selId=null;
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  el.classList.add('active');
+  const t={all:'Toutes les offres',new:'Nouvelles offres',adapted:'CV adaptés',applied:'Candidatures',dismissed:'Ignorées'};
+  document.getElementById('mTitle').textContent = t[f];
+  document.getElementById('dpWrap').innerHTML='';
+  closeAI(); closePDF();
+  render();
+}
+function mF(f,el){
+  filter=f; selId=null;
+  document.querySelectorAll('.bn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('dpWrap').innerHTML='';
+  closeAI(); closePDF();
+  render();
+}
+
+// ── Select ─────────────────────────────────────────────────────────────────────
+function sel(id) {
+  selId=id; render();
+  const j=JOBS.find(x=>x.id===id); if(!j) return;
+  document.getElementById('dpWrap').innerHTML=`
+    <div class="dp">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;margin-bottom:1rem;">
+        <div>
+          <div class="dp-title">${j.title}</div>
+          <div class="dp-co">${j.company} · ${j.location} · ${j.type}${j.salary?' · 💰 '+j.salary:''}</div>
+        </div>
+        <span class="tag ${sCls(j.status)}" style="font-size:12px;padding:4px 11px;">${sLbl(j.status)}</span>
+      </div>
+      <div class="dp-sec"><div class="dp-sec-lbl">Description</div><div class="dp-desc">${j.summary}</div></div>
+      <div class="dp-sec">
+        <div class="dp-sec-lbl">Correspondance profil</div>
+        <div class="kw-grid">
+          ${(j.matchKw||[]).map(k=>`<span class="kw kw-ok">✓ ${k}</span>`).join('')}
+          ${(j.missingKw||[]).map(k=>`<span class="kw kw-miss">⚠ ${k}</span>`).join('')}
+        </div>
+      </div>
+      <div class="acts">
+        ${(j.status==='new'||j.status==='dismissed')?`<button class="btn btn-gold" onclick="adaptCV(${j.id})">✦ Adapter mon CV</button>`:''}
+        ${j.adaptedContent?`<button class="btn btn-out" onclick="showAI(${j.id})">👁 Voir contenu adapté</button>`:''}
+        ${j.cvFile?`<button class="btn btn-out" onclick="showPDF(${j.id})">📄 Aperçu CV</button>`:''}
+        ${j.status==='adapted'?`<button class="btn btn-gold" id="applyBtn-${j.id}" onclick="apply(${j.id})">→ Valider la candidature</button>`:''}
+        ${j.status==='applied'?`<button class="btn btn-out" disabled>✓ Candidature envoyée</button>`:''}
+        <a href="${j.url||'https://linkedin.com/jobs/search/?keywords='+encodeURIComponent(j.title)+'&location=Maroc'}" target="_blank" class="btn btn-li">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+          Voir sur LinkedIn
+        </a>
+        ${j.status!=='dismissed'&&j.status!=='applied'?`<button class="btn btn-err" onclick="dismiss(${j.id})">✕ Ignorer</button>`:''}
+      </div>
+    </div>`;
+  document.getElementById('dpWrap').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+// ── Scan ───────────────────────────────────────────────────────────────────────
+async function scan() {
+  const btn=document.getElementById('scanBtn');
+  btn.disabled=true; btn.innerHTML='<span class="spin" style="border-top-color:var(--navy)"></span> Recherche...';
+  showLog(); log('Scan lancé · '+CFG.kw.slice(0,3).join(', ')+'...');
+  log('Villes : '+CFG.ci.join(', '));
+  try {
+    const res = await fetch(`${BASE}/api/search`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({keywords:CFG.kw, cities:CFG.ci})
+    });
+    const data = await res.json();
+    if(!data.success) throw new Error(data.error||'Erreur serveur');
+    const maxId = Math.max(...JOBS.map(j=>j.id),0);
+    const srcs = ['LinkedIn','Indeed','Rekrute'];
+    data.jobs.forEach((j,i)=>{
+      JOBS.push({...j, id:maxId+i+1, status:'new', cvFile:null, adaptedContent:null,
+        source:srcs[i%3], url:`https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(j.title)}&location=Maroc`
+      });
+    });
+    stats(); render();
+    log(`✓ ${data.jobs.length} nouvelles offres`,'ok');
+    toast(`${data.jobs.length} nouvelles offres trouvées !`);
+  } catch(err) {
+    log('✗ '+err.message,'warn');
+    toast('Erreur scan — vérifiez que le serveur est démarré');
+  }
+  btn.disabled=false;
+  btn.innerHTML='<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/></svg> Scanner les offres';
+}
+
+// ── Adapt CV ───────────────────────────────────────────────────────────────────
+async function adaptCV(id) {
+  const j=JOBS.find(x=>x.id===id);
+  const panel=document.getElementById('aiPanel');
+  const body=document.getElementById('aiBody');
+  panel.classList.add('open');
+  body.innerHTML='<span class="cursor"></span>';
+  document.getElementById('aiActs').innerHTML='';
+  panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+  log('Adaptation CV pour "'+j.title+'" @ '+j.company+'...');
+
+  try {
+    const res = await fetch(`${BASE}/api/adapt`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({job:j})
+    });
+    const reader=res.body.getReader(), dec=new TextDecoder();
+    let text='';
+    body.innerHTML='<span class="cursor"></span>';
+    while(true){
+      const {done,value}=await reader.read(); if(done) break;
+      const lines=dec.decode(value).split('\n').filter(l=>l.startsWith('data: '));
+      for(const line of lines){
+        const d=line.slice(6); if(d==='[DONE]') continue;
+        try{ const p=JSON.parse(d); if(p.text){ text+=p.text; body.innerHTML=text.replace(/\n/g,'<br>')+' <span class="cursor"></span>'; } }catch{}
+      }
+    }
+    body.innerHTML=text.replace(/\n/g,'<br>');
+    j.adaptedContent=text;
+    j.status='adapted';
+    // Extraire le nom du fichier depuis la réponse
+    const fnMatch=text.match(/CV_SAID_LAKHRIF_[A-Z0-9_]+/);
+    j.cvFile=fnMatch?fnMatch[0]:`CV_SAID_LAKHRIF_${clean(j.title)}_${clean(j.company)}`;
+    stats(); render(); sel(id);
+    log('✓ CV adapté pour '+j.company,'ok');
+    toast('CV adapté pour '+j.title+' !');
+    document.getElementById('aiActs').innerHTML=`
+      <button class="btn btn-gold" onclick="showPDF(${j.id})">📄 Aperçu du CV</button>
+      <button class="btn btn-out" onclick="closeAI()">Fermer</button>`;
+  } catch(err){
+    body.innerHTML='<span style="color:var(--err)">Erreur : '+err.message+'</span>';
+    log('✗ '+err.message,'warn');
+  }
+}
+
+function showAI(id){
+  const j=JOBS.find(x=>x.id===id); if(!j?.adaptedContent) return;
+  document.getElementById('aiBody').innerHTML=j.adaptedContent.replace(/\n/g,'<br>');
+  document.getElementById('aiActs').innerHTML=`
+    <button class="btn btn-gold" onclick="showPDF(${j.id})">📄 Aperçu du CV</button>
+    <button class="btn btn-out" onclick="closeAI()">Fermer</button>`;
+  document.getElementById('aiPanel').classList.add('open');
+  document.getElementById('aiPanel').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function closeAI(){ document.getElementById('aiPanel').classList.remove('open'); }
+function closePDF(){ document.getElementById('pdfPanel').classList.remove('open'); }
+
+// ── PDF Preview ────────────────────────────────────────────────────────────────
+function showPDF(id){
+  const j=JOBS.find(x=>x.id===id); if(!j) return;
+  let title=j.title, resume='', tessiB=[], fedexB=[], comp='';
+  if(j.adaptedContent){
+    let sec='';
+    for(const line of j.adaptedContent.split('\n')){
+      const l=line.trim();
+      if(l.startsWith('TITRE DU CV')){sec='title';continue;}
+      if(l.startsWith('RÉSUMÉ')){sec='resume';continue;}
+      if(l.startsWith('TESSI')){sec='tessi';continue;}
+      if(l.startsWith('FEDEX')){sec='fedex';continue;}
+      if(l.startsWith('COMPÉTENCES')){sec='comp';continue;}
+      if(l.startsWith('NOM DU')||l.startsWith('CV_SAID')){sec='';continue;}
+      if(!l) continue;
+      if(sec==='title') title=l;
+      else if(sec==='resume') resume+=l+' ';
+      else if(sec==='tessi') tessiB.push(l.replace(/^[•\-▸]\s*/,''));
+      else if(sec==='fedex') fedexB.push(l.replace(/^[•\-▸]\s*/,''));
+      else if(sec==='comp') comp=l;
+    }
+  }
+  const buls=arr=>arr.map(b=>`<div class="pdf-bullet"><span>${b}</span></div>`).join('');
+  document.getElementById('pdfPrev').innerHTML=`
+    <div style="text-align:center;padding:.7rem;background:var(--navy);border-radius:7px;margin-bottom:.8rem;">
+      <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:#fff;">SAID LAKHRIF</div>
+      <div style="font-size:10.5px;color:#AECDE8;margin-top:2px;">${title}</div>
+      <div style="font-size:9.5px;color:rgba(255,255,255,.45);margin-top:3px;">Casablanca · +212 660 720 147 · said.lakhrif@gmail.com</div>
+    </div>
+    ${resume?`<div style="margin-bottom:.75rem;"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--navy);margin-bottom:4px;padding-bottom:3px;border-bottom:1.5px solid var(--gold);">Résumé</div><div style="font-size:11.5px;line-height:1.6;">${resume}</div></div>`:''}
+    <div style="margin-bottom:.75rem;"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--navy);margin-bottom:4px;padding-bottom:3px;border-bottom:1.5px solid var(--gold);">Expériences</div>
+      <div class="pdf-job-title">${title}</div>
+      <div class="pdf-co">TESSI Maroc · Oct. 2023 – Présent</div>
+      ${tessiB.length?buls(tessiB):buls(['Gestion portefeuille clients stratégiques','Pilotage SLA, KPI, comitologie'])}
+      <div style="margin-top:6px;"></div>
+      <div class="pdf-job-title">Customer Experience Manager</div>
+      <div class="pdf-co">FedEx · Mars 2022 – Oct. 2023</div>
+      ${fedexB.length?buls(fedexB):buls(['Relation client multicanal B2B & B2C','Suivi NPS/CSAT'])}
+    </div>
+    ${comp?`<div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--navy);margin-bottom:4px;padding-bottom:3px;border-bottom:1.5px solid var(--gold);">Compétences clés</div><div style="font-size:11.5px;">${comp}</div></div>`:''}
+    <div style="text-align:center;font-size:9.5px;color:var(--ink3);margin-top:.75rem;padding-top:.5rem;border-top:1px solid var(--bd);">Aperçu — CV complet disponible au téléchargement · ${j.cvFile}.pdf</div>`;
+  document.getElementById('pdfActs').innerHTML=`
+    <a href="${j.url||'https://linkedin.com/jobs'}" target="_blank" class="btn btn-li" style="text-decoration:none;">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+      Postuler sur LinkedIn
+    </a>
+    ${j.status==='adapted'?`<button class="btn btn-gold" onclick="apply(${j.id})">✓ Valider la candidature</button>`:''}`;
+  document.getElementById('pdfPanel').classList.add('open');
+  document.getElementById('pdfPanel').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+// ── Apply ──────────────────────────────────────────────────────────────────────
+function apply(id){
+  const j=JOBS.find(x=>x.id===id);
+  setTimeout(()=>{
+    j.status='applied'; stats(); render(); sel(id); closePDF();
+    log('✓ Candidature validée — '+j.company,'ok');
+    toast('Candidature envoyée chez '+j.company+' !');
+  },600);
+}
+function dismiss(id){
+  const j=JOBS.find(x=>x.id===id);
+  j.status='dismissed'; selId=null;
+  document.getElementById('dpWrap').innerHTML='';
+  closeAI(); closePDF(); stats(); render();
+}
+
+// ── Log ────────────────────────────────────────────────────────────────────────
+function showLog(){ document.getElementById('logEl').classList.add('open'); }
+function log(msg,type=''){
+  const now=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const cls=type==='ok'?'log-ok':type==='warn'?'log-warn':'';
+  const el=document.getElementById('logLines');
+  el.innerHTML+=`<div class="log-line"><span class="log-t">${now}</span><span class="${cls}">${msg}</span></div>`;
+  el.parentElement.scrollTop=el.parentElement.scrollHeight;
+}
+
+// ── Toast ──────────────────────────────────────────────────────────────────────
+function toast(msg){
+  const w=document.getElementById('toasts');
+  const t=document.createElement('div'); t.className='toast';
+  t.innerHTML=`<div class="tdot"></div>${msg}`; w.appendChild(t);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('show')));
+  setTimeout(()=>{ t.classList.remove('show'); setTimeout(()=>t.remove(),300); },3500);
+}
+
+// ── Sheet ──────────────────────────────────────────────────────────────────────
+function openSheet(){
+  document.getElementById('shKw').value=CFG.kw.join(', ');
+  document.getElementById('shCi').value=CFG.ci.join(', ');
+  document.getElementById('sheet').classList.add('open');
+  document.getElementById('sheetOv').classList.add('open');
+}
+function closeSheet(){
+  document.getElementById('sheet').classList.remove('open');
+  document.getElementById('sheetOv').classList.remove('open');
+}
+function saveSheet(){
+  const kw=document.getElementById('shKw').value.split(',').map(s=>s.trim()).filter(Boolean);
+  const ci=document.getElementById('shCi').value.split(',').map(s=>s.trim()).filter(Boolean);
+  if(kw.length) CFG.kw=kw; if(ci.length) CFG.ci=ci;
+  closeSheet(); renderCfgTags();
+  toast('Config mise à jour — scan en cours...'); setTimeout(scan,400);
+}
+
+// ── Helpers ────────────────────────────────────────────────────────────────────
+function clean(s){ return s.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Z0-9]+/g,'_').replace(/^_+|_+$/g,''); }
+
+// ── SW ─────────────────────────────────────────────────────────────────────────
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
+
+// ── Init ───────────────────────────────────────────────────────────────────────
+renderCfgTags(); stats(); render();
+</script>
+</body>
+</html>

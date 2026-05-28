@@ -1,0 +1,40 @@
+{
+  "name": "JobRadar — Said Lakhrif",
+  "short_name": "JobRadar",
+  "description": "Surveillance d'offres d'emploi · Maroc · CSM / SDM / CX Manager",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0D1B3E",
+  "theme_color": "#0D1B3E",
+  "lang": "fr",
+  "categories": ["productivity", "business"],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Scanner les offres",
+      "short_name": "Scanner",
+      "description": "Lancer un scan d'offres d'emploi",
+      "url": "/index.html?action=scan"
+    }
+  ]
+}
