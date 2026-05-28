@@ -1,8 +1,5 @@
 {
-  "buildCommand": null,
-  "outputDirectory": ".",
   "rewrites": [
-    { "source": "/", "destination": "/index.html" },
     { "source": "/app/:path*", "destination": "/index.html" }
   ]
 }
