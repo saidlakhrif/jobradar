@@ -3,9 +3,7 @@
     { "src": "server.js", "use": "@vercel/node" }
   ],
   "routes": [
-    { "src": "/api/search", "dest": "/server.js" },
-    { "src": "/api/adapt", "dest": "/server.js" },
-    { "src": "/api/health", "dest": "/server.js" },
+    { "src": "/api/(.*)", "dest": "/server.js" },
     { "handle": "filesystem" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
