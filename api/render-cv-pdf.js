@@ -1,7 +1,7 @@
 // Render an HTML page (sent in the POST body) to a 1-page A4 PDF.
 // Two backends:
 //   - LOCAL  (Windows/Mac/Linux dev): spawn Edge or Chrome headless (faster, uses installed browser)
-//   - VERCEL (serverless Linux):      puppeteer-core + @sparticuz/chromium-min (downloads Chromium at runtime)
+//   - VERCEL (serverless Linux):      puppeteer-core + @sparticuz/chromium (bundled binary)
 
 import { writeFile, readFile, unlink, access } from 'fs/promises';
 import { spawn } from 'child_process';
@@ -10,10 +10,6 @@ import { join } from 'path';
 import { randomBytes } from 'crypto';
 
 const IS_VERCEL = !!process.env.VERCEL || !!process.env.AWS_LAMBDA_FUNCTION_NAME;
-// Pin Chromium version aligned with installed @sparticuz/chromium-min (147)
-const CHROMIUM_VERSION = 'v147.0.0';
-const CHROMIUM_PACK_URL = `https://github.com/Sparticuz/chromium/releases/download/${CHROMIUM_VERSION}/chromium-${CHROMIUM_VERSION}-pack.x64.tar`;
-
 const CANDIDATE_BROWSERS = [
   'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe',
   'C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe',
@@ -33,7 +29,7 @@ async function findBrowser() {
   throw new Error('No Edge/Chrome found on this machine');
 }
 
-// ─── Vercel / serverless path via puppeteer-core + chromium-min ─────────────
+// ─── Vercel / serverless path via puppeteer-core + @sparticuz/chromium ─────
 async function renderViaPuppeteer(html) {
   const chromium = (await import('@sparticuz/chromium')).default;
   const puppeteer = (await import('puppeteer-core')).default;
