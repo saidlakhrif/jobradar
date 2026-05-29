@@ -83,7 +83,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
 .scan-btn:disabled{opacity:.6;cursor:default;transform:none;}
 
 /* Main */
-.main{padding:1.8rem 2.1rem;overflow-y:auto;}
+.main{padding:1.8rem 2.1rem;overflow-y:auto;display:flex;flex-direction:column;align-items:stretch;}
+.main-inner{width:100%;max-width:920px;margin:0 auto;}
 .mhdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.4rem;gap:1rem;flex-wrap:wrap;}
 .mtitle{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--navy);letter-spacing:-.3px;}
 .msub{font-size:12px;color:var(--ink3);margin-top:3px;}
@@ -187,8 +188,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
 .tdot{width:6px;height:6px;border-radius:50%;background:var(--gold);flex-shrink:0;}
 
 /* Empty */
-.empty{text-align:center;padding:3rem 1rem;color:var(--ink3);}
-.empty-ico{font-size:36px;margin-bottom:9px;opacity:.25;}
+.empty{text-align:center;padding:4.5rem 1.5rem;color:var(--ink3);background:#fff;border:1.5px dashed var(--bd2);border-radius:var(--rl);display:flex;flex-direction:column;align-items:center;gap:10px;}
+.empty-ico{font-size:54px;margin-bottom:4px;opacity:.35;}
+.empty-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--navy);}
+.empty-sub{font-size:13px;color:var(--ink3);max-width:380px;line-height:1.5;}
+.empty-cta{margin-top:14px;background:var(--gold);color:var(--navy);border:none;border-radius:9px;padding:.65rem 1.4rem;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:7px;}
+.empty-cta:hover{background:var(--gold2);}
 
 /* Mobile */
 .bnav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--navy);border-top:1px solid rgba(255,255,255,.1);padding:.45rem 0 calc(.45rem + env(safe-area-inset-bottom));z-index:50;grid-template-columns:repeat(5,1fr);}
@@ -270,6 +275,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
 
 <!-- MAIN -->
 <main class="main">
+ <div class="main-inner">
   <div class="mhdr">
     <div><div class="mtitle" id="mTitle">Toutes les offres</div><div class="msub" id="mSub">Lancez un scan pour démarrer</div></div>
     <div class="search-bar">
@@ -279,7 +285,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
   </div>
 
   <div class="jobs-grid" id="grid">
-    <div class="empty"><div class="empty-ico">🎯</div><div>Cliquez sur "Scanner les offres" pour démarrer</div></div>
+    <div class="empty">
+      <div class="empty-ico">🎯</div>
+      <div class="empty-title">Prêt à scanner</div>
+      <div class="empty-sub">Lancez une recherche d'offres correspondant à vos mots-clés (CSM, SDM, CX Manager…) sur Casablanca et Rabat.</div>
+      <button class="empty-cta" onclick="document.querySelector('.scan-btn')?.click()">🔍 Scanner les offres</button>
+    </div>
   </div>
 
   <div id="dpWrap"></div>
@@ -312,6 +323,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
     <div class="log-lbl">— Journal —</div>
     <div id="logLines"></div>
   </div>
+ </div>
 </main>
 </div>
 
@@ -389,7 +401,7 @@ function sCls(s){ return {new:'tnew',adapted:'tadapted',applied:'tapplied',dismi
 function render() {
   const g = document.getElementById('grid');
   const list = getList();
-  if(!list.length){ g.innerHTML='<div class="empty"><div class="empty-ico">📭</div><div>Aucune offre</div></div>'; return; }
+  if(!list.length){ g.innerHTML='<div class="empty"><div class="empty-ico">📭</div><div class="empty-title">Aucune offre</div><div class="empty-sub">Aucune offre ne correspond aux filtres actuels. Lancez un nouveau scan ou changez de catégorie.</div></div>'; return; }
   const C=2*Math.PI*17;
   g.innerHTML = list.map(j=>`
     <div class="jcard${selId===j.id?' sel':''}" onclick="sel(${j.id})">
