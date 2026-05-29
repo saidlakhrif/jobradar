@@ -5,3 +5,7 @@ node_modules/
 
 _extract.cjs
 *.tmp.*
+
+_shot*.mjs
+_audit.mjs
+_preview.html
