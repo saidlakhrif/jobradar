@@ -35,13 +35,13 @@ async function findBrowser() {
 
 // ─── Vercel / serverless path via puppeteer-core + chromium-min ─────────────
 async function renderViaPuppeteer(html) {
-  const chromium = (await import('@sparticuz/chromium-min')).default;
+  const chromium = (await import('@sparticuz/chromium')).default;
   const puppeteer = (await import('puppeteer-core')).default;
 
   const browser = await puppeteer.launch({
     args: [...chromium.args, '--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--font-render-hinting=none'],
     defaultViewport: { width: 794, height: 1123, deviceScaleFactor: 2 }, // A4 @ 96 DPI
-    executablePath: await chromium.executablePath(CHROMIUM_PACK_URL),
+    executablePath: await chromium.executablePath(),
     headless: true,
   });
 
