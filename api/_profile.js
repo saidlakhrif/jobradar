@@ -18,7 +18,7 @@ export async function callClaude({ prompt, stream = false, system = '' }) {
   if (!API_KEY) throw new Error('ANTHROPIC_API_KEY missing');
 
   const body = {
-    model: 'claude-sonnet-4-20250514',
+    model: 'claude-sonnet-4-6',
     max_tokens: 1500,
     messages: [{ role: 'user', content: prompt }],
   };
