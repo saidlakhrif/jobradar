@@ -6,7 +6,7 @@
     "node": ">=20"
   },
   "scripts": {
-    "dev": "vercel dev",
-    "start": "vercel dev"
+    "dev": "node --watch dev.js",
+    "start": "node dev.js"
   }
 }
