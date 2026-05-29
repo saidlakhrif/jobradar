@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>CV — Said Lakhrif</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ATS-optimized: single column, no background colors, simple structure,
+   standard fonts, no letter-spacing in section titles, plain bullets, clear job→bullet linkage. */
+*{box-sizing:border-box;margin:0;padding:0;}
+@page{size:A4;margin:12mm 13mm 10mm 13mm;}
+html,body{font-family:'DM Sans','Arial',sans-serif;color:#111;background:#fff;font-size:9.6pt;line-height:1.36;}
+
+.h-name{font-size:19pt;font-weight:700;color:#111;margin-bottom:.5mm;}
+.h-role{font-size:11pt;font-weight:500;color:#333;margin-bottom:1.8mm;}
+.h-contact{font-size:9.3pt;color:#222;margin-bottom:1.5mm;line-height:1.35;}
+.h-contact span{margin-right:4mm;white-space:nowrap;}
+
+h2{font-size:10.4pt;font-weight:700;color:#111;text-transform:uppercase;margin-top:2.2mm;margin-bottom:1mm;padding-bottom:.4mm;border-bottom:1px solid #888;}
+h2:first-of-type{margin-top:1.4mm;}
+
+.summary{font-size:9.4pt;color:#222;line-height:1.38;margin-bottom:.3mm;}
+
+.skills-block{margin-bottom:.5mm;}
+.skills-row{font-size:9.4pt;color:#222;line-height:1.4;margin-bottom:.5mm;}
+.skills-row strong{color:#111;font-weight:600;}
+.skills-cat{font-size:9.4pt;font-weight:600;color:#111;margin-top:1.2mm;margin-bottom:.3mm;}
+.skills-line{font-size:9.4pt;color:#222;line-height:1.4;}
+
+.xp{margin-bottom:1.6mm;page-break-inside:avoid;}
+.xp-line1{display:flex;justify-content:space-between;gap:5mm;align-items:baseline;}
+.xp-title{font-size:10pt;font-weight:700;color:#111;}
+.xp-dates{font-size:9.2pt;color:#444;font-weight:500;white-space:nowrap;}
+.xp-co{font-size:9.4pt;color:#222;font-weight:500;margin-bottom:.5mm;}
+.xp ul,.simple-list{list-style:disc;padding-left:5mm;margin:0;}
+.xp ul li,.simple-list li{font-size:9.4pt;color:#222;line-height:1.38;margin-bottom:.3mm;}
+.inline-list{font-size:9.4pt;color:#222;line-height:1.4;margin:0;}
+</style>
+</head>
+<body>
+
+<div class="h-name">Said Lakhrif</div>
+<div class="h-role">{{ROLE_TITLE}}</div>
+<div class="h-contact">
+  <span>Email : said.lakhrif@gmail.com</span>
+  <span>Téléphone : +212 660 720 147</span>
+  <span>Casablanca, Maroc — Mobilité nationale</span>
+</div>
+
+<h2>Résumé professionnel</h2>
+<p class="summary">{{SUMMARY}}</p>
+
+<h2>Compétences clés</h2>
+<div class="skills-block">
+  <p class="skills-row"><strong>Service Delivery et IT :</strong> Service Delivery Management (SDM), ITIL 4, Comitologie (COPIL, COSTRAT, COSUI), Gouvernance SLA, Reporting KPI, Gestion incidents et crises</p>
+  <p class="skills-row"><strong>Customer Success :</strong> Portefeuille B2B/B2C, NPS, CSAT, Rétention, Churn, Onboarding, Adoption, QBR, Upsell, Cross-sell, Voix du client (VOC)</p>
+  <p class="skills-row"><strong>Management et Outils :</strong> Management offshore/onshore (jusqu'à 350 agents), Salesforce, Zendesk, MS Dynamics, MS 365, Power BI, Power Platform, Agile, SCRUM, IOBSP</p>
+  {{ADDED_SKILLS_BLOCK_ATS}}
+</div>
+
+<h2>Expériences professionnelles</h2>
+
+<div class="xp">
+  <div class="xp-line1">
+    <span class="xp-title">Team Manager — Customer Success Manager IT</span>
+    <span class="xp-dates">Octobre 2023 — Présent</span>
+  </div>
+  <div class="xp-co">TESSI Maroc, Casablanca, Maroc</div>
+  <ul>{{TESSI_LIS}}</ul>
+</div>
+
+<div class="xp">
+  <div class="xp-line1">
+    <span class="xp-title">Customer Experience Manager — CS & Clearance</span>
+    <span class="xp-dates">Mars 2022 — Octobre 2023</span>
+  </div>
+  <div class="xp-co">FedEx, Casablanca, Maroc</div>
+  <ul>{{FEDEX_LIS}}</ul>
+</div>
+
+<div class="xp">
+  <div class="xp-line1">
+    <span class="xp-title">Responsable des Comptes Clients</span>
+    <span class="xp-dates">Février 2020 — Mars 2022</span>
+  </div>
+  <div class="xp-co">CGI, Casablanca, Maroc</div>
+  <ul>
+    <li>Pilotage opérationnel de 5 comptes In et Outbound, effectif 250 agents</li>
+    <li>Gestion KPI, rentabilité, marges et suivi contractuel SLA pour chaque compte</li>
+  </ul>
+</div>
+
+<div class="xp">
+  <div class="xp-line1">
+    <span class="xp-title">Business Unit Manager</span>
+    <span class="xp-dates">Février 2019 — Février 2020</span>
+  </div>
+  <div class="xp-co">Groupe Crédit Mutuel, Rabat, Maroc</div>
+  <ul>
+    <li>Démarrage et pilotage de la plateforme offshore multicanal, 11 activités, 350 agents</li>
+    <li>Gestion des comptes et interfaces clients DO, MOE, MOA et outils de reporting</li>
+  </ul>
+</div>
+
+<div class="xp">
+  <div class="xp-line1">
+    <span class="xp-title">Chef de Projets Relation Clients</span>
+    <span class="xp-dates">Février 2017 — Janvier 2019</span>
+  </div>
+  <div class="xp-co">YNNA Holding, Mohammedia, Maroc</div>
+  <ul>
+    <li>Setup du Centre de Relation Client pour 5 entreprises de la holding</li>
+    <li>Management du service clients, programme de fidélité 1 million de clients et SAV</li>
+  </ul>
+</div>
+
+<div class="xp">
+  <div class="xp-line1">
+    <span class="xp-title">Responsable Opérationnel d'Activité et Manager Senior</span>
+    <span class="xp-dates">Août 2011 — Décembre 2016</span>
+  </div>
+  <div class="xp-co">WEBHELP, Fès, Maroc</div>
+  <ul>
+    <li>Management d'équipes In et Outbound jusqu'à 25 agents</li>
+    <li>Pilotage des KPI qualité et performance, gestion de l'interface client et chiffre d'affaires</li>
+  </ul>
+</div>
+
+<h2>Certifications</h2>
+<p class="inline-list">SCRUM MASTER (active) · IOBSP (active) · ITIL 4 (en cours d'obtention)</p>
+
+<h2>Formation</h2>
+<p class="inline-list">Génie des procédés industriels, EST Fès (2007-2009) · Baccalauréat Chimie industrielle, Lycée technique Fès (2005-2007)</p>
+
+<h2>Langues</h2>
+<p class="inline-list">Français : Courant (professionnel) · Anglais : Professionnel · Arabe : Langue maternelle</p>
+
+</body>
+</html>

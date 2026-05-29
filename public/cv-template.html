@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>CV — Said Lakhrif — Service Delivery Manager / CSM IT</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0D1B3E;--navy2:#1B3A6B;--blue:#2B5BA8;
+  --gold:#C9A84C;--gold2:#E8C97A;
+  --cream:#F7F4EE;--cream2:#EDE8DC;
+  --ink:#0D1117;--ink2:#3A3F4B;--ink3:#6B7280;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+@page{size:A4;margin:0;}
+html,body{font-family:'DM Sans',sans-serif;color:var(--ink);background:#fff;font-size:9.4pt;line-height:1.4;}
+
+/* Print container = A4 exact */
+.page{width:210mm;height:297mm;display:grid;grid-template-columns:73mm 1fr;background:#fff;overflow:hidden;}
+
+/* LEFT — navy sidebar */
+.side{background:var(--navy);color:#fff;padding:8mm 7mm;display:flex;flex-direction:column;gap:3.4mm;overflow:hidden;}
+.name-block{border-bottom:1.5px solid rgba(201,168,76,.45);padding-bottom:6mm;}
+.name{font-size:21pt;font-weight:800;letter-spacing:-.5px;line-height:1.05;color:#fff;}
+.role{font-size:9.6pt;font-weight:500;color:var(--gold2);margin-top:2mm;line-height:1.35;}
+
+.side-sec h3{font-size:9pt;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--gold);margin-bottom:1.6mm;padding-bottom:.8mm;border-bottom:1px solid rgba(255,255,255,.18);}
+.side-sec p, .side-sec li{font-size:8.8pt;color:rgba(255,255,255,.88);line-height:1.55;}
+.contact-row{display:flex;gap:3mm;align-items:flex-start;margin-bottom:1.8mm;font-size:8.8pt;color:rgba(255,255,255,.92);}
+.ico{color:var(--gold);font-size:9.6pt;flex-shrink:0;width:4mm;text-align:center;font-weight:700;}
+.contact-row a{color:inherit;text-decoration:none;word-break:break-all;}
+
+.skills{display:flex;flex-direction:column;gap:1.5mm;}
+.skill-cat{font-size:8.2pt;font-weight:700;color:var(--gold2);margin-top:2.2mm;margin-bottom:.8mm;text-transform:uppercase;letter-spacing:.04em;}
+.skill-cat:first-child{margin-top:0;}
+.skill-list{list-style:none;padding:0;margin:0;}
+.skill-list li{position:relative;padding-left:3.5mm;font-size:8.5pt;color:rgba(255,255,255,.86);line-height:1.5;margin-bottom:.4mm;}
+.skill-list li::before{content:'';position:absolute;left:0;top:1.7mm;width:1.2mm;height:1.2mm;background:var(--gold);border-radius:50%;}
+
+.lang-list{display:flex;flex-wrap:wrap;gap:1.8mm 3mm;font-size:8pt;color:rgba(255,255,255,.92);line-height:1.2;}
+.lang-row{display:inline-flex;align-items:baseline;gap:1.4mm;}
+.lang-row strong{font-weight:700;color:#fff;}
+.lang-level{font-size:7pt;color:var(--gold2);font-weight:600;text-transform:uppercase;letter-spacing:.03em;}
+
+.cert-list{display:flex;flex-direction:column;gap:2mm;}
+.cert-row{display:flex;gap:3mm;align-items:flex-start;font-size:8.5pt;color:rgba(255,255,255,.9);line-height:1.4;}
+.cert-pill{font-size:7.4pt;font-weight:700;color:var(--navy);background:var(--gold);padding:.6mm 1.7mm;border-radius:1.2mm;letter-spacing:.02em;text-transform:uppercase;flex-shrink:0;margin-top:.2mm;}
+.cert-pill.warn{background:var(--gold2);color:var(--navy);}
+
+/* RIGHT — main content */
+.main{padding:11mm 12mm 9mm;background:#fff;display:flex;flex-direction:column;gap:5mm;}
+.main-sec{break-inside:avoid;}
+.main-sec h2{font-size:11pt;font-weight:800;color:var(--navy);text-transform:uppercase;letter-spacing:.08em;margin-bottom:2.5mm;padding-bottom:1.5mm;border-bottom:2px solid var(--gold);position:relative;}
+.main-sec h2::after{content:'';position:absolute;left:0;bottom:-2px;width:14mm;height:2px;background:var(--navy);}
+
+.summary{font-size:9pt;color:var(--ink2);line-height:1.55;text-align:justify;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;}
+.summary strong{color:var(--navy);font-weight:600;}
+
+/* Experience */
+.xp{margin-bottom:4mm;page-break-inside:avoid;}
+.xp:last-child{margin-bottom:0;}
+.xp-head{display:flex;justify-content:space-between;align-items:baseline;gap:4mm;margin-bottom:.6mm;}
+.xp-title{font-size:9.6pt;font-weight:700;color:var(--navy);line-height:1.25;}
+.xp-co{font-size:8.6pt;color:var(--blue);font-weight:600;margin-bottom:1.4mm;}
+.xp-date{font-size:7.8pt;font-weight:700;color:var(--ink3);background:var(--cream);padding:.7mm 2.2mm;border-radius:1.5mm;white-space:nowrap;letter-spacing:.02em;flex-shrink:0;}
+.xp ul{list-style:none;padding:0;margin:0;}
+.xp ul li{position:relative;padding-left:3.5mm;font-size:8.5pt;color:var(--ink2);line-height:1.42;margin-bottom:.5mm;}
+.xp ul li::before{content:'▸';position:absolute;left:0;top:0;color:var(--gold);font-size:8.5pt;font-weight:700;line-height:1.42;}
+
+/* No screen-only chrome */
+@media screen{
+  body{background:#e5e7eb;padding:20px 0;}
+  .page{margin:0 auto;box-shadow:0 8px 40px rgba(0,0,0,.18);}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="side">
+
+    <div class="name-block">
+      <div class="name">SAID<br>LAKHRIF</div>
+      <div class="role">{{ROLE_TITLE}}</div>
+    </div>
+
+    <div class="side-sec">
+      <h3>Contact</h3>
+      <div class="contact-row"><span class="ico">📍</span>Casablanca, Maroc · Mobile géo.</div>
+      <div class="contact-row"><span class="ico">📞</span>+212 660 720 147</div>
+      <div class="contact-row"><span class="ico">✉</span><a href="mailto:said.lakhrif@gmail.com">said.lakhrif@gmail.com</a></div>
+      <div class="contact-row"><span class="ico">🚗</span>Permis B</div>
+    </div>
+
+    <div class="side-sec">
+      <h3>Compétences clés</h3>
+      <div class="skills">
+
+        <div class="skill-cat">Service Delivery & IT</div>
+        <ul class="skill-list">
+          <li>Service Delivery Management — RUN, SLA, BAU</li>
+          <li>ITIL 4 — Incident · Problem · Change</li>
+          <li>Comitologie : COPIL · COSTRAT · COSUI</li>
+          <li>KPI, reporting, tableaux de bord</li>
+          <li>Gestion des risques & crises clients</li>
+        </ul>
+
+        <div class="skill-cat">Customer Success</div>
+        <ul class="skill-list">
+          <li>Portefeuille B2B / B2C stratégique</li>
+          <li>NPS · CSAT · churn · rétention</li>
+          <li>Onboarding & adoption · QBR</li>
+          <li>Upsell, cross-sell · VOC interne</li>
+        </ul>
+
+        <div class="skill-cat">Management & Outils</div>
+        <ul class="skill-list">
+          <li>Équipes offshore / onshore (jusqu'à 350)</li>
+          <li>Salesforce · Zendesk · MS Dynamics</li>
+          <li>MS 365 · Power BI · Power Platform</li>
+          <li>Agile · SCRUM · IOBSP</li>
+        </ul>
+        {{ADDED_SKILLS_BLOCK}}
+      </div>
+    </div>
+
+    <div class="side-sec">
+      <h3>Certifications</h3>
+      <div class="cert-list">
+        <div class="cert-row"><span class="cert-pill">Actif</span><div><strong>SCRUM MASTER</strong></div></div>
+        <div class="cert-row"><span class="cert-pill">Actif</span><div><strong>IOBSP</strong></div></div>
+        <div class="cert-row"><span class="cert-pill warn">En cours</span><div><strong>ITIL 4</strong></div></div>
+      </div>
+    </div>
+
+    <div class="side-sec">
+      <h3>Formation</h3>
+      <div style="font-size:8.5pt;color:rgba(255,255,255,.9);line-height:1.5;">
+        <strong>Génie des procédés industriels</strong><br>
+        EST Fès · 2007–2009<br>
+        <span style="opacity:.7;font-size:8pt;">Bac Chimie industrielle — 2007</span>
+      </div>
+    </div>
+
+    <div class="side-sec">
+      <h3>Langues</h3>
+      <div class="lang-list">
+        <span class="lang-row"><strong>FR</strong><span class="lang-level">Courant</span></span>
+        <span class="lang-row"><strong>EN</strong><span class="lang-level">Pro.</span></span>
+        <span class="lang-row"><strong>AR</strong><span class="lang-level">Maternelle</span></span>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- RIGHT CONTENT -->
+  <section class="main">
+
+    <div class="main-sec">
+      <h2>Résumé professionnel</h2>
+      <p class="summary">{{SUMMARY}}</p>
+    </div>
+
+    <div class="main-sec">
+      <h2>Expériences professionnelles</h2>
+
+      <div class="xp">
+        <div class="xp-head">
+          <div class="xp-title">Team Manager — Customer Success Manager IT</div>
+          <span class="xp-date">Oct. 2023 — Présent</span>
+        </div>
+        <div class="xp-co">TESSI Maroc · Casablanca</div>
+        <ul>{{TESSI_LIS}}</ul>
+      </div>
+
+      <div class="xp">
+        <div class="xp-head">
+          <div class="xp-title">Customer Experience Manager — CS & Clearance</div>
+          <span class="xp-date">Mars 2022 — Oct. 2023</span>
+        </div>
+        <div class="xp-co">FedEx · Casablanca</div>
+        <ul>{{FEDEX_LIS}}</ul>
+      </div>
+
+      <div class="xp">
+        <div class="xp-head">
+          <div class="xp-title">Responsable des Comptes Clients</div>
+          <span class="xp-date">Fév. 2020 — Mars 2022</span>
+        </div>
+        <div class="xp-co">CGI · Casablanca</div>
+        <ul>
+          <li>Pilotage de 5 comptes In/Outbound — effectif 250 agents</li>
+          <li>Gestion KPI, rentabilité, marges · suivi contractuel SLA</li>
+        </ul>
+      </div>
+
+      <div class="xp">
+        <div class="xp-head">
+          <div class="xp-title">Business Unit Manager</div>
+          <span class="xp-date">Fév. 2019 — Fév. 2020</span>
+        </div>
+        <div class="xp-co">Groupe Crédit Mutuel · Rabat</div>
+        <ul>
+          <li>Démarrage plateforme offshore multicanal — 11 activités, 350 agents</li>
+          <li>Gestion comptes/interfaces DO, MOE, MOA · outils de reporting</li>
+        </ul>
+      </div>
+
+      <div class="xp">
+        <div class="xp-head">
+          <div class="xp-title">Chef de Projets Relation Clients</div>
+          <span class="xp-date">Fév. 2017 — Jan. 2019</span>
+        </div>
+        <div class="xp-co">YNNA Holding · Mohammedia</div>
+        <ul>
+          <li>Setup du Centre de Relation Client — 5 entreprises de la holding</li>
+          <li>Service clients, programme de fidélité (1 M clients) et SAV</li>
+        </ul>
+      </div>
+
+      <div class="xp">
+        <div class="xp-head">
+          <div class="xp-title">Responsable Opérationnel & Manager Senior</div>
+          <span class="xp-date">Août 2011 — Déc. 2016</span>
+        </div>
+        <div class="xp-co">WEBHELP · Fès</div>
+        <ul>
+          <li>Management équipes In/Outbound (25 agents) · KPI qualité et performance</li>
+          <li>Gestion interface client, qualité de prestation et chiffre d'affaires</li>
+        </ul>
+      </div>
+
+    </div>
+
+  </section>
+
+</div>
+</body>
+</html>

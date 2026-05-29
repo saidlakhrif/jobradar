@@ -6,12 +6,12 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="JobRadar">
+<meta name="apple-mobile-web-app-title" content="Jobary">
 <meta name="theme-color" content="#0D1B3E">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<title>JobRadar — Said Lakhrif</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<title>Jobary — Said Lakhrif</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
   --navy:#0D1B3E;--navy2:#1B3A6B;--blue:#2B5BA8;
@@ -29,94 +29,169 @@
   --r:10px;--rl:16px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;font-size:15px;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;font-size:15px;line-height:1.5;}
 
 /* Layout */
-.app{display:grid;grid-template-columns:280px 1fr;min-height:100vh;}
+.app{display:grid;grid-template-columns:310px 1fr;min-height:100vh;}
 
-/* Sidebar */
-.sb{background:var(--navy);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;}
-.sb-top{padding:1.4rem 1.4rem 1rem;border-bottom:1px solid rgba(255,255,255,.07);}
-.logo{display:flex;align-items:center;gap:9px;margin-bottom:1.1rem;}
-.logo-icon{width:32px;height:32px;background:var(--gold);border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;color:var(--navy);}
-.logo-name{font-family:'Syne',sans-serif;font-weight:700;font-size:16px;color:#fff;}
-.logo-sub{font-size:10px;color:rgba(255,255,255,.35);}
-.profile{background:rgba(255,255,255,.06);border-radius:9px;padding:.7rem;display:flex;align-items:center;gap:9px;}
-.av{width:36px;height:36px;background:linear-gradient(135deg,var(--gold),var(--blue));border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;color:#fff;flex-shrink:0;}
-.pname{font-size:12.5px;font-weight:500;color:#fff;}
-.prole{font-size:10.5px;color:rgba(255,255,255,.38);}
+/* Sidebar — clearer hierarchy, bigger text, more contrast */
+.sb{background:var(--navy);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;color:#fff;}
+.sb-top{padding:1.6rem 1.4rem 1.2rem;border-bottom:1px solid rgba(255,255,255,.1);}
+.logo{display:flex;align-items:center;gap:11px;margin-bottom:1.3rem;}
+.logo-icon{width:38px;height:38px;background:var(--gold);border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:var(--navy);}
+.logo-name{font-weight:700;font-size:18px;color:#fff;letter-spacing:-.2px;}
+.logo-sub{font-size:11.5px;color:rgba(255,255,255,.55);margin-top:1px;}
+.profile{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:.85rem;display:flex;align-items:center;gap:11px;}
+.av{width:40px;height:40px;background:linear-gradient(135deg,var(--gold),var(--blue));border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff;flex-shrink:0;}
+.pname{font-size:14px;font-weight:600;color:#fff;line-height:1.2;}
+.prole{font-size:12px;color:rgba(255,255,255,.62);margin-top:2px;}
 
-/* Config */
-.sb-cfg{padding:.9rem 1.4rem;border-bottom:1px solid rgba(255,255,255,.07);}
-.cfg-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:rgba(255,255,255,.32);margin-bottom:7px;display:flex;justify-content:space-between;align-items:center;}
-.cfg-edit{font-size:10px;color:var(--gold);background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;}
-.cfg-tags{display:flex;flex-wrap:wrap;gap:4px;min-height:22px;}
-.ctag{font-size:10.5px;padding:2px 8px;border-radius:99px;background:rgba(201,168,76,.15);color:var(--gold2);border:1px solid rgba(201,168,76,.2);}
-.ctag.city{background:rgba(74,128,212,.15);color:#93C5FD;border-color:rgba(74,128,212,.2);}
-.cfg-form{display:none;margin-top:8px;}
-.cfg-form.open{display:block;}
-.cfg-inp{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:7px;padding:6px 9px;color:#fff;font-size:11.5px;font-family:'DM Sans',sans-serif;margin-bottom:5px;outline:none;}
-.cfg-inp::placeholder{color:rgba(255,255,255,.28);}
-.cfg-save{background:var(--gold);color:var(--navy);border:none;border-radius:7px;padding:5px 13px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Syne',sans-serif;}
+/* Config form (always visible, chip-based) */
+.sb-sec{padding:1.15rem 1.4rem;border-bottom:1px solid rgba(255,255,255,.08);}
+.sb-sec-lbl{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:rgba(255,255,255,.62);margin-bottom:11px;display:flex;justify-content:space-between;align-items:center;font-weight:700;}
+.sb-sec-lbl .count{color:var(--gold);font-weight:700;font-size:11px;background:rgba(201,168,76,.18);padding:1px 8px;border-radius:99px;}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:9px;}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:13px;padding:5px 9px 5px 12px;border-radius:99px;background:rgba(232,201,122,.18);color:#F5E5BC;border:1px solid rgba(232,201,122,.35);font-weight:500;line-height:1.2;}
+.chip.city{background:rgba(147,197,253,.16);color:#DBEAFE;border-color:rgba(147,197,253,.35);}
+.chip-x{background:rgba(0,0,0,.22);border:none;color:inherit;opacity:.85;cursor:pointer;font-size:14px;line-height:1;padding:0;width:18px;height:18px;display:flex;align-items:center;justify-content:center;border-radius:50%;}
+.chip-x:hover{opacity:1;background:rgba(0,0,0,.45);}
+.chip-input{width:100%;background:rgba(255,255,255,.08);border:1px dashed rgba(255,255,255,.22);border-radius:8px;padding:8px 12px;color:#fff;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .15s,background .15s;}
+.chip-input::placeholder{color:rgba(255,255,255,.45);}
+.chip-input:focus{border-color:var(--gold);background:rgba(255,255,255,.13);border-style:solid;}
+
+/* Sources toggles */
+.src-list{display:flex;flex-direction:column;gap:6px;}
+.src-row{display:flex;align-items:center;justify-content:space-between;padding:.55rem .75rem;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);cursor:pointer;transition:background .15s,border-color .15s;}
+.src-row:hover{background:rgba(255,255,255,.11);border-color:rgba(255,255,255,.18);}
+.src-row.off{opacity:.5;background:rgba(255,255,255,.03);}
+.src-l{display:flex;align-items:center;gap:10px;font-size:14px;color:#fff;font-weight:500;}
+.src-dot{width:9px;height:9px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.25);}
+.src-row.off .src-dot{background:rgba(255,255,255,.2);box-shadow:none;}
+.src-count{font-size:12px;color:rgba(255,255,255,.7);font-family:monospace;font-weight:600;background:rgba(0,0,0,.22);padding:2px 8px;border-radius:99px;min-width:28px;text-align:center;}
 
 /* Stats */
-.sb-stats{padding:.9rem 1.4rem;display:grid;grid-template-columns:repeat(2,1fr);gap:6px;border-bottom:1px solid rgba(255,255,255,.07);}
-.mstat{background:rgba(255,255,255,.05);border-radius:7px;padding:.55rem .7rem;text-align:center;}
-.mstat-v{font-family:'Syne',sans-serif;font-size:19px;font-weight:700;color:var(--gold);line-height:1;}
-.mstat-l{font-size:9.5px;color:rgba(255,255,255,.35);margin-top:2px;text-transform:uppercase;letter-spacing:.04em;}
+.sb-stats{padding:1.1rem 1.4rem;display:grid;grid-template-columns:repeat(2,1fr);gap:8px;border-bottom:1px solid rgba(255,255,255,.08);}
+.mstat{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);border-radius:9px;padding:.7rem .8rem;text-align:center;}
+.mstat-v{font-size:24px;font-weight:700;color:var(--gold);line-height:1;}
+.mstat-l{font-size:11px;color:rgba(255,255,255,.65);margin-top:5px;text-transform:uppercase;letter-spacing:.06em;font-weight:600;}
 
 /* Nav */
-.sb-nav{padding:.9rem 1.4rem;flex:1;}
-.nav-lbl{font-size:9.5px;text-transform:uppercase;letter-spacing:.07em;color:rgba(255,255,255,.28);margin-bottom:6px;}
-.ni{display:flex;align-items:center;justify-content:space-between;padding:.5rem .65rem;border-radius:7px;cursor:pointer;margin-bottom:2px;color:rgba(255,255,255,.52);font-size:13px;transition:background .15s;}
-.ni:hover{background:rgba(255,255,255,.06);color:#fff;}
-.ni.active{background:rgba(201,168,76,.15);color:var(--gold2);}
-.ni-l{display:flex;align-items:center;gap:7px;}
-.nc{font-size:10.5px;background:rgba(255,255,255,.1);padding:1px 6px;border-radius:99px;}
-.ni.active .nc{background:rgba(201,168,76,.25);color:var(--gold2);}
+.sb-nav{padding:1.1rem 1.4rem;flex:1;}
+.nav-lbl{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:rgba(255,255,255,.62);margin-bottom:10px;font-weight:700;}
+.ni{display:flex;align-items:center;justify-content:space-between;padding:.6rem .8rem;border-radius:8px;cursor:pointer;margin-bottom:3px;color:rgba(255,255,255,.78);font-size:14px;font-weight:500;transition:background .15s,color .15s;}
+.ni:hover{background:rgba(255,255,255,.08);color:#fff;}
+.ni.active{background:rgba(201,168,76,.18);color:var(--gold2);border:1px solid rgba(201,168,76,.3);}
+.ni-l{display:flex;align-items:center;gap:10px;}
+.nc{font-size:12px;background:rgba(255,255,255,.14);padding:2px 9px;border-radius:99px;font-weight:600;}
+.ni.active .nc{background:rgba(201,168,76,.32);color:var(--gold2);}
 
 /* Scan btn */
-.sb-bot{padding:.9rem 1.4rem;border-top:1px solid rgba(255,255,255,.07);}
-.scan-btn{width:100%;background:var(--gold);color:var(--navy);border:none;border-radius:9px;padding:.65rem;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:background .15s,transform .1s;}
+.sb-bot{padding:1.1rem 1.4rem;border-top:1px solid rgba(255,255,255,.08);position:sticky;bottom:0;background:linear-gradient(to top, var(--navy) 70%, rgba(13,27,62,0));padding-top:1.4rem;}
+.scan-btn{width:100%;background:var(--gold);color:var(--navy);border:none;border-radius:10px;padding:.95rem;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .15s,transform .1s;box-shadow:0 4px 14px rgba(201,168,76,.3);}
 .scan-btn:hover{background:var(--gold2);}
 .scan-btn:active{transform:scale(.98);}
 .scan-btn:disabled{opacity:.6;cursor:default;transform:none;}
 
 /* Main */
-.main{padding:1.8rem 2.1rem;overflow-y:auto;display:flex;flex-direction:column;align-items:stretch;}
-.main-inner{width:100%;max-width:920px;margin:0 auto;}
-.mhdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.4rem;gap:1rem;flex-wrap:wrap;}
-.mtitle{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--navy);letter-spacing:-.3px;}
-.msub{font-size:12px;color:var(--ink3);margin-top:3px;}
-.search-bar{display:flex;gap:7px;align-items:center;background:#fff;border:1.5px solid var(--bd2);border-radius:9px;padding:.4rem .8rem;min-width:220px;box-shadow:var(--sh);}
-.search-bar input{border:none;outline:none;font-size:13px;color:var(--ink);background:transparent;flex:1;font-family:'DM Sans',sans-serif;}
+.main{padding:0 2.1rem 1.8rem;overflow-y:auto;display:flex;flex-direction:column;align-items:stretch;}
+.main-inner{width:100%;max-width:1040px;margin:0 auto;}
+
+/* Sticky top bar — metrics + tabs + sort row stay visible while scrolling */
+.main-head{position:sticky;top:0;background:var(--cream);padding-top:1.8rem;padding-bottom:.9rem;margin-bottom:1rem;z-index:8;}
+.main-head::after{content:'';position:absolute;left:0;right:0;bottom:-12px;height:12px;background:linear-gradient(to bottom, var(--cream), rgba(247,244,238,0));pointer-events:none;}
+
+/* Top metric strip — at-a-glance stats above content */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:1rem;}
+.metric{background:#fff;border:1.5px solid var(--bd);border-radius:14px;padding:1rem 1.2rem;box-shadow:var(--sh);display:flex;flex-direction:column;gap:4px;transition:transform .15s,border-color .15s;}
+.metric:hover{border-color:var(--bd2);transform:translateY(-1px);}
+.metric-v{font-size:28px;font-weight:800;color:var(--navy);line-height:1;letter-spacing:-.5px;}
+.metric-l{font-size:12px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;}
+
+/* Sticky filter tabs — horizontal navigation, no scroll needed */
+.ftabs{display:flex;gap:6px;margin-bottom:.9rem;border-bottom:1.5px solid var(--bd);overflow-x:auto;scrollbar-width:none;}
+.ftabs::-webkit-scrollbar{display:none;}
+.ftab{background:none;border:none;border-bottom:2.5px solid transparent;padding:.65rem 1rem;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:var(--ink3);cursor:pointer;display:inline-flex;align-items:center;gap:7px;white-space:nowrap;transition:color .15s,border-color .15s;margin-bottom:-1.5px;}
+.ftab:hover{color:var(--ink);}
+.ftab.active{color:var(--navy);border-bottom-color:var(--gold);}
+.ftab-c{font-size:11.5px;font-weight:700;background:var(--cream2);color:var(--ink2);padding:1.5px 8px;border-radius:99px;min-width:22px;text-align:center;}
+.ftab.active .ftab-c{background:var(--navy);color:var(--gold2);}
+.mhdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:0;gap:1rem;flex-wrap:wrap;}
+.mtitle{font-size:26px;font-weight:800;color:var(--navy);letter-spacing:-.4px;line-height:1.15;}
+.msub{font-size:14px;color:var(--ink2);margin-top:5px;line-height:1.45;}
+.search-bar{display:flex;gap:8px;align-items:center;background:#fff;border:1.5px solid var(--bd2);border-radius:10px;padding:.55rem 1rem;min-width:240px;box-shadow:var(--sh);}
+.search-bar input{border:none;outline:none;font-size:14px;color:var(--ink);background:transparent;flex:1;font-family:'DM Sans',sans-serif;}
 
 /* Cards */
-.jobs-grid{display:flex;flex-direction:column;gap:8px;}
-.jcard{background:#fff;border:1.5px solid var(--bd);border-radius:var(--rl);padding:1rem 1.3rem;cursor:pointer;transition:border-color .15s,box-shadow .15s,transform .1s;position:relative;overflow:hidden;}
-.jcard::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:transparent;transition:background .15s;}
+.jobs-grid{display:flex;flex-direction:column;gap:10px;}
+.jcard{background:#fff;border:1.5px solid var(--bd);border-radius:var(--rl);padding:1.15rem 1.4rem;cursor:pointer;transition:border-color .15s,box-shadow .15s,transform .1s;position:relative;overflow:hidden;}
+.jcard::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:transparent;transition:background .15s;}
 .jcard:hover{border-color:var(--bd2);box-shadow:var(--sh);transform:translateY(-1px);}
 .jcard.sel{border-color:var(--blue);box-shadow:0 0 0 3px rgba(43,91,168,.1);}
 .jcard.sel::before{background:var(--blue);}
-.jc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
-.jc-title{font-family:'Syne',sans-serif;font-size:13.5px;font-weight:700;color:var(--navy);margin-bottom:2px;}
-.jc-co{font-size:12px;color:var(--ink3);}
-.jc-r{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;}
-.ring{width:40px;height:40px;position:relative;display:flex;align-items:center;justify-content:center;}
+.jc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;}
+.jc-title{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:4px;line-height:1.3;}
+.jc-co{font-size:13.5px;color:var(--ink2);font-weight:500;}
+.jc-r{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;}
+.ring{width:46px;height:46px;position:relative;display:flex;align-items:center;justify-content:center;}
 .ring svg{position:absolute;top:0;left:0;transform:rotate(-90deg);}
-.ring-num{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--navy);z-index:1;}
-.tags{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap;}
-.tag{font-size:10.5px;font-weight:500;padding:2px 8px;border-radius:99px;}
+.ring-num{font-size:12.5px;font-weight:700;color:var(--navy);z-index:1;}
+.tags{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
+.tag{font-size:12px;font-weight:600;padding:3px 10px;border-radius:99px;letter-spacing:.01em;}
 .tnew{background:var(--info-bg);color:var(--info);}
 .tadapted{background:var(--warn-bg);color:var(--warn);}
 .tapplied{background:var(--ok-bg);color:var(--ok);}
 .tdismissed{background:var(--cream2);color:var(--ink3);}
 .ttype{background:var(--cream2);color:var(--ink2);border:1px solid var(--bd);}
 .tcv{background:#EEF2FF;color:#3730A3;}
+.tsrc-linkedin{background:#E0F2FE;color:#075985;border:1px solid #BAE6FD;}
+.tsrc-rekrute{background:#DCFCE7;color:#166534;border:1px solid #BBF7D0;}
+.tsrc-emploima{background:#F3E8FF;color:#6B21A8;border:1px solid #E9D5FF;}
+
+/* Sort */
+.sort-bar{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink2);font-weight:500;}
+.sort-sel{background:#fff;border:1.5px solid var(--bd2);border-radius:8px;padding:6px 10px;font-size:13px;color:var(--ink);font-family:'DM Sans',sans-serif;outline:none;cursor:pointer;font-weight:500;}
+
+/* Step indicator (funnel) */
+.steps{display:flex;align-items:center;gap:6px;margin-bottom:1rem;padding:.7rem 1rem;background:var(--cream2);border-radius:11px;border:1px solid var(--bd);overflow-x:auto;}
+.step{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ink3);font-weight:500;white-space:nowrap;padding:3px 9px;border-radius:99px;background:rgba(255,255,255,.6);}
+.step.done{color:var(--ok);background:var(--ok-bg);}
+.step.active{color:var(--navy);background:#fff;border:1.5px solid var(--gold);font-weight:700;}
+.step-dot{width:6px;height:6px;border-radius:50%;background:currentColor;}
+.step-arrow{color:var(--ink3);opacity:.45;font-size:11px;}
+
+/* Action groups */
+.act-grp{display:flex;align-items:center;gap:5px;padding:5px 7px;border-radius:9px;background:var(--cream2);border:1px solid var(--bd);}
+.act-grp-lbl{font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-right:3px;}
+
+/* Modal */
+.mov{position:fixed;inset:0;background:rgba(13,27,62,.55);backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;z-index:90;opacity:0;pointer-events:none;transition:opacity .2s;}
+.mov.open{opacity:1;pointer-events:auto;}
+.modal{background:#fff;border-radius:14px;padding:1.4rem 1.6rem 1.2rem;width:min(440px,90vw);box-shadow:0 24px 48px rgba(13,27,62,.3);transform:translateY(10px);transition:transform .2s;}
+.mov.open .modal{transform:none;}
+.modal h3{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:4px;}
+.modal p{font-size:12.5px;color:var(--ink3);line-height:1.55;margin-bottom:1rem;}
+.modal label{display:block;font-size:11px;font-weight:600;color:var(--ink2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px;margin-top:.8rem;}
+.modal input[type="text"]{width:100%;border:1.5px solid var(--bd2);border-radius:8px;padding:8px 11px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;color:var(--ink);}
+.modal input[type="text"]:focus{border-color:var(--gold);}
+.modal-acts{display:flex;gap:8px;justify-content:flex-end;margin-top:1.1rem;}
+
+/* Source progress chip */
+.src-pg{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:3px 9px;border-radius:99px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.65);margin-right:5px;}
+.src-pg .dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.4);}
+.src-pg.run{color:var(--gold2);}
+.src-pg.run .dot{background:var(--gold);animation:pulse 1s infinite;}
+.src-pg.done{color:#4ADE80;}
+.src-pg.done .dot{background:#4ADE80;}
+.src-pg.err{color:#FCA5A5;}
+.src-pg.err .dot{background:#EF4444;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* Kbd hint */
+.kbd{display:inline-block;font-family:monospace;font-size:10.5px;background:var(--cream2);border:1px solid var(--bd2);border-bottom-width:2px;border-radius:4px;padding:1px 5px;color:var(--ink2);}
 
 /* Detail */
 .dp{background:#fff;border:1.5px solid var(--bd);border-radius:var(--rl);padding:1.5rem;margin-top:9px;box-shadow:var(--sh);}
-.dp-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--navy);letter-spacing:-.2px;}
+.dp-title{font-size:18px;font-weight:800;color:var(--navy);letter-spacing:-.2px;}
 .dp-co{font-size:12px;color:var(--ink3);margin-top:3px;}
 .dp-sec{margin-top:1rem;}
 .dp-sec-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);margin-bottom:6px;display:flex;align-items:center;gap:5px;}
@@ -128,7 +203,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
 .kw-miss{background:var(--warn-bg);color:#92400E;}
 
 /* Salary badge */
-.salary{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;padding:4px 11px;border-radius:99px;background:#F0FDF4;color:#166534;border:1px solid #BBF7D0;margin-top:8px;}
+.salary{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:600;padding:4px 12px;border-radius:99px;background:#F0FDF4;color:#166534;border:1px solid #BBF7D0;margin-top:10px;}
 
 /* Actions */
 .acts{display:flex;gap:7px;margin-top:1.25rem;flex-wrap:wrap;}
@@ -171,7 +246,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
 /* Log */
 .log{background:var(--navy);border-radius:var(--rl);padding:.9rem 1.2rem;margin-top:9px;max-height:130px;overflow-y:auto;display:none;}
 .log.open{display:block;}
-.log-lbl{font-family:'Syne',sans-serif;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:rgba(255,255,255,.28);margin-bottom:.5rem;}
+.log-lbl{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:rgba(255,255,255,.28);margin-bottom:.5rem;}
 .log-line{font-size:11px;color:rgba(255,255,255,.58);padding:2px 0;display:flex;gap:9px;font-family:monospace;}
 .log-t{color:var(--gold);opacity:.6;flex-shrink:0;}
 .log-ok{color:#4ADE80;}
@@ -190,9 +265,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
 /* Empty */
 .empty{text-align:center;padding:4.5rem 1.5rem;color:var(--ink3);background:#fff;border:1.5px dashed var(--bd2);border-radius:var(--rl);display:flex;flex-direction:column;align-items:center;gap:10px;}
 .empty-ico{font-size:54px;margin-bottom:4px;opacity:.35;}
-.empty-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--navy);}
+.empty-title{font-size:16px;font-weight:700;color:var(--navy);}
 .empty-sub{font-size:13px;color:var(--ink3);max-width:380px;line-height:1.5;}
-.empty-cta{margin-top:14px;background:var(--gold);color:var(--navy);border:none;border-radius:9px;padding:.65rem 1.4rem;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:7px;}
+.empty-cta{margin-top:14px;background:var(--gold);color:var(--navy);border:none;border-radius:9px;padding:.65rem 1.4rem;font-size:13px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:7px;}
 .empty-cta:hover{background:var(--gold2);}
 
 /* Mobile */
@@ -210,14 +285,18 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
 .sheet{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--navy);border-radius:18px 18px 0 0;padding:1.2rem 1.2rem calc(1.2rem + env(safe-area-inset-bottom));z-index:60;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);}
 .sheet.open{display:block;transform:translateY(0);}
 .sheet-handle{width:36px;height:4px;background:rgba(255,255,255,.2);border-radius:2px;margin:0 auto 1.1rem;}
-.sheet-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:.9rem;}
+.sheet-title{font-size:14px;font-weight:700;color:#fff;margin-bottom:.9rem;}
 
 @media(max-width:760px){
   .app{grid-template-columns:1fr;}
   .sb{position:static;height:auto;}
-  .sb-nav,.sb-bot{display:none;}
-  .sb-stats{grid-template-columns:repeat(4,1fr);}
+  .sb-bot{display:none;}
   .main{padding:1rem;padding-bottom:75px;}
+  .metrics{grid-template-columns:repeat(2,1fr);gap:8px;}
+  .metric{padding:.8rem .9rem;}
+  .metric-v{font-size:22px;}
+  .ftabs{margin-bottom:.8rem;}
+  .ftab{font-size:13px;padding:.55rem .75rem;}
   .bnav{display:grid;}
   .toast-wrap{bottom:5rem;}
 }
@@ -230,8 +309,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
 <aside class="sb">
   <div class="sb-top">
     <div class="logo">
-      <div class="logo-icon">JR</div>
-      <div><div class="logo-name">JobRadar</div><div class="logo-sub">Surveillance d'offres · Maroc</div></div>
+      <div class="logo-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="16.65" y2="16.65"/></svg></div>
+      <div><div class="logo-name">Jobary</div><div class="logo-sub">Surveillance d'offres · Maroc</div></div>
     </div>
     <div class="profile">
       <div class="av">SL</div>
@@ -239,33 +318,48 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
     </div>
   </div>
 
-  <div class="sb-cfg">
-    <div class="cfg-lbl">Mots-clés & villes <button class="cfg-edit" onclick="toggleCfg()">✎ Modifier</button></div>
-    <div class="cfg-tags" id="cfgTags"></div>
-    <div class="cfg-form" id="cfgForm">
-      <input class="cfg-inp" id="cfgKw" placeholder="Mots-clés (virgule)">
-      <input class="cfg-inp" id="cfgCi" placeholder="Villes (virgule)">
-      <button class="cfg-save" onclick="saveCfg()">Enregistrer & Scanner</button>
+  <div class="sb-sec">
+    <div class="sb-sec-lbl">Mots-clés <span class="count" id="kwCount">0</span></div>
+    <div class="chips" id="kwChips"></div>
+    <input class="chip-input" id="kwInput" placeholder="+ Ajouter (Entrée)" autocomplete="off">
+  </div>
+
+  <div class="sb-sec">
+    <div class="sb-sec-lbl">Villes <span class="count" id="ciCount">0</span></div>
+    <div class="chips" id="ciChips"></div>
+    <input class="chip-input" id="ciInput" placeholder="+ Ajouter (Entrée)" autocomplete="off">
+  </div>
+
+  <div class="sb-sec">
+    <div class="sb-sec-lbl">Sources</div>
+    <div class="src-list" id="srcList">
+      <div class="src-row" data-src="LinkedIn" onclick="toggleSrc(this)">
+        <div class="src-l"><span class="src-dot"></span>LinkedIn</div>
+        <span class="src-count" id="src-LinkedIn">—</span>
+      </div>
+      <div class="src-row" data-src="Rekrute" onclick="toggleSrc(this)">
+        <div class="src-l"><span class="src-dot"></span>Rekrute</div>
+        <span class="src-count" id="src-Rekrute">—</span>
+      </div>
+      <div class="src-row" data-src="Emploi.ma" onclick="toggleSrc(this)">
+        <div class="src-l"><span class="src-dot"></span>Emploi.ma</div>
+        <span class="src-count" id="src-Emploi.ma">—</span>
+      </div>
     </div>
   </div>
 
-  <div class="sb-stats">
-    <div class="mstat"><div class="mstat-v" id="sT">0</div><div class="mstat-l">Offres</div></div>
-    <div class="mstat"><div class="mstat-v" id="sN">0</div><div class="mstat-l">Nouvelles</div></div>
-    <div class="mstat"><div class="mstat-v" id="sA">0</div><div class="mstat-l">CV prêts</div></div>
-    <div class="mstat"><div class="mstat-v" id="sP">0</div><div class="mstat-l">Postulé</div></div>
-  </div>
-
-  <div class="sb-nav">
-    <div class="nav-lbl">Statut</div>
-    <div class="ni active" onclick="setF('all',this)"><div class="ni-l"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Toutes</div><span class="nc" id="nc-all">0</span></div>
-    <div class="ni" onclick="setF('new',this)"><div class="ni-l"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>Nouvelles</div><span class="nc" id="nc-new">0</span></div>
-    <div class="ni" onclick="setF('adapted',this)"><div class="ni-l"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>CV adapté</div><span class="nc" id="nc-adapted">0</span></div>
-    <div class="ni" onclick="setF('applied',this)"><div class="ni-l"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Postulé</div><span class="nc" id="nc-applied">0</span></div>
-    <div class="ni" onclick="setF('dismissed',this)"><div class="ni-l"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>Ignorées</div><span class="nc" id="nc-dismissed">0</span></div>
-  </div>
-
   <div class="sb-bot">
+    <div style="display:flex;gap:6px;margin-bottom:.7rem;">
+      <button onclick="openDriveSettings()" style="flex:1;background:rgba(255,255,255,.06);color:rgba(255,255,255,.78);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:.55rem;font-family:'DM Sans',sans-serif;font-size:11.5px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:background .15s;" onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background='rgba(255,255,255,.06)'">⚙ Réglages</button>
+      <button onclick="eraseJobs()" title="Vider toutes les offres sauvegardées" style="background:rgba(220,38,38,.08);color:rgba(252,165,165,.85);border:1px solid rgba(220,38,38,.2);border-radius:8px;padding:.55rem .7rem;font-family:'DM Sans',sans-serif;font-size:11.5px;font-weight:500;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='rgba(220,38,38,.18)'" onmouseout="this.style.background='rgba(220,38,38,.08)'">🗑</button>
+    </div>
+    <div style="font-size:10px;color:rgba(255,255,255,.4);text-align:center;margin-bottom:.5rem;letter-spacing:.04em;">
+      <span class="kbd" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.12);color:rgba(255,255,255,.7);">/</span> recherche
+      · <span class="kbd" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.12);color:rgba(255,255,255,.7);">s</span> scan
+      · <span class="kbd" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.12);color:rgba(255,255,255,.7);">a</span> adapter
+      · <span class="kbd" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.12);color:rgba(255,255,255,.7);">l</span> LM
+      · <span class="kbd" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.12);color:rgba(255,255,255,.7);">Esc</span> fermer
+    </div>
     <button class="scan-btn" id="scanBtn" onclick="scan()">
       <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/></svg>
       Scanner les offres
@@ -276,11 +370,48 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
 <!-- MAIN -->
 <main class="main">
  <div class="main-inner">
-  <div class="mhdr">
-    <div><div class="mtitle" id="mTitle">Toutes les offres</div><div class="msub" id="mSub">Lancez un scan pour démarrer</div></div>
-    <div class="search-bar">
-      <svg width="13" height="13" fill="none" stroke="#9CA3AF" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
-      <input type="text" placeholder="Rechercher..." id="searchQ" oninput="render()">
+
+  <div class="main-head">
+    <div class="metrics">
+      <div class="metric"><div class="metric-v" id="sT">0</div><div class="metric-l">Offres actives</div></div>
+      <div class="metric"><div class="metric-v" id="sN">0</div><div class="metric-l">Nouvelles</div></div>
+      <div class="metric"><div class="metric-v" id="sA">0</div><div class="metric-l">CV prêts</div></div>
+      <div class="metric"><div class="metric-v" id="sP">0</div><div class="metric-l">Postulé</div></div>
+    </div>
+
+    <div class="ftabs">
+      <button class="ftab active" data-f="all" onclick="setF('all',this)">Toutes <span class="ftab-c" id="nc-all">0</span></button>
+      <button class="ftab" data-f="new" onclick="setF('new',this)">Nouvelles <span class="ftab-c" id="nc-new">0</span></button>
+      <button class="ftab" data-f="adapted" onclick="setF('adapted',this)">CV adapté <span class="ftab-c" id="nc-adapted">0</span></button>
+      <button class="ftab" data-f="applied" onclick="setF('applied',this)">Postulé <span class="ftab-c" id="nc-applied">0</span></button>
+      <button class="ftab" data-f="dismissed" onclick="setF('dismissed',this)">Ignorées <span class="ftab-c" id="nc-dismissed">0</span></button>
+    </div>
+
+    <div class="mhdr">
+      <div><div class="mtitle" id="mTitle">Toutes les offres</div><div class="msub" id="mSub">Lancez un scan pour démarrer</div></div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <div class="sort-bar">
+          Trier :
+          <select class="sort-sel" id="sortBy" onchange="render()">
+            <option value="score">Score ↓</option>
+            <option value="title">Titre A-Z</option>
+            <option value="date">Plus récentes</option>
+          </select>
+        </div>
+        <div class="sort-bar">
+          Source :
+          <select class="sort-sel" id="srcFilter" onchange="render()">
+            <option value="">Toutes</option>
+            <option value="LinkedIn">LinkedIn</option>
+            <option value="Rekrute">Rekrute</option>
+            <option value="Emploi.ma">Emploi.ma</option>
+          </select>
+        </div>
+        <div class="search-bar">
+          <svg width="13" height="13" fill="none" stroke="#9CA3AF" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+          <input type="text" placeholder="Rechercher..." id="searchQ" oninput="render()">
+        </div>
+      </div>
     </div>
   </div>
 
@@ -327,6 +458,29 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
 </main>
 </div>
 
+<!-- Settings Modal -->
+<div class="mov" id="driveModal" onclick="if(event.target===this)closeDriveModal()">
+  <div class="modal">
+    <h3>⚙ Réglages</h3>
+    <p style="margin-bottom:.6rem;">Configure Google Drive pour sauver tes CV/LM directement, ou teste le scan automatique quotidien.</p>
+
+    <div style="font-size:10.5px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-top:1rem;margin-bottom:.5rem;border-top:1px solid var(--bd);padding-top:.9rem;">Google Drive</div>
+    <label for="drvCid">OAuth Client ID</label>
+    <input type="text" id="drvCid" placeholder="123456-xxx.apps.googleusercontent.com" spellcheck="false">
+    <label for="drvFid">ID du dossier Drive</label>
+    <input type="text" id="drvFid" placeholder="1xYz...AbC" spellcheck="false">
+
+    <div style="font-size:10.5px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-top:1.1rem;margin-bottom:.5rem;border-top:1px solid var(--bd);padding-top:.9rem;">Scan automatique</div>
+    <p style="font-size:11.5px;color:var(--ink3);margin-bottom:.6rem;">Vercel Cron déclenche le scan tous les jours à 9h Casablanca et t'envoie un mail avec les offres ≥ 70%. Vérifie que <code>RESEND_API_KEY</code> est en env var Vercel, puis teste :</p>
+    <button class="btn btn-navy" style="width:100%;justify-content:center;" onclick="testCronScan()">▶ Lancer le scan auto maintenant (test)</button>
+
+    <div class="modal-acts">
+      <button class="btn btn-out" onclick="closeDriveModal()">Fermer</button>
+      <button class="btn btn-gold" onclick="saveDriveModal()">Enregistrer Drive</button>
+    </div>
+  </div>
+</div>
+
 <!-- BOTTOM NAV -->
 <nav class="bnav">
   <div class="bn active" id="bn-all" onclick="mF('all',this)"><div class="bn-ico"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div><span>Toutes</span></div>
@@ -355,43 +509,107 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
 // ── Config ─────────────────────────────────────────────────────────────────────
 const BASE = window.location.origin; // pointe vers votre serveur
 
-let CFG = {
-  kw: ['Customer Success Manager','Delivery Manager','Service Delivery Manager','CX Manager','Head of Customer Success'],
-  ci: ['Casablanca','Rabat']
-};
-let JOBS = [];
+const STORE_KEY = 'jobradar.cfg.v2';
+const JOBS_KEY  = 'jobary.jobs.v1';
+const UI_KEY    = 'jobary.ui.v1';
+let CFG = loadCfg();
+let JOBS = loadJobs();
 let selId = null, filter = 'all';
+(function restoreUi(){
+  try {
+    const u = JSON.parse(localStorage.getItem(UI_KEY) || '{}');
+    if (u.filter && ['all','new','adapted','applied','dismissed'].includes(u.filter)) filter = u.filter;
+    if (u.selId && JOBS.some(j => j.id === u.selId)) selId = u.selId;
+  } catch {}
+})();
 
-// ── Config UI ──────────────────────────────────────────────────────────────────
-function renderCfgTags() {
-  document.getElementById('cfgTags').innerHTML =
-    CFG.kw.map(k=>`<span class="ctag">${k}</span>`).join('') +
-    CFG.ci.map(c=>`<span class="ctag city">${c}</span>`).join('');
+function loadJobs(){
+  try {
+    const raw = JSON.parse(localStorage.getItem(JOBS_KEY) || '[]');
+    if (!Array.isArray(raw)) return [];
+    return raw.filter(j => j && j.title && j.id);
+  } catch { return []; }
 }
-function toggleCfg() {
-  const f = document.getElementById('cfgForm');
-  if(f.classList.toggle('open')) {
-    document.getElementById('cfgKw').value = CFG.kw.join(', ');
-    document.getElementById('cfgCi').value = CFG.ci.join(', ');
-  }
+function saveJobs(){
+  try { localStorage.setItem(JOBS_KEY, JSON.stringify(JOBS)); } catch (e) { console.warn('saveJobs:', e); }
 }
-function saveCfg() {
-  const kw = document.getElementById('cfgKw').value.split(',').map(s=>s.trim()).filter(Boolean);
-  const ci = document.getElementById('cfgCi').value.split(',').map(s=>s.trim()).filter(Boolean);
-  if(kw.length) CFG.kw = kw;
-  if(ci.length) CFG.ci = ci;
-  document.getElementById('cfgForm').classList.remove('open');
-  renderCfgTags();
-  toast('Configuration mise à jour — scan en cours...');
-  setTimeout(scan, 400);
+function saveUi(){
+  try { localStorage.setItem(UI_KEY, JSON.stringify({ filter, selId })); } catch {}
+}
+function eraseJobs(){
+  if (!confirm('Supprimer toutes les offres sauvegardées et leurs CV adaptés ? Cette action est irréversible.')) return;
+  JOBS = []; selId = null; saveJobs(); saveUi(); stats(); render();
+  document.getElementById('dpWrap').innerHTML=''; closeAI(); closePDF();
+  toast('Historique vidé');
+}
+window.eraseJobs = eraseJobs;
+
+function loadCfg() {
+  try {
+    const j = JSON.parse(localStorage.getItem(STORE_KEY) || 'null');
+    if (j && j.kw && j.ci && j.src) return j;
+  } catch {}
+  return {
+    kw: ['Customer Success Manager','Delivery Manager','Service Delivery Manager','CX Manager','Head of Customer Success'],
+    ci: ['Casablanca','Rabat'],
+    src: { LinkedIn: true, Rekrute: true, 'Emploi.ma': true },
+  };
+}
+function saveCfgLs() { localStorage.setItem(STORE_KEY, JSON.stringify(CFG)); }
+
+// ── Chip-based config UI ──────────────────────────────────────────────────────
+function renderChips() {
+  const esc = s => s.replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+  document.getElementById('kwChips').innerHTML = CFG.kw.map((k,i) =>
+    `<span class="chip">${esc(k)}<button class="chip-x" onclick="removeChip('kw',${i})" title="Retirer">×</button></span>`).join('');
+  document.getElementById('ciChips').innerHTML = CFG.ci.map((c,i) =>
+    `<span class="chip city">${esc(c)}<button class="chip-x" onclick="removeChip('ci',${i})" title="Retirer">×</button></span>`).join('');
+  document.getElementById('kwCount').textContent = CFG.kw.length;
+  document.getElementById('ciCount').textContent = CFG.ci.length;
+  document.querySelectorAll('.src-row').forEach(r => {
+    r.classList.toggle('off', !CFG.src[r.dataset.src]);
+  });
+}
+function addChip(kind, value) {
+  const v = (value || '').trim();
+  if (!v) return;
+  const list = CFG[kind];
+  if (list.some(x => x.toLowerCase() === v.toLowerCase())) return;
+  list.push(v);
+  saveCfgLs();
+  renderChips();
+}
+function removeChip(kind, idx) {
+  CFG[kind].splice(idx, 1);
+  saveCfgLs();
+  renderChips();
+}
+function toggleSrc(el) {
+  const s = el.dataset.src;
+  CFG.src[s] = !CFG.src[s];
+  saveCfgLs();
+  renderChips();
 }
 
 // ── Render ─────────────────────────────────────────────────────────────────────
 function getList() {
   const q = document.getElementById('searchQ').value.toLowerCase();
+  const srcF = document.getElementById('srcFilter')?.value || '';
   let list = filter==='all' ? JOBS : JOBS.filter(j=>j.status===filter);
+  if(srcF) list = list.filter(j => (j.source||'').toLowerCase().includes(srcF.toLowerCase()));
   if(q) list = list.filter(j=>j.title.toLowerCase().includes(q)||j.company.toLowerCase().includes(q));
+  const sort = document.getElementById('sortBy')?.value || 'score';
+  if (sort === 'score')       list = [...list].sort((a,b)=>(b.score||0)-(a.score||0));
+  else if (sort === 'title')  list = [...list].sort((a,b)=>a.title.localeCompare(b.title));
+  else if (sort === 'date')   list = [...list].sort((a,b)=>(b.firstSeen||0)-(a.firstSeen||0));
   return list;
+}
+function srcClass(s){
+  const k=(s||'').toLowerCase();
+  if(k.includes('linkedin')) return 'tsrc-linkedin';
+  if(k.includes('rekrute')) return 'tsrc-rekrute';
+  if(k.includes('emploi')) return 'tsrc-emploima';
+  return 'ttype';
 }
 
 function scColor(n){ return n>=85?'#16A34A':n>=70?'#D97706':'#DC2626'; }
@@ -425,7 +643,7 @@ function render() {
       </div>
       <div class="tags">
         <span class="tag ttype">${j.type}</span>
-        <span class="tag ttype">${j.source}</span>
+        <span class="tag ${srcClass(j.source)}">${j.source}</span>
         ${j.cvFile?'<span class="tag tcv">📄 CV prêt</span>':''}
       </div>
     </div>
@@ -449,8 +667,8 @@ function stats() {
 }
 
 function setF(f, el) {
-  filter=f; selId=null;
-  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  filter=f; selId=null; saveUi();
+  document.querySelectorAll('.ftab').forEach(n=>n.classList.remove('active'));
   el.classList.add('active');
   const t={all:'Toutes les offres',new:'Nouvelles offres',adapted:'CV adaptés',applied:'Candidatures',dismissed:'Ignorées'};
   document.getElementById('mTitle').textContent = t[f];
@@ -469,10 +687,24 @@ function mF(f,el){
 
 // ── Select ─────────────────────────────────────────────────────────────────────
 function sel(id) {
-  selId=id; render();
+  selId=id; saveUi(); render();
   const j=JOBS.find(x=>x.id===id); if(!j) return;
+  const step = (label, key, ok) => {
+    const isActive = ({repere:j.status==='new',adapte:j.status==='adapted'||j.cvFile,lm:j.lmContent,postule:j.status==='applied'})[key];
+    const isDone = ({repere:true,adapte:j.cvFile||j.status==='adapted'||j.status==='applied'||j.lmContent,lm:j.lmContent,postule:j.status==='applied'})[key];
+    const cls = isDone?'done':(isActive?'active':'');
+    return `<span class="step ${cls}"><span class="step-dot"></span>${label}</span>`;
+  };
+  const steps = `
+    <div class="steps">
+      ${step('Repérée','repere')}<span class="step-arrow">→</span>
+      ${step('CV adapté','adapte')}<span class="step-arrow">→</span>
+      ${step('LM prête','lm')}<span class="step-arrow">→</span>
+      ${step('Postulée','postule')}
+    </div>`;
   document.getElementById('dpWrap').innerHTML=`
     <div class="dp">
+      ${steps}
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;margin-bottom:1rem;">
         <div>
           <div class="dp-title">${j.title}</div>
@@ -507,9 +739,21 @@ function sel(id) {
 // ── Scan ───────────────────────────────────────────────────────────────────────
 async function scan() {
   const btn=document.getElementById('scanBtn');
-  btn.disabled=true; btn.innerHTML='<span class="spin" style="border-top-color:var(--navy)"></span> Recherche...';
-  showLog(); log('Scan lancé · '+CFG.kw.slice(0,3).join(', ')+'...');
-  log('Villes : '+CFG.ci.join(', '));
+  btn.disabled=true; btn.innerHTML='<span class="spin" style="border-top-color:var(--navy)"></span> Recherche…';
+  // Visual progress per source in the journal
+  showLog();
+  const enabledSources = Object.keys(CFG.src).filter(s=>CFG.src[s]);
+  const startedAt = Date.now();
+  log(`Scan lancé · ${CFG.kw.length} mots-clés × ${CFG.ci.length} villes × ${enabledSources.length} sources`);
+  const progressId = 'scan-prog-' + Date.now();
+  const w = document.getElementById('logLines');
+  const row = document.createElement('div');
+  row.id = progressId;
+  row.className = 'log-line';
+  row.innerHTML = '<span class="log-t">⏱</span><div>' +
+    enabledSources.map(s=>`<span class="src-pg run" data-s="${s}"><span class="dot"></span>${s}</span>`).join('') +
+    '</div>';
+  w.appendChild(row);
   try {
     const res = await fetch(`${BASE}/api/search`, {
       method:'POST', headers:{'Content-Type':'application/json'},
@@ -517,16 +761,50 @@ async function scan() {
     });
     const data = await res.json();
     if(!data.success) throw new Error(data.error||'Erreur serveur');
-    const maxId = Math.max(...JOBS.map(j=>j.id),0);
-    const srcs = ['LinkedIn','Indeed','Rekrute'];
-    data.jobs.forEach((j,i)=>{
-      JOBS.push({...j, id:maxId+i+1, status:'new', cvFile:null, adaptedContent:null,
-        source:srcs[i%3], url:`https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(j.title)}&location=Maroc`
+    let maxId = Math.max(...JOBS.map(j=>j.id),0);
+    // Filter by enabled sources; keep real source & URL from backend
+    const enabledSources = Object.keys(CFG.src).filter(s => CFG.src[s]);
+    const incoming = data.jobs.filter(j => enabledSources.some(s => (j.source||'').toLowerCase().includes(s.toLowerCase())));
+
+    // Dedup against existing JOBS — match by URL first, fallback to title+company
+    const fingerprint = j => (j.url ? j.url : `${(j.title||'').toLowerCase()}|${(j.company||'').toLowerCase()}`);
+    const existing = new Map(JOBS.map(j => [fingerprint(j), j]));
+    let added = 0, refreshed = 0;
+    for (const inc of incoming) {
+      const key = fingerprint(inc);
+      const known = existing.get(key);
+      if (known) {
+        // refresh score/salary/matchKw but keep status, adaptedContent, cvFile
+        known.score = inc.score ?? known.score;
+        known.salary = inc.salary || known.salary;
+        known.matchKw = inc.matchKw || known.matchKw;
+        known.missingKw = inc.missingKw || known.missingKw;
+        known.lastSeen = Date.now();
+        refreshed++;
+      } else {
+        maxId++;
+        JOBS.push({ ...inc, id:maxId, status:'new', cvFile:null, adaptedContent:null,
+                    firstSeen: Date.now(), lastSeen: Date.now() });
+        added++;
+      }
+    }
+    saveJobs();
+    // Update source counts in sidebar + mark progress chips as done
+    if (data.sourcesCount) {
+      Object.entries(data.sourcesCount).forEach(([s,n]) => {
+        const el = document.getElementById('src-'+s);
+        if (el) el.textContent = n;
+        const chip = row.querySelector(`.src-pg[data-s="${s}"]`);
+        if (chip) { chip.classList.remove('run'); chip.classList.add(n>0?'done':'err'); chip.querySelector('span.dot'); chip.innerHTML = `<span class="dot"></span>${s} <strong style="font-size:10px;opacity:.7;">${n}</strong>`; }
       });
-    });
+      // Any chip still in "run" → no data returned for it
+      row.querySelectorAll('.src-pg.run').forEach(c=>{c.classList.remove('run'); c.classList.add('err');});
+    }
+    log(`⏱ Terminé en ${((Date.now()-startedAt)/1000).toFixed(1)}s`);
     stats(); render();
-    log(`✓ ${data.jobs.length} nouvelles offres`,'ok');
-    toast(`${data.jobs.length} nouvelles offres trouvées !`);
+    log(`✓ ${added} nouvelles · ${refreshed} mises à jour (${data.totalScraped||data.jobs.length} scrapées)`,'ok');
+    if (data.warning) log('⚠ '+data.warning,'warn');
+    toast(added ? `${added} nouvelles offres !` : `${refreshed} offres mises à jour`);
   } catch(err) {
     log('✗ '+err.message,'warn');
     toast('Erreur scan — vérifiez que le serveur est démarré');
@@ -565,14 +843,26 @@ async function adaptCV(id) {
     body.innerHTML=text.replace(/\n/g,'<br>');
     j.adaptedContent=text;
     j.status='adapted';
+    j.adaptedAt = Date.now();
     // Extraire le nom du fichier depuis la réponse
     const fnMatch=text.match(/CV_SAID_LAKHRIF_[A-Z0-9_]+/);
     j.cvFile=fnMatch?fnMatch[0]:`CV_SAID_LAKHRIF_${clean(j.title)}_${clean(j.company)}`;
-    stats(); render(); sel(id);
+    saveJobs(); stats(); render(); sel(id);
     log('✓ CV adapté pour '+j.company,'ok');
     toast('CV adapté pour '+j.title+' !');
     document.getElementById('aiActs').innerHTML=`
-      <button class="btn btn-gold" onclick="showPDF(${j.id})">📄 Aperçu du CV</button>
+      <div class="act-grp">
+        <span class="act-grp-lbl">CV</span>
+        <button class="btn btn-gold" onclick="downloadCV(${j.id},'design')">⬇ Design</button>
+        <button class="btn btn-gold" onclick="downloadCV(${j.id},'ats')" title="Version optimisée ATS (Workday, Taleo…)">⬇ ATS</button>
+        <button class="btn btn-out" onclick="uploadCV(${j.id},'design')" title="Sauver le CV Design sur Drive">☁</button>
+        <button class="btn btn-out" onclick="uploadCV(${j.id},'ats')" title="Sauver le CV ATS sur Drive">☁</button>
+      </div>
+      <div class="act-grp">
+        <span class="act-grp-lbl">LM</span>
+        <button class="btn btn-navy" onclick="generateLM(${j.id})">✍ Générer</button>
+        ${j.lmContent?`<button class="btn btn-out" onclick="downloadLM(${j.id})">⬇</button><button class="btn btn-out" onclick="uploadLM(${j.id})" title="Sauver la LM sur Drive">☁</button>`:''}
+      </div>
       <button class="btn btn-out" onclick="closeAI()">Fermer</button>`;
   } catch(err){
     body.innerHTML='<span style="color:var(--err)">Erreur : '+err.message+'</span>';
@@ -584,7 +874,9 @@ function showAI(id){
   const j=JOBS.find(x=>x.id===id); if(!j?.adaptedContent) return;
   document.getElementById('aiBody').innerHTML=j.adaptedContent.replace(/\n/g,'<br>');
   document.getElementById('aiActs').innerHTML=`
-    <button class="btn btn-gold" onclick="showPDF(${j.id})">📄 Aperçu du CV</button>
+    <button class="btn btn-gold" onclick="downloadCV(${j.id})">⬇ Télécharger le CV (PDF)</button>
+    <button class="btn btn-navy" onclick="uploadCV(${j.id})">☁ Sauver dans Drive</button>
+    <button class="btn btn-out" onclick="showPDF(${j.id})">👁 Aperçu</button>
     <button class="btn btn-out" onclick="closeAI()">Fermer</button>`;
   document.getElementById('aiPanel').classList.add('open');
   document.getElementById('aiPanel').scrollIntoView({behavior:'smooth',block:'nearest'});
@@ -617,7 +909,7 @@ function showPDF(id){
   const buls=arr=>arr.map(b=>`<div class="pdf-bullet"><span>${b}</span></div>`).join('');
   document.getElementById('pdfPrev').innerHTML=`
     <div style="text-align:center;padding:.7rem;background:var(--navy);border-radius:7px;margin-bottom:.8rem;">
-      <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:#fff;">SAID LAKHRIF</div>
+      <div style="font-size:16px;font-weight:800;color:#fff;">SAID LAKHRIF</div>
       <div style="font-size:10.5px;color:#AECDE8;margin-top:2px;">${title}</div>
       <div style="font-size:9.5px;color:rgba(255,255,255,.45);margin-top:3px;">Casablanca · +212 660 720 147 · said.lakhrif@gmail.com</div>
     </div>
@@ -644,17 +936,20 @@ function showPDF(id){
 }
 
 // ── Apply ──────────────────────────────────────────────────────────────────────
+function _save(){ saveJobs(); saveUi(); }
 function apply(id){
   const j=JOBS.find(x=>x.id===id);
   setTimeout(()=>{
-    j.status='applied'; stats(); render(); sel(id); closePDF();
+    j.status='applied'; j.appliedAt = Date.now();
+    saveJobs(); stats(); render(); sel(id); closePDF();
     log('✓ Candidature validée — '+j.company,'ok');
     toast('Candidature envoyée chez '+j.company+' !');
   },600);
 }
 function dismiss(id){
   const j=JOBS.find(x=>x.id===id);
-  j.status='dismissed'; selId=null;
+  j.status='dismissed'; j.dismissedAt = Date.now(); selId=null;
+  saveJobs(); saveUi();
   document.getElementById('dpWrap').innerHTML='';
   closeAI(); closePDF(); stats(); render();
 }
@@ -693,12 +988,151 @@ function saveSheet(){
   const kw=document.getElementById('shKw').value.split(',').map(s=>s.trim()).filter(Boolean);
   const ci=document.getElementById('shCi').value.split(',').map(s=>s.trim()).filter(Boolean);
   if(kw.length) CFG.kw=kw; if(ci.length) CFG.ci=ci;
-  closeSheet(); renderCfgTags();
+  saveCfgLs(); closeSheet(); renderChips();
   toast('Config mise à jour — scan en cours...'); setTimeout(scan,400);
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 function clean(s){ return s.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Z0-9]+/g,'_').replace(/^_+|_+$/g,''); }
+
+// \u2500\u2500 CV download & Drive upload \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+let _cvBuilder = null;
+async function _loadCvBuilder(){
+  if(_cvBuilder) return _cvBuilder;
+  _cvBuilder = await import('./cv-builder.js');
+  return _cvBuilder;
+}
+async function downloadCV(id, variant){
+  variant = variant || 'design';
+  const j=JOBS.find(x=>x.id===id); if(!j?.adaptedContent) return toast("Adapte le CV d'abord");
+  toast('G\u00e9n\u00e9ration du PDF '+variant+'\u2026');
+  try{
+    const m = await _loadCvBuilder();
+    const { blob, filename } = await m.buildCvPdf(j.adaptedContent, { title:j.title, company:j.company }, variant);
+    m.downloadBlob(blob, filename);
+    j.cvFile = filename;
+    log('\u2713 CV '+variant+' t\u00e9l\u00e9charg\u00e9 : '+filename+'.pdf','ok');
+    toast('CV '+variant+' t\u00e9l\u00e9charg\u00e9');
+    stats(); render();
+  }catch(e){ console.error(e); log('\u2717 PDF : '+e.message,'warn'); toast('Erreur PDF : '+e.message); }
+}
+async function uploadCV(id, variant){
+  variant = variant || 'design';
+  const j=JOBS.find(x=>x.id===id); if(!j?.adaptedContent) return toast("Adapte le CV d'abord");
+  const m = await _loadCvBuilder();
+  const cfg = m.getDriveCfg();
+  if(!cfg.clientId || !cfg.folderId){ openDriveSettings(); return; }
+  toast('G\u00e9n\u00e9ration '+variant+' + upload Drive\u2026');
+  try{
+    const { blob, filename } = await m.buildCvPdf(j.adaptedContent, { title:j.title, company:j.company }, variant);
+    const res = await m.uploadToDrive(blob, filename);
+    log('\u2713 Drive '+variant+' : '+res.name,'ok');
+    toast('Sauv\u00e9 sur Drive \u2713');
+    if(res.webViewLink) window.open(res.webViewLink,'_blank');
+  }catch(e){ console.error(e); log('\u2717 Drive : '+e.message,'warn'); toast(e.message); }
+}
+// ── Cover letter (LM) ─────────────────────────────────────────────────────────
+async function generateLM(id){
+  const j=JOBS.find(x=>x.id===id); if(!j) return toast('Offre introuvable');
+  const panel=document.getElementById('aiPanel');
+  const body=document.getElementById('aiBody');
+  panel.classList.add('open');
+  body.innerHTML='<div style="color:var(--ink3);font-size:11px;margin-bottom:8px;">✍ Génération de la lettre de motivation…</div><span class="cursor"></span>';
+  document.getElementById('aiActs').innerHTML='';
+  panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+  log('Lettre de motivation pour "'+j.title+'" @ '+j.company);
+
+  try {
+    const res = await fetch(`${BASE}/api/cover-letter`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ job:j })
+    });
+    const reader=res.body.getReader(), dec=new TextDecoder();
+    let text='';
+    body.innerHTML='<div style="color:var(--ink3);font-size:11px;margin-bottom:8px;">✍ Lettre de motivation</div><span class="cursor"></span>';
+    while(true){
+      const {done,value}=await reader.read(); if(done) break;
+      const lines=dec.decode(value).split('\n').filter(l=>l.startsWith('data: '));
+      for(const line of lines){
+        const d=line.slice(6); if(d==='[DONE]') continue;
+        try{ const p=JSON.parse(d); if(p.text){ text+=p.text; body.innerHTML='<div style="color:var(--ink3);font-size:11px;margin-bottom:8px;">✍ Lettre de motivation</div>'+text.replace(/\n/g,'<br>')+' <span class="cursor"></span>'; } }catch{}
+      }
+    }
+    body.innerHTML='<div style="color:var(--ink3);font-size:11px;margin-bottom:8px;">✍ Lettre de motivation</div>'+text.replace(/\n/g,'<br>');
+    j.lmContent=text; j.lmGeneratedAt=Date.now();
+    _save();
+    log('✓ LM générée pour '+j.company,'ok');
+    toast('Lettre prête !');
+    document.getElementById('aiActs').innerHTML=`
+      <button class="btn btn-gold" onclick="downloadLM(${j.id})">⬇ Télécharger la LM (PDF)</button>
+      <button class="btn btn-navy" onclick="uploadLM(${j.id})">☁ Drive</button>
+      <button class="btn btn-out" onclick="showAI(${j.id})">↩ Revenir au CV</button>
+      <button class="btn btn-out" onclick="closeAI()">Fermer</button>`;
+  } catch(err){
+    body.innerHTML='<span style="color:var(--err)">Erreur : '+err.message+'</span>';
+    log('✗ LM : '+err.message,'warn');
+  }
+}
+async function downloadLM(id){
+  const j=JOBS.find(x=>x.id===id); if(!j?.lmContent) return toast('Génère la LM d\'abord');
+  toast('Génération du PDF…');
+  try{
+    const m = await _loadCvBuilder();
+    const { blob, filename } = await m.buildCoverLetterPdf(j.lmContent, { title:j.title, company:j.company, location:j.location });
+    m.downloadBlob(blob, filename);
+    log('✓ LM téléchargée : '+filename+'.pdf','ok');
+    toast('LM téléchargée');
+  }catch(e){ console.error(e); log('✗ PDF LM : '+e.message,'warn'); toast('Erreur PDF : '+e.message); }
+}
+async function uploadLM(id){
+  const j=JOBS.find(x=>x.id===id); if(!j?.lmContent) return toast('Génère la LM d\'abord');
+  const m = await _loadCvBuilder();
+  const cfg = m.getDriveCfg();
+  if(!cfg.clientId || !cfg.folderId){ openDriveSettings(); return; }
+  toast('Génération + upload Drive…');
+  try{
+    const { blob, filename } = await m.buildCoverLetterPdf(j.lmContent, { title:j.title, company:j.company, location:j.location });
+    const res = await m.uploadToDrive(blob, filename);
+    log('✓ Drive LM : '+res.name,'ok');
+    toast('LM sauvée sur Drive ✓');
+    if(res.webViewLink) window.open(res.webViewLink,'_blank');
+  }catch(e){ console.error(e); log('✗ Drive LM : '+e.message,'warn'); toast(e.message); }
+}
+async function openDriveSettings(){
+  const m = await _loadCvBuilder();
+  const cur = m.getDriveCfg();
+  document.getElementById('drvCid').value = cur.clientId || '';
+  document.getElementById('drvFid').value = cur.folderId || '1_kXbANZVYfPyXpY9Z9Yj_x49BsJPTdzC';
+  document.getElementById('driveModal').classList.add('open');
+  setTimeout(() => document.getElementById('drvCid').focus(), 100);
+}
+function closeDriveModal(){ document.getElementById('driveModal').classList.remove('open'); }
+async function saveDriveModal(){
+  const m = await _loadCvBuilder();
+  const cid = document.getElementById('drvCid').value.trim();
+  const fid = document.getElementById('drvFid').value.trim();
+  if(!cid || !fid){ toast('Les deux champs sont requis'); return; }
+  m.setDriveCfg({ clientId:cid, folderId:fid });
+  closeDriveModal();
+  toast('Config Drive enregistr\u00e9e \u2713');
+}
+window.closeDriveModal=closeDriveModal; window.saveDriveModal=saveDriveModal;
+
+async function testCronScan(){
+  toast('Scan auto en cours… (peut prendre 30-60s)');
+  log('▶ Test scan auto (cron) lancé');
+  try{
+    const r = await fetch(`${BASE}/api/cron-scan`, { method:'POST' });
+    const d = await r.json();
+    if(!r.ok) throw new Error(d.error||r.status);
+    log(`✓ Cron OK · ${d.totalScraped||0} scrapées, ${d.scoredAboveThreshold||0} ≥ seuil`,'ok');
+    if(d.email?.id) toast('✓ Email envoyé (id: '+d.email.id.slice(0,8)+')');
+    else if(d.email?.skipped) toast('⚠ Mail non envoyé : '+d.email.reason);
+    else toast('Scan terminé · check les logs');
+    console.log('cron result:', d);
+  }catch(e){ console.error(e); log('✗ Cron : '+e.message,'warn'); toast('Erreur : '+e.message); }
+}
+window.testCronScan = testCronScan;
 
 // ── SW ─────────────────────────────────────────────────────────────────────────
 if('serviceWorker' in navigator){
@@ -706,7 +1140,52 @@ if('serviceWorker' in navigator){
 }
 
 // ── Init ───────────────────────────────────────────────────────────────────────
-renderCfgTags(); stats(); render();
+['kw','ci'].forEach(kind => {
+  const inp = document.getElementById(kind+'Input');
+  if (!inp) return;
+  inp.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addChip(kind, inp.value);
+      inp.value = '';
+    } else if (e.key === 'Backspace' && !inp.value && CFG[kind].length) {
+      removeChip(kind, CFG[kind].length - 1);
+    }
+  });
+  inp.addEventListener('blur', () => { if (inp.value.trim()) { addChip(kind, inp.value); inp.value = ''; } });
+});
+renderChips(); stats(); render();
+
+// ── Keyboard shortcuts ──────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  const tag = (e.target.tagName||'').toLowerCase();
+  const inField = tag==='input' || tag==='textarea' || e.target.isContentEditable;
+  if (e.key === 'Escape') {
+    if (document.getElementById('driveModal').classList.contains('open')) { closeDriveModal(); return; }
+    closeAI(); closePDF();
+    if (selId) { selId=null; saveUi(); document.getElementById('dpWrap').innerHTML=''; render(); }
+    return;
+  }
+  if (inField && e.key !== 'Enter') return;
+  if (e.key === '/') { e.preventDefault(); document.getElementById('searchQ').focus(); return; }
+  if (e.key.toLowerCase() === 's' && !e.metaKey && !e.ctrlKey) { e.preventDefault(); scan(); return; }
+  if (e.key.toLowerCase() === 'a' && selId) { e.preventDefault(); adaptCV(selId); return; }
+  if (e.key.toLowerCase() === 'l' && selId && JOBS.find(j=>j.id===selId)?.adaptedContent) { e.preventDefault(); generateLM(selId); return; }
+});
+
+// Restore the active filter tab visually + reopen previously selected job, if any.
+(function restoreFilterTab(){
+  const tab = document.querySelector(`.ftab[data-f="${filter}"]`);
+  if (tab) {
+    document.querySelectorAll('.ftab').forEach(n=>n.classList.remove('active'));
+    tab.classList.add('active');
+    const t={all:'Toutes les offres',new:'Nouvelles offres',adapted:'CV adaptés',applied:'Candidatures',dismissed:'Ignorées'};
+    document.getElementById('mTitle').textContent = t[filter] || t.all;
+  }
+  if (selId && JOBS.some(j => j.id === selId)) {
+    setTimeout(() => sel(selId), 100);
+  }
+})();
 </script>
 </body>
 </html>

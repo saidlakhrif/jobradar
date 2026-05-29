@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Lettre de motivation — Said Lakhrif</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+@page{size:A4;margin:0;}
+html,body{font-family:'DM Sans',sans-serif;color:#111;background:#fff;font-size:10.6pt;line-height:1.52;}
+
+.page{width:210mm;min-height:297mm;padding:0;background:#fff;}
+
+/* Top navy band — identity */
+.top{background:#0D1B3E;color:#fff;padding:13mm 18mm 11mm;display:flex;justify-content:space-between;align-items:flex-end;gap:8mm;}
+.who .name{font-size:21pt;font-weight:700;letter-spacing:-.4px;line-height:1;}
+.who .role{font-size:10pt;font-weight:500;color:#E8C97A;margin-top:2.5mm;}
+.contact{font-size:9pt;line-height:1.55;text-align:right;color:rgba(255,255,255,.88);}
+.contact strong{color:#fff;font-weight:600;}
+
+/* Body */
+.body{padding:11mm 18mm 14mm;}
+.meta-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8mm;font-size:10pt;}
+.meta-row .to{color:#222;}
+.meta-row .to strong{font-weight:700;display:block;font-size:11pt;color:#0D1B3E;margin-bottom:.5mm;}
+.meta-row .date{color:#444;font-size:9.6pt;}
+
+.objet{font-size:11pt;font-weight:700;color:#0D1B3E;margin-bottom:6mm;padding-bottom:1.6mm;border-bottom:2px solid #C9A84C;}
+.objet::before{content:'Objet : ';color:#6B7280;font-weight:600;}
+
+.salut{font-size:10.6pt;color:#222;margin-bottom:5mm;}
+p.para{font-size:10.4pt;color:#1f2330;line-height:1.6;text-align:justify;margin-bottom:4mm;}
+p.para strong{color:#0D1B3E;font-weight:600;}
+
+.formule{font-size:10.4pt;color:#1f2330;margin-top:5mm;line-height:1.55;}
+.signature{margin-top:7mm;font-size:11pt;font-weight:700;color:#0D1B3E;}
+.signature small{display:block;font-weight:500;font-size:9pt;color:#6B7280;margin-top:1mm;}
+
+@media screen{
+  body{background:#e5e7eb;padding:20px 0;}
+  .page{margin:0 auto;box-shadow:0 8px 40px rgba(0,0,0,.18);}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="top">
+    <div class="who">
+      <div class="name">Said Lakhrif</div>
+      <div class="role">{{ROLE_TITLE}}</div>
+    </div>
+    <div class="contact">
+      <strong>+212 660 720 147</strong><br>
+      said.lakhrif@gmail.com<br>
+      Casablanca, Maroc · Mobilité nationale
+    </div>
+  </header>
+
+  <main class="body">
+
+    <div class="meta-row">
+      <div class="to">
+        <strong>À l'attention du Service Recrutement</strong>
+        {{COMPANY}}<br>
+        {{LOCATION}}
+      </div>
+      <div class="date">Casablanca, le {{DATE}}</div>
+    </div>
+
+    <div class="objet">{{OBJET}}</div>
+
+    <div class="salut">Madame, Monsieur,</div>
+
+    <p class="para">{{ACCROCHE}}</p>
+
+    <p class="para">{{POURQUOI_MOI}}</p>
+
+    <p class="para">{{MOTIVATION}}</p>
+
+    <div class="formule">{{FORMULE}}</div>
+
+    <div class="signature">
+      Said Lakhrif
+      <small>Customer Success Manager · Service Delivery Manager</small>
+    </div>
+
+  </main>
+
+</div>
+</body>
+</html>

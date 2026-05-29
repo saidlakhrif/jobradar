@@ -5,5 +5,11 @@
   "outputDirectory": "public",
   "rewrites": [
     { "source": "/app/:path*", "destination": "/index.html" }
-  ]
+  ],
+  "crons": [
+    { "path": "/api/cron-scan", "schedule": "0 8 * * *" }
+  ],
+  "functions": {
+    "api/cron-scan.js": { "maxDuration": 60 }
+  }
 }
