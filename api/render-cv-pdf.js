@@ -120,13 +120,26 @@ export default async function handler(req, res) {
   if (!html || html.length < 100) return res.status(400).json({ error: 'No HTML provided' });
 
   try {
-    const pdf = IS_VERCEL ? await renderViaPuppeteer(html) : await renderViaSpawn(html);
+    // Prefer explicit signal (Vercel/Lambda), else try installed browser, else fall back to puppeteer
+    let pdf;
+    if (IS_VERCEL) {
+      pdf = await renderViaPuppeteer(html);
+    } else {
+      try {
+        pdf = await renderViaSpawn(html);
+      } catch (e) {
+        if (/No Edge\/Chrome/i.test(e.message)) {
+          console.log('[render-cv-pdf] no local browser, falling back to puppeteer');
+          pdf = await renderViaPuppeteer(html);
+        } else throw e;
+      }
+    }
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Length', pdf.length);
     res.setHeader('Cache-Control', 'no-store');
     res.end(pdf);
   } catch (e) {
     console.error('[render-cv-pdf]', e);
-    res.status(500).json({ error: e.message });
+    res.status(500).json({ error: e.message, stack: e.stack?.split('\n').slice(0,3) });
   }
 }
