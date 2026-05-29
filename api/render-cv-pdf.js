@@ -10,8 +10,8 @@ import { join } from 'path';
 import { randomBytes } from 'crypto';
 
 const IS_VERCEL = !!process.env.VERCEL || !!process.env.AWS_LAMBDA_FUNCTION_NAME;
-// Pin Chromium version compatible with puppeteer-core v23+
-const CHROMIUM_VERSION = 'v131.0.1';
+// Pin Chromium version aligned with installed @sparticuz/chromium-min (147)
+const CHROMIUM_VERSION = 'v147.0.0';
 const CHROMIUM_PACK_URL = `https://github.com/Sparticuz/chromium/releases/download/${CHROMIUM_VERSION}/chromium-${CHROMIUM_VERSION}-pack.x64.tar`;
 
 const CANDIDATE_BROWSERS = [
