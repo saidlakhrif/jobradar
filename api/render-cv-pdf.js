@@ -1,11 +1,18 @@
-// Render an HTML page (sent in the POST body) to a 1-page A4 PDF using Edge / Chrome headless.
-// Used locally via dev.js. On Vercel a different backend (puppeteer-core + chromium) is needed.
+// Render an HTML page (sent in the POST body) to a 1-page A4 PDF.
+// Two backends:
+//   - LOCAL  (Windows/Mac/Linux dev): spawn Edge or Chrome headless (faster, uses installed browser)
+//   - VERCEL (serverless Linux):      puppeteer-core + @sparticuz/chromium-min (downloads Chromium at runtime)
 
 import { writeFile, readFile, unlink, access } from 'fs/promises';
 import { spawn } from 'child_process';
 import { tmpdir } from 'os';
 import { join } from 'path';
 import { randomBytes } from 'crypto';
+
+const IS_VERCEL = !!process.env.VERCEL || !!process.env.AWS_LAMBDA_FUNCTION_NAME;
+// Pin Chromium version compatible with puppeteer-core v23+
+const CHROMIUM_VERSION = 'v131.0.1';
+const CHROMIUM_PACK_URL = `https://github.com/Sparticuz/chromium/releases/download/${CHROMIUM_VERSION}/chromium-${CHROMIUM_VERSION}-pack.x64.tar`;
 
 const CANDIDATE_BROWSERS = [
   'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe',
@@ -24,6 +31,66 @@ async function findBrowser() {
     try { await access(p); _cachedBrowser = p; return p; } catch {}
   }
   throw new Error('No Edge/Chrome found on this machine');
+}
+
+// ─── Vercel / serverless path via puppeteer-core + chromium-min ─────────────
+async function renderViaPuppeteer(html) {
+  const chromium = (await import('@sparticuz/chromium-min')).default;
+  const puppeteer = (await import('puppeteer-core')).default;
+
+  const browser = await puppeteer.launch({
+    args: [...chromium.args, '--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--font-render-hinting=none'],
+    defaultViewport: { width: 794, height: 1123, deviceScaleFactor: 2 }, // A4 @ 96 DPI
+    executablePath: await chromium.executablePath(CHROMIUM_PACK_URL),
+    headless: true,
+  });
+
+  try {
+    const page = await browser.newPage();
+    await page.setContent(html, { waitUntil: 'networkidle0', timeout: 25000 });
+    // Give web fonts a moment to settle (DM Sans from Google Fonts)
+    try { await page.evaluateHandle('document.fonts.ready'); } catch {}
+    const pdf = await page.pdf({
+      format: 'A4',
+      printBackground: true,
+      preferCSSPageSize: true,
+      margin: { top: 0, right: 0, bottom: 0, left: 0 },
+    });
+    return Buffer.from(pdf);
+  } finally {
+    await browser.close().catch(()=>{});
+  }
+}
+
+// ─── Local path via Edge/Chrome spawn (existing behaviour) ──────────────────
+async function renderViaSpawn(html) {
+  const tmp = tmpdir();
+  const id = randomBytes(8).toString('hex');
+  const htmlPath = join(tmp, `cv-${id}.html`);
+  const pdfPath  = join(tmp, `cv-${id}.pdf`);
+  try {
+    const browser = await findBrowser();
+    await writeFile(htmlPath, html, 'utf8');
+    await new Promise((resolve, reject) => {
+      const args = [
+        '--headless=new', '--disable-gpu', '--no-sandbox',
+        '--no-pdf-header-footer', '--hide-scrollbars',
+        '--run-all-compositor-stages-before-draw',
+        `--print-to-pdf=${pdfPath}`,
+        `file:///${htmlPath.replace(/\\/g, '/')}`,
+      ];
+      const proc = spawn(browser, args, { windowsHide: true });
+      let err = '';
+      proc.stderr.on('data', d => err += d.toString());
+      proc.on('exit', code => code === 0 ? resolve() : reject(new Error(`browser exited ${code}: ${err.slice(0,300)}`)));
+      proc.on('error', reject);
+      setTimeout(() => { try { proc.kill(); } catch {} reject(new Error('browser timeout')); }, 25000);
+    });
+    return await readFile(pdfPath);
+  } finally {
+    unlink(htmlPath).catch(()=>{});
+    unlink(pdfPath).catch(()=>{});
+  }
 }
 
 function readBody(req) {
@@ -52,32 +119,8 @@ export default async function handler(req, res) {
   }
   if (!html || html.length < 100) return res.status(400).json({ error: 'No HTML provided' });
 
-  const tmp = tmpdir();
-  const id = randomBytes(8).toString('hex');
-  const htmlPath = join(tmp, `cv-${id}.html`);
-  const pdfPath  = join(tmp, `cv-${id}.pdf`);
-
   try {
-    const browser = await findBrowser();
-    await writeFile(htmlPath, html, 'utf8');
-
-    await new Promise((resolve, reject) => {
-      const args = [
-        '--headless=new', '--disable-gpu', '--no-sandbox',
-        '--no-pdf-header-footer', '--hide-scrollbars',
-        '--run-all-compositor-stages-before-draw',
-        `--print-to-pdf=${pdfPath}`,
-        `file:///${htmlPath.replace(/\\/g, '/')}`,
-      ];
-      const proc = spawn(browser, args, { windowsHide: true });
-      let err = '';
-      proc.stderr.on('data', d => err += d.toString());
-      proc.on('exit', code => code === 0 ? resolve() : reject(new Error(`browser exited ${code}: ${err.slice(0,300)}`)));
-      proc.on('error', reject);
-      setTimeout(() => { try { proc.kill(); } catch {} reject(new Error('browser timeout')); }, 25000);
-    });
-
-    const pdf = await readFile(pdfPath);
+    const pdf = IS_VERCEL ? await renderViaPuppeteer(html) : await renderViaSpawn(html);
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Length', pdf.length);
     res.setHeader('Cache-Control', 'no-store');
@@ -85,8 +128,5 @@ export default async function handler(req, res) {
   } catch (e) {
     console.error('[render-cv-pdf]', e);
     res.status(500).json({ error: e.message });
-  } finally {
-    unlink(htmlPath).catch(()=>{});
-    unlink(pdfPath).catch(()=>{});
   }
 }

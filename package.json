@@ -10,6 +10,8 @@
     "start": "node dev.js"
   },
   "dependencies": {
-    "cheerio": "^1.0.0"
+    "@sparticuz/chromium-min": "^147.0.0",
+    "cheerio": "^1.0.0",
+    "puppeteer-core": "^24.43.1"
   }
 }
