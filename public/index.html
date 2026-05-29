@@ -279,6 +279,45 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
 .bn-badge{position:absolute;top:-2px;right:-4px;background:var(--gold);color:var(--navy);font-size:8.5px;font-weight:700;width:14px;height:14px;border-radius:50%;display:none;align-items:center;justify-content:center;}
 .bn-badge.show{display:flex;}
 
+/* Mobile top bar */
+.mtop{display:none;position:sticky;top:0;background:var(--navy);color:#fff;padding:calc(.65rem + env(safe-area-inset-top)) .85rem .65rem;z-index:30;align-items:center;gap:.7rem;border-bottom:1px solid rgba(255,255,255,.1);box-shadow:0 4px 16px rgba(13,27,62,.18);}
+.mtop-logo{width:32px;height:32px;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--navy);flex-shrink:0;}
+.mtop-mid{flex:1;min-width:0;}
+.mtop-title{font-size:15px;font-weight:700;color:#fff;line-height:1.1;}
+.mtop-meta{font-size:10.5px;color:rgba(255,255,255,.55);margin-top:1px;}
+.mtop-act{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#fff;padding:.45rem .55rem;cursor:pointer;font-size:14px;}
+.mtop-act:active{background:rgba(255,255,255,.16);}
+
+/* Center FAB Scan button on mobile bottom nav */
+.fab{display:flex;flex-direction:column;align-items:center;cursor:pointer;position:relative;}
+.fab-btn{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--gold) 0%,var(--gold2) 100%);border:4px solid var(--navy);display:flex;align-items:center;justify-content:center;color:var(--navy);box-shadow:0 8px 20px rgba(201,168,76,.45);transition:transform .15s;margin-top:-28px;}
+.fab-btn:active{transform:scale(.93);}
+.fab-btn svg{width:24px;height:24px;}
+.fab-btn.scanning{animation:pulse-fab 1.4s ease-in-out infinite;}
+@keyframes pulse-fab{0%,100%{box-shadow:0 8px 20px rgba(201,168,76,.45)}50%{box-shadow:0 8px 32px rgba(201,168,76,.7),0 0 0 6px rgba(201,168,76,.18)}}
+.fab-lbl{font-size:10.5px;font-weight:700;color:var(--gold);margin-top:3px;}
+
+/* Scan progress overlay */
+.scan-ov{display:none;position:fixed;inset:0;background:rgba(13,27,62,.96);backdrop-filter:blur(8px);z-index:70;align-items:center;justify-content:center;padding:1.5rem;}
+.scan-ov.open{display:flex;}
+.scan-card{background:var(--navy);border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:2rem 1.4rem 1.4rem;width:100%;max-width:380px;}
+.scan-spin{width:46px;height:46px;margin:0 auto 1rem;border:4px solid rgba(201,168,76,.2);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;}
+.scan-title{font-size:18px;font-weight:700;color:#fff;margin-bottom:.3rem;text-align:center;}
+.scan-sub{font-size:12.5px;color:rgba(255,255,255,.55);margin-bottom:1.3rem;text-align:center;}
+.scan-sources{display:flex;flex-direction:column;gap:.55rem;}
+.scan-source{display:flex;align-items:center;gap:.7rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);padding:.65rem .85rem;border-radius:11px;font-size:13px;color:#fff;font-weight:500;}
+.scan-source-st{font-size:12.5px;font-weight:700;margin-left:auto;color:rgba(255,255,255,.55);font-family:monospace;}
+.scan-source.run{border-color:rgba(201,168,76,.5);}
+.scan-source.run .scan-source-st{color:var(--gold2);}
+.scan-source.done{border-color:rgba(74,222,128,.4);background:rgba(74,222,128,.07);}
+.scan-source.done .scan-source-st{color:#4ADE80;}
+.scan-source.err{border-color:rgba(248,113,113,.4);background:rgba(248,113,113,.07);}
+.scan-source.err .scan-source-st{color:#FCA5A5;}
+
+/* NEW badge on freshly scanned cards */
+.jcard.fresh{position:relative;}
+.jcard.fresh::after{content:'NOUVEAU';position:absolute;top:9px;right:9px;background:var(--gold);color:var(--navy);font-size:9.5px;font-weight:800;letter-spacing:.06em;padding:2px 7px;border-radius:99px;box-shadow:0 2px 6px rgba(201,168,76,.45);z-index:1;}
+
 /* Bottom sheet */
 .sheet-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:55;}
 .sheet-ov.open{display:block;}
@@ -288,21 +327,54 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
 .sheet-title{font-size:14px;font-weight:700;color:#fff;margin-bottom:.9rem;}
 
 @media(max-width:760px){
-  .app{grid-template-columns:1fr;}
-  .sb{position:static;height:auto;}
-  .sb-bot{display:none;}
-  .main{padding:1rem;padding-bottom:75px;}
-  .metrics{grid-template-columns:repeat(2,1fr);gap:8px;}
-  .metric{padding:.8rem .9rem;}
-  .metric-v{font-size:22px;}
-  .ftabs{margin-bottom:.8rem;}
-  .ftab{font-size:13px;padding:.55rem .75rem;}
-  .bnav{display:grid;}
-  .toast-wrap{bottom:5rem;}
+  .app{display:block;}
+  .sb{display:none;}                     /* hide sidebar entirely on mobile */
+  .mtop{display:flex;}                   /* show mobile top bar */
+  .bnav{display:grid;}                   /* show mobile bottom nav */
+  .main{padding:.85rem .85rem 100px;}
+  .main-head{position:static !important;background:transparent !important;padding-top:0 !important;padding-bottom:0 !important;}
+  .metrics{grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:.9rem;}
+  .metric{padding:.7rem .8rem;border-radius:11px;}
+  .metric-v{font-size:21px;}
+  .metric-l{font-size:10.5px;}
+  .ftabs{margin-bottom:.7rem;}
+  .ftab{font-size:13px;padding:.55rem .7rem;}
+  .mhdr{flex-direction:column;align-items:stretch;margin-bottom:.5rem;}
+  .mhdr > div:last-child{gap:7px !important;}
+  .search-bar{flex:1;min-width:0;}
+  .jcard{padding:.95rem 1.05rem;border-radius:13px;}
+  .jc-title{font-size:14.5px;}
+  .toast-wrap{bottom:7.5rem;right:.85rem;left:.85rem;}
+  .toast{font-size:13px;}
+  .dp{padding:1.1rem;border-radius:14px;}
+  .steps{padding:.5rem .7rem;}
+  .step{font-size:10.5px;padding:2px 7px;}
+  .act-grp{flex-wrap:wrap;}
 }
 </style>
 </head>
 <body>
+
+<!-- Mobile top bar -->
+<header class="mtop">
+  <div class="mtop-logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="16.65" y2="16.65"/></svg></div>
+  <div class="mtop-mid">
+    <div class="mtop-title">Jobary</div>
+    <div class="mtop-meta" id="mtopMeta">Aucun scan pour l'instant</div>
+  </div>
+  <button class="mtop-act" onclick="openConfigSheet()" aria-label="Configuration">⚙</button>
+</header>
+
+<!-- Scan progress overlay -->
+<div class="scan-ov" id="scanOv">
+  <div class="scan-card">
+    <div class="scan-spin"></div>
+    <div class="scan-title">Recherche d'offres…</div>
+    <div class="scan-sub" id="scanSub">3 sources en parallèle</div>
+    <div class="scan-sources" id="scanSources"></div>
+  </div>
+</div>
+
 <div class="app">
 
 <!-- SIDEBAR -->
@@ -481,25 +553,64 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
   </div>
 </div>
 
-<!-- BOTTOM NAV -->
+<!-- MOBILE BOTTOM NAV (5 slots with center FAB) -->
 <nav class="bnav">
-  <div class="bn active" id="bn-all" onclick="mF('all',this)"><div class="bn-ico"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div><span>Toutes</span></div>
-  <div class="bn" id="bn-new" onclick="mF('new',this)"><div class="bn-ico"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg><span class="bn-badge" id="bb-new">0</span></div><span>Nouvelles</span></div>
-  <div class="bn" onclick="scan()"><div class="bn-ico"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/></svg></div><span>Scanner</span></div>
-  <div class="bn" id="bn-adapted" onclick="mF('adapted',this)"><div class="bn-ico"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><span>CV prêts</span></div>
-  <div class="bn" onclick="openSheet()"><div class="bn-ico"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M21 12h-2M19.07 19.07l-1.41-1.41M12 21v-2M4.93 19.07l1.41 1.41M3 12h2M4.93 4.93l1.41 1.41"/></svg></div><span>Config</span></div>
+  <div class="bn active" id="bn-all" onclick="mF('all',this)">
+    <div class="bn-ico"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>
+    <span>Offres</span>
+  </div>
+  <div class="bn" id="bn-new" onclick="mF('new',this)">
+    <div class="bn-ico"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg><span class="bn-badge" id="bb-new">0</span></div>
+    <span>Nouvelles</span>
+  </div>
+  <!-- Center FAB Scan -->
+  <div class="fab" onclick="scan()">
+    <div class="fab-btn" id="fabBtn"><svg fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="16.65" y2="16.65"/></svg></div>
+    <span class="fab-lbl">SCANNER</span>
+  </div>
+  <div class="bn" id="bn-adapted" onclick="mF('adapted',this)">
+    <div class="bn-ico"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+    <span>CV</span>
+  </div>
+  <div class="bn" onclick="openConfigSheet()">
+    <div class="bn-ico"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M21 12h-2M19.07 19.07l-1.41-1.41M12 21v-2M4.93 19.07l1.41 1.41M3 12h2M4.93 4.93l1.41 1.41"/></svg></div>
+    <span>Config</span>
+  </div>
 </nav>
 
-<!-- BOTTOM SHEET -->
-<div class="sheet-ov" id="sheetOv" onclick="closeSheet()"></div>
+<!-- CONFIG BOTTOM SHEET (mobile keyword/cities/sources) -->
+<div class="sheet-ov" id="sheetOv" onclick="closeConfigSheet()"></div>
 <div class="sheet" id="sheet">
   <div class="sheet-handle"></div>
-  <div class="sheet-title">Mots-clés & villes</div>
-  <input class="cfg-inp" id="shKw" placeholder="Mots-clés (virgule)" style="width:100%;margin-bottom:7px;">
-  <input class="cfg-inp" id="shCi" placeholder="Villes (virgule)" style="width:100%;margin-bottom:11px;">
-  <div style="display:flex;gap:7px;">
-    <button class="cfg-save" style="flex:1;padding:9px;" onclick="saveSheet()">Enregistrer & Scanner</button>
-    <button class="btn btn-out" style="border-color:rgba(255,255,255,.2);color:#fff;" onclick="closeSheet()">Annuler</button>
+  <div class="sheet-title">Recherche</div>
+  <div class="sheet-sub">Choisis tes mots-clés, villes et sources. Le scan se lance après.</div>
+
+  <div style="margin-bottom:1rem;">
+    <div class="sb-sec-lbl">Mots-clés <span class="count" id="shKwCount">0</span></div>
+    <div class="chips" id="shKwChips" style="margin-bottom:7px;"></div>
+    <input class="chip-input" id="shKwInput" placeholder="+ Ajouter un mot-clé" autocomplete="off">
+  </div>
+
+  <div style="margin-bottom:1rem;">
+    <div class="sb-sec-lbl">Villes <span class="count" id="shCiCount">0</span></div>
+    <div class="chips" id="shCiChips" style="margin-bottom:7px;"></div>
+    <input class="chip-input" id="shCiInput" placeholder="+ Ajouter une ville" autocomplete="off">
+  </div>
+
+  <div style="margin-bottom:1rem;">
+    <div class="sb-sec-lbl">Sources</div>
+    <div class="src-list" id="shSrcList">
+      <div class="src-row" data-src="LinkedIn" onclick="toggleSrcSheet(this)"><div class="src-l"><span class="src-dot"></span>LinkedIn</div><span class="src-count" id="shsrc-LinkedIn">—</span></div>
+      <div class="src-row" data-src="Rekrute" onclick="toggleSrcSheet(this)"><div class="src-l"><span class="src-dot"></span>Rekrute</div><span class="src-count" id="shsrc-Rekrute">—</span></div>
+      <div class="src-row" data-src="Emploi.ma" onclick="toggleSrcSheet(this)"><div class="src-l"><span class="src-dot"></span>Emploi.ma</div><span class="src-count" id="shsrc-Emploi.ma">—</span></div>
+    </div>
+  </div>
+
+  <button class="sheet-cta" onclick="closeConfigSheet();scan();">🔍 Scanner maintenant</button>
+
+  <div style="display:flex;gap:6px;margin-top:.7rem;">
+    <button class="btn btn-out" style="flex:1;background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15);color:#fff;" onclick="openDriveSettings();closeConfigSheet();">⚙ Réglages avancés</button>
+    <button class="btn btn-err" style="background:rgba(220,38,38,.12);border-color:rgba(220,38,38,.3);color:#FCA5A5;" onclick="closeConfigSheet();eraseJobs();">🗑 Vider</button>
   </div>
 </div>
 
@@ -560,16 +671,30 @@ function saveCfgLs() { localStorage.setItem(STORE_KEY, JSON.stringify(CFG)); }
 // ── Chip-based config UI ──────────────────────────────────────────────────────
 function renderChips() {
   const esc = s => s.replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
-  document.getElementById('kwChips').innerHTML = CFG.kw.map((k,i) =>
-    `<span class="chip">${esc(k)}<button class="chip-x" onclick="removeChip('kw',${i})" title="Retirer">×</button></span>`).join('');
-  document.getElementById('ciChips').innerHTML = CFG.ci.map((c,i) =>
-    `<span class="chip city">${esc(c)}<button class="chip-x" onclick="removeChip('ci',${i})" title="Retirer">×</button></span>`).join('');
-  document.getElementById('kwCount').textContent = CFG.kw.length;
-  document.getElementById('ciCount').textContent = CFG.ci.length;
-  document.querySelectorAll('.src-row').forEach(r => {
-    r.classList.toggle('off', !CFG.src[r.dataset.src]);
-  });
+  const kwHtml = CFG.kw.map((k,i) => `<span class="chip">${esc(k)}<button class="chip-x" onclick="removeChip('kw',${i})">×</button></span>`).join('');
+  const ciHtml = CFG.ci.map((c,i) => `<span class="chip city">${esc(c)}<button class="chip-x" onclick="removeChip('ci',${i})">×</button></span>`).join('');
+  ['kwChips','shKwChips'].forEach(id => { const el=document.getElementById(id); if(el) el.innerHTML = kwHtml; });
+  ['ciChips','shCiChips'].forEach(id => { const el=document.getElementById(id); if(el) el.innerHTML = ciHtml; });
+  ['kwCount','shKwCount'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent = CFG.kw.length; });
+  ['ciCount','shCiCount'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent = CFG.ci.length; });
+  document.querySelectorAll('.src-row').forEach(r => r.classList.toggle('off', !CFG.src[r.dataset.src]));
 }
+function openConfigSheet(){
+  document.getElementById('sheetOv').classList.add('open');
+  document.getElementById('sheet').classList.add('open');
+  renderChips();
+}
+function closeConfigSheet(){
+  document.getElementById('sheetOv').classList.remove('open');
+  document.getElementById('sheet').classList.remove('open');
+}
+function toggleSrcSheet(el){
+  CFG.src[el.dataset.src] = !CFG.src[el.dataset.src];
+  saveCfgLs(); renderChips();
+}
+window.openConfigSheet = openConfigSheet;
+window.closeConfigSheet = closeConfigSheet;
+window.toggleSrcSheet = toggleSrcSheet;
 function addChip(kind, value) {
   const v = (value || '').trim();
   if (!v) return;
@@ -622,7 +747,7 @@ function render() {
   if(!list.length){ g.innerHTML='<div class="empty"><div class="empty-ico">📭</div><div class="empty-title">Aucune offre</div><div class="empty-sub">Aucune offre ne correspond aux filtres actuels. Lancez un nouveau scan ou changez de catégorie.</div></div>'; return; }
   const C=2*Math.PI*17;
   g.innerHTML = list.map(j=>`
-    <div class="jcard${selId===j.id?' sel':''}" onclick="sel(${j.id})">
+    <div class="jcard${selId===j.id?' sel':''}${j.isNew?' fresh':''}" onclick="sel(${j.id})">
       <div class="jc-top">
         <div style="flex:1;min-width:0;">
           <div class="jc-title">${j.title}</div>
@@ -687,8 +812,10 @@ function mF(f,el){
 
 // ── Select ─────────────────────────────────────────────────────────────────────
 function sel(id) {
-  selId=id; saveUi(); render();
+  selId=id; saveUi();
   const j=JOBS.find(x=>x.id===id); if(!j) return;
+  if (j.isNew) { j.isNew = false; saveJobs(); }
+  render();
   const step = (label, key, ok) => {
     const isActive = ({repere:j.status==='new',adapte:j.status==='adapted'||j.cvFile,lm:j.lmContent,postule:j.status==='applied'})[key];
     const isDone = ({repere:true,adapte:j.cvFile||j.status==='adapted'||j.status==='applied'||j.lmContent,lm:j.lmContent,postule:j.status==='applied'})[key];
@@ -737,18 +864,30 @@ function sel(id) {
 }
 
 // ── Scan ───────────────────────────────────────────────────────────────────────
+function openScanOverlay(sources){
+  const ov = document.getElementById('scanOv');
+  document.getElementById('scanSub').textContent = `${sources.length} sources · ${CFG.kw.length} mots-clés × ${CFG.ci.length} villes`;
+  document.getElementById('scanSources').innerHTML = sources.map(s =>
+    `<div class="scan-source run" data-s="${s}"><span>${s}</span><span class="scan-source-st" id="scsrc-${s}">… en cours</span></div>`
+  ).join('');
+  ov.classList.add('open');
+  document.getElementById('fabBtn')?.classList.add('scanning');
+}
+function closeScanOverlay(){
+  document.getElementById('scanOv').classList.remove('open');
+  document.getElementById('fabBtn')?.classList.remove('scanning');
+}
+
 async function scan() {
   const btn=document.getElementById('scanBtn');
-  btn.disabled=true; btn.innerHTML='<span class="spin" style="border-top-color:var(--navy)"></span> Recherche…';
-  // Visual progress per source in the journal
+  if (btn) { btn.disabled=true; btn.innerHTML='<span class="spin" style="border-top-color:var(--navy)"></span> Recherche…'; }
   showLog();
   const enabledSources = Object.keys(CFG.src).filter(s=>CFG.src[s]);
   const startedAt = Date.now();
+  openScanOverlay(enabledSources);
   log(`Scan lancé · ${CFG.kw.length} mots-clés × ${CFG.ci.length} villes × ${enabledSources.length} sources`);
-  const progressId = 'scan-prog-' + Date.now();
   const w = document.getElementById('logLines');
   const row = document.createElement('div');
-  row.id = progressId;
   row.className = 'log-line';
   row.innerHTML = '<span class="log-t">⏱</span><div>' +
     enabledSources.map(s=>`<span class="src-pg run" data-s="${s}"><span class="dot"></span>${s}</span>`).join('') +
@@ -766,6 +905,8 @@ async function scan() {
     const enabledSources = Object.keys(CFG.src).filter(s => CFG.src[s]);
     const incoming = data.jobs.filter(j => enabledSources.some(s => (j.source||'').toLowerCase().includes(s.toLowerCase())));
 
+    // Clear previous "isNew" flags before marking newly added ones
+    JOBS.forEach(j => { j.isNew = false; });
     // Dedup against existing JOBS — match by URL first, fallback to title+company
     const fingerprint = j => (j.url ? j.url : `${(j.title||'').toLowerCase()}|${(j.company||'').toLowerCase()}`);
     const existing = new Map(JOBS.map(j => [fingerprint(j), j]));
@@ -774,7 +915,6 @@ async function scan() {
       const key = fingerprint(inc);
       const known = existing.get(key);
       if (known) {
-        // refresh score/salary/matchKw but keep status, adaptedContent, cvFile
         known.score = inc.score ?? known.score;
         known.salary = inc.salary || known.salary;
         known.matchKw = inc.matchKw || known.matchKw;
@@ -784,33 +924,48 @@ async function scan() {
       } else {
         maxId++;
         JOBS.push({ ...inc, id:maxId, status:'new', cvFile:null, adaptedContent:null,
-                    firstSeen: Date.now(), lastSeen: Date.now() });
+                    firstSeen: Date.now(), lastSeen: Date.now(), isNew:true });
         added++;
       }
     }
     saveJobs();
-    // Update source counts in sidebar + mark progress chips as done
+    // Update source counts in sidebar/sheet + scan overlay status
     if (data.sourcesCount) {
       Object.entries(data.sourcesCount).forEach(([s,n]) => {
-        const el = document.getElementById('src-'+s);
-        if (el) el.textContent = n;
+        const el = document.getElementById('src-'+s);  if (el) el.textContent = n;
+        const sh = document.getElementById('shsrc-'+s); if (sh) sh.textContent = n;
         const chip = row.querySelector(`.src-pg[data-s="${s}"]`);
-        if (chip) { chip.classList.remove('run'); chip.classList.add(n>0?'done':'err'); chip.querySelector('span.dot'); chip.innerHTML = `<span class="dot"></span>${s} <strong style="font-size:10px;opacity:.7;">${n}</strong>`; }
+        if (chip) { chip.classList.remove('run'); chip.classList.add(n>0?'done':'err'); chip.innerHTML = `<span class="dot"></span>${s} <strong style="font-size:10px;opacity:.7;">${n}</strong>`; }
+        const ovSt = document.getElementById('scsrc-'+s);
+        const ovRow = document.querySelector(`.scan-source[data-s="${s}"]`);
+        if (ovSt && ovRow) {
+          ovRow.classList.remove('run');
+          ovRow.classList.add(n>0?'done':'err');
+          ovSt.textContent = n>0 ? `${n} offres` : 'aucune';
+        }
       });
-      // Any chip still in "run" → no data returned for it
       row.querySelectorAll('.src-pg.run').forEach(c=>{c.classList.remove('run'); c.classList.add('err');});
+      document.querySelectorAll('.scan-source.run').forEach(c=>{c.classList.remove('run'); c.classList.add('err');});
     }
-    log(`⏱ Terminé en ${((Date.now()-startedAt)/1000).toFixed(1)}s`);
-    stats(); render();
+    const tookS = ((Date.now()-startedAt)/1000).toFixed(1);
+    log(`⏱ Terminé en ${tookS}s`);
     log(`✓ ${added} nouvelles · ${refreshed} mises à jour (${data.totalScraped||data.jobs.length} scrapées)`,'ok');
     if (data.warning) log('⚠ '+data.warning,'warn');
-    toast(added ? `${added} nouvelles offres !` : `${refreshed} offres mises à jour`);
+    // Update mobile top bar meta
+    const meta = document.getElementById('mtopMeta');
+    if (meta) meta.textContent = `Scanné à l'instant · ${added} nouvelles · ${JOBS.length} au total`;
+    stats(); render();
+    setTimeout(closeScanOverlay, 800);
+    toast(added ? `${added} nouvelles offres trouvées !` : `${refreshed} offres mises à jour`);
   } catch(err) {
     log('✗ '+err.message,'warn');
-    toast('Erreur scan — vérifiez que le serveur est démarré');
+    closeScanOverlay();
+    toast('Erreur scan : '+err.message);
   }
-  btn.disabled=false;
-  btn.innerHTML='<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/></svg> Scanner les offres';
+  if (btn) {
+    btn.disabled=false;
+    btn.innerHTML='<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/></svg> Scanner les offres';
+  }
 }
 
 // ── Adapt CV ───────────────────────────────────────────────────────────────────
@@ -1141,19 +1296,29 @@ if('serviceWorker' in navigator){
 
 // ── Init ───────────────────────────────────────────────────────────────────────
 ['kw','ci'].forEach(kind => {
-  const inp = document.getElementById(kind+'Input');
-  if (!inp) return;
-  inp.addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      addChip(kind, inp.value);
-      inp.value = '';
-    } else if (e.key === 'Backspace' && !inp.value && CFG[kind].length) {
-      removeChip(kind, CFG[kind].length - 1);
-    }
+  ['','sh'].forEach(prefix => {
+    const inpId = prefix ? `${prefix}${kind.charAt(0).toUpperCase()+kind.slice(1)}Input` : `${kind}Input`;
+    const inp = document.getElementById(inpId);
+    if (!inp) return;
+    inp.addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); addChip(kind, inp.value); inp.value = ''; }
+      else if (e.key === 'Backspace' && !inp.value && CFG[kind].length) { removeChip(kind, CFG[kind].length - 1); }
+    });
+    inp.addEventListener('blur', () => { if (inp.value.trim()) { addChip(kind, inp.value); inp.value = ''; } });
   });
-  inp.addEventListener('blur', () => { if (inp.value.trim()) { addChip(kind, inp.value); inp.value = ''; } });
 });
+
+// Update mobile top bar meta when JOBS is loaded
+(function initTopBarMeta(){
+  const meta = document.getElementById('mtopMeta');
+  if (!meta) return;
+  if (!JOBS.length) { meta.textContent = "Aucun scan pour l'instant"; return; }
+  const last = Math.max(...JOBS.map(j=>j.lastSeen||j.firstSeen||0));
+  if (!last) { meta.textContent = `${JOBS.length} offres en mémoire`; return; }
+  const mins = Math.floor((Date.now() - last) / 60000);
+  const when = mins < 60 ? `il y a ${mins} min` : mins < 1440 ? `il y a ${Math.floor(mins/60)}h` : `il y a ${Math.floor(mins/1440)}j`;
+  meta.textContent = `Dernier scan ${when} · ${JOBS.length} offres`;
+})();
 renderChips(); stats(); render();
 
 // ── Keyboard shortcuts ──────────────────────────────────────────────────────
