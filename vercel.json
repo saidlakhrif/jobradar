@@ -1,4 +1,8 @@
 {
+  "framework": null,
+  "buildCommand": null,
+  "installCommand": null,
+  "outputDirectory": "public",
   "rewrites": [
     { "source": "/app/:path*", "destination": "/index.html" }
   ]
