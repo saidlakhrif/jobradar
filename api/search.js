@@ -1,5 +1,6 @@
 import { PROFILE, callClaude, readJsonBody } from './_profile.js';
 import { scrapeAll } from './_scrapers.js';
+import { estimateSalary } from './_salaries.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -61,11 +62,31 @@ Pas de markdown, pas de backtick, pas de texte avant/après.`;
       scoring = candidates.map((c) => ({ i: c.i, score: 50, matchKw: [], missingKw: [], salary: '' }));
     }
 
-    // 4) Merge scoring into the offers
+    // 4) Merge scoring into the offers + compute salary estimate from reference table
+    const currentYear = new Date().getFullYear();
     const byIndex = new Map(scoring.map((s) => [s.i, s]));
     const jobs = candidates.map((c, idx) => {
       const o = offers[idx];
       const s = byIndex.get(c.i) || {};
+      // Try the reference table first; fall back to Claude's estimate if not matched
+      const ref = estimateSalary({ title: o.title, company: o.company, description: o.summary, currentYear });
+      let salary = '';
+      let salaryMeta = null;
+      if (ref) {
+        salary = ref.formatted;
+        salaryMeta = {
+          source: 'estimated',
+          provider: 'Rekrute/Michael Page',
+          studyYear: ref.studyYear,
+          inflationPct: ref.inflationPct,
+          sector: ref.sector,
+          level: ref.level,
+          label: ref.label,
+        };
+      } else if (s.salary) {
+        salary = s.salary;
+        salaryMeta = { source: 'estimated', provider: 'Claude (rôle non référencé)' };
+      }
       return {
         title: o.title,
         company: o.company,
@@ -77,7 +98,7 @@ Pas de markdown, pas de backtick, pas de texte avant/après.`;
         summary: o.summary || c.summary,
         matchKw: s.matchKw || [],
         missingKw: s.missingKw || [],
-        salary: s.salary || '',
+        salary, salaryMeta,
       };
     });
 

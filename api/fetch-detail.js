@@ -3,6 +3,7 @@
 import * as cheerio from 'cheerio';
 import { fetchHtml } from './_scrapers.js';
 import { readJsonBody } from './_profile.js';
+import { parseSalaryFromDescription } from './_salaries.js';
 
 const norm = (s) => (s || '').replace(/\s+/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
 
@@ -66,7 +67,8 @@ export default async function handler(req, res) {
     if (!description || description.length < 80) {
       return res.status(200).json({ description: null, error: 'Description introuvable sur cette page' });
     }
-    res.status(200).json({ description });
+    const announcedSalary = parseSalaryFromDescription(description);
+    res.status(200).json({ description, salary: announcedSalary });
   } catch (e) {
     console.error('[fetch-detail]', e.message);
     res.status(500).json({ error: e.message });

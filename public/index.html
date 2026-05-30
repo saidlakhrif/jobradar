@@ -482,7 +482,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
 .kw-miss{background:var(--warn-bg);color:#92400E;}
 
 /* Salary badge */
-.salary{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:600;padding:4px 12px;border-radius:99px;background:#F0FDF4;color:#166534;border:1px solid #BBF7D0;margin-top:10px;}
+.salary{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:600;padding:4px 12px;border-radius:99px;background:#F0FDF4;color:#166534;border:1px solid #BBF7D0;margin-top:10px;cursor:help;}
+.salary-announced{background:#DCFCE7;color:#15803D;border-color:#86EFAC;font-weight:800;box-shadow:0 1px 3px rgba(22,163,74,.2);}
+:root[data-theme="dark"] .salary{background:rgba(34,197,94,.12);color:#86EFAC;border-color:rgba(34,197,94,.3);}
+:root[data-theme="dark"] .salary-announced{background:rgba(34,197,94,.22);color:#BBF7D0;border-color:rgba(34,197,94,.5);}
+.dp-salary-meta{font-size:11px;color:var(--ink3);margin-top:6px;line-height:1.4;font-style:italic;}
 
 /* Actions */
 .acts{display:flex;gap:7px;margin-top:1.25rem;flex-wrap:wrap;}
@@ -1474,7 +1478,7 @@ function render() {
           ${j.isNew?'<span class="fresh-pill">Nouveau</span>':''}
           <div class="jc-title">${j.title}</div>
           <div class="jc-co">${j.company} · ${j.location}</div>
-          ${j.salary?`<div class="salary">💰 ${j.salary}</div>`:''}
+          ${j.salary?`<div class="salary ${j.salaryMeta?.source==='announced'?'salary-announced':''}" title="${salaryTooltip(j)}">💰 ${j.salaryMeta?.source==='announced'?'':'≈ '}${j.salary}${j.salaryMeta?.source==='announced'?' · ✓':''}</div>`:''}
         </div>
         <div class="jc-r">
           <div class="ring">
@@ -1534,6 +1538,33 @@ function mF(f,el){
 
 // ── Select ─────────────────────────────────────────────────────────────────────
 function esc(s){ return (s||'').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
+
+function salaryTooltip(j){
+  if (!j.salaryMeta) return j.salary || '';
+  const m = j.salaryMeta;
+  if (m.source === 'announced') return `Salaire annoncé dans la description de l'offre : ${j.salary}`;
+  if (m.provider) {
+    const parts = [`Estimation ${m.provider}`];
+    if (m.label) parts.push(`Poste type : ${m.label}`);
+    if (m.level) parts.push(`Niveau : ${m.level}`);
+    if (m.sector && m.sector !== 'default') parts.push(`Secteur : ${m.sector}`);
+    if (m.studyYear) parts.push(`Étude : ${m.studyYear}`);
+    if (m.inflationPct > 0) parts.push(`Inflation +${m.inflationPct}%`);
+    return parts.join(' · ');
+  }
+  return j.salary;
+}
+function salaryMetaLine(j){
+  const m = j.salaryMeta;
+  if (!m) return '';
+  if (m.source === 'announced') return `<span style="color:var(--ok);">✓ Annoncé</span> dans la description de l'offre`;
+  const provider = m.provider || 'Claude';
+  const sectorTxt = m.sector && m.sector !== 'default' ? ` · secteur ${m.sector}` : '';
+  const levelTxt  = m.level ? ` · niveau ${m.level}` : '';
+  const studyTxt  = m.studyYear ? ` · étude ${m.studyYear}` : '';
+  const inflTxt   = m.inflationPct > 0 ? ` (+${m.inflationPct}% inflation)` : '';
+  return `≈ Estimation ${provider}${levelTxt}${sectorTxt}${studyTxt}${inflTxt}`;
+}
 function sel(id) {
   selId=id; saveUi();
   const j=JOBS.find(x=>x.id===id); if(!j) return;
@@ -1612,7 +1643,8 @@ function sel(id) {
         <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;margin-bottom:1rem;">
           <div>
             <div class="dp-title">${j.title}</div>
-            <div class="dp-co">${j.company} · ${j.location} · ${j.type}${j.salary?' · 💰 '+j.salary:''}</div>
+            <div class="dp-co">${j.company} · ${j.location} · ${j.type}${j.salary?` · 💰 ${j.salaryMeta?.source==='announced'?'':'≈ '}${j.salary}`:''}</div>
+            ${j.salaryMeta ? `<div class="dp-salary-meta">${salaryMetaLine(j)}</div>` : ''}
           </div>
           <span class="tag ${sCls(j.status)}" style="font-size:12px;padding:4px 11px;">${sLbl(j.status)}</span>
         </div>
@@ -1804,10 +1836,17 @@ async function loadFullDescription(id){
     const data = await r.json();
     if (data.description) {
       j.fullDescription = data.description;
+      // V14: if the description includes an announced salary, override the estimate
+      if (data.salary?.formatted) {
+        j.salary = data.salary.formatted;
+        j.salaryMeta = { source: 'announced', formatted: data.salary.formatted };
+        toast('✓ Description + salaire annoncé trouvés');
+      } else {
+        toast('✓ Description chargée');
+      }
       saveJobs();
       sel(id);
       haptic([15, 25]);
-      toast('✓ Description chargée');
     } else {
       if (btn) {
         btn.disabled = false;
