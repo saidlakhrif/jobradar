@@ -613,7 +613,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
 /* Bottom sheet */
 .sheet-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:55;}
 .sheet-ov.open{display:block;}
-.sheet{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--navy);border-radius:18px 18px 0 0;padding:1.2rem 1.2rem calc(1.2rem + env(safe-area-inset-bottom));z-index:60;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);}
+.sheet{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--navy);border-radius:18px 18px 0 0;padding:1.2rem 1.2rem calc(1.4rem + env(safe-area-inset-bottom));z-index:60;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);max-height:88dvh;max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
+body.sheet-open{overflow:hidden;}
 .sheet.open{display:block;transform:translateY(0);}
 .sheet-handle{width:42px;height:4.5px;background:rgba(255,255,255,.25);border-radius:99px;margin:0 auto .9rem;}
 .sheet-hdr{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:.8rem;}
@@ -1225,10 +1226,13 @@ function renderScanSummary(){
   }
 }
 function openConfigSheet(){
+  document.body.classList.add('sheet-open');
   document.getElementById('sheetOv').classList.add('open');
   document.getElementById('sheet').classList.add('open');
   renderChips();
   renderSavedSearches();
+  // Scroll sheet to top in case it kept previous scroll position
+  setTimeout(() => { document.getElementById('sheet').scrollTop = 0; }, 50);
 }
 
 // V11: Saved searches (presets)
@@ -1327,6 +1331,7 @@ window.renameSaved = renameSaved;
 window.deleteSaved = deleteSaved;
 window.renderSavedSearches = renderSavedSearches;
 function closeConfigSheet(){
+  document.body.classList.remove('sheet-open');
   document.getElementById('sheetOv').classList.remove('open');
   document.getElementById('sheet').classList.remove('open');
 }
@@ -2363,23 +2368,31 @@ async function renderSettings(){
       </div>
 
       <div id="driveView" style="display:${driveOk?'block':'none'};">
-        <div class="scard-row"><span class="scard-row-l">Client ID</span><span class="scard-row-v" title="${(cur.clientId||'').replace(/"/g,'&quot;')}">${cidShort}</span></div>
-        <div class="scard-row"><span class="scard-row-l">Dossier</span><span class="scard-row-v" title="${(cur.folderId||'').replace(/"/g,'&quot;')}">${fidShort}</span></div>
+        <div class="scard-row"><span class="scard-row-l">Dossier Drive</span><span class="scard-row-v" title="${(cur.folderId||'').replace(/"/g,'&quot;')}">${fidShort}</span></div>
+        <div class="scard-row"><span class="scard-row-l">Statut</span><span class="scard-row-v" style="font-family:inherit;color:var(--ok);">\u2713 Pr\u00eat \u00e0 recevoir tes CV</span></div>
         <div class="scard-cta">
-          <button class="btn btn-out" onclick="showDriveEditor(true)">\u270e Modifier</button>
+          <button class="btn btn-out" onclick="showDriveEditor(true)">\u270e Changer de dossier</button>
           <button class="btn btn-err" onclick="disconnectDrive()">D\u00e9connecter</button>
         </div>
       </div>
 
       <div id="driveEditor" style="display:${driveOk?'none':'block'};">
-        <p style="font-size:11.5px;color:var(--ink3);margin-bottom:.5rem;line-height:1.5;">Lien le compte Google qui h\u00e9bergera tes CV/LM. Cr\u00e9e un OAuth Client ID sur <code>console.cloud.google.com</code>, puis colle-le ici.</p>
-        <label>OAuth Client ID</label>
-        <input type="text" id="drvCid" placeholder="123456-xxx.apps.googleusercontent.com" value="${(cur.clientId||'').replace(/"/g,'&quot;')}" spellcheck="false" autocomplete="off">
-        <label>ID du dossier Drive cible</label>
-        <input type="text" id="drvFid" placeholder="1xYz...AbC" value="${(cur.folderId||'1_kXbANZVYfPyXpY9Z9Yj_x49BsJPTdzC').replace(/"/g,'&quot;')}" spellcheck="false" autocomplete="off">
+        <p style="font-size:11.5px;color:var(--ink3);margin-bottom:.6rem;line-height:1.55;">Colle simplement l'<strong>URL du dossier Drive</strong> o\u00f9 sauvegarder tes CV adapt\u00e9s. Tu seras invit\u00e9 \u00e0 te connecter \u00e0 Google la 1\u00e8re fois.</p>
+        <label>\ud83d\udcc2 URL ou ID du dossier Drive</label>
+        <input type="text" id="drvFid" placeholder="https://drive.google.com/drive/folders/1xYz...AbC" value="${cur.folderId ? ('https://drive.google.com/drive/folders/' + cur.folderId).replace(/"/g,'&quot;') : 'https://drive.google.com/drive/folders/1_kXbANZVYfPyXpY9Z9Yj_x49BsJPTdzC'}" spellcheck="false" autocomplete="off">
+        <p style="font-size:10.5px;color:var(--ink3);margin-top:6px;line-height:1.4;">\ud83d\udca1 Ouvre ton dossier Drive dans le navigateur, copie l'URL depuis la barre d'adresse, puis colle-la ici.</p>
+
+        <details style="margin-top:.85rem;border:1px solid var(--bd);border-radius:9px;background:var(--cream2);">
+          <summary style="cursor:pointer;list-style:none;padding:.55rem .8rem;font-size:11.5px;font-weight:600;color:var(--ink3);">\u2699 Avanc\u00e9 : Client ID Google personnalis\u00e9</summary>
+          <div style="padding:.7rem .9rem;">
+            <p style="font-size:11px;color:var(--ink3);margin-bottom:.55rem;line-height:1.5;">Un Client ID par d\u00e9faut est configur\u00e9 pour Jobary. Si tu veux utiliser le tien (cr\u00e9\u00e9 sur console.cloud.google.com), colle-le ici :</p>
+            <input type="text" id="drvCid" placeholder="Laisse vide pour utiliser le d\u00e9faut" value="${(cur.clientId === '671415882968-qiueaclokrqgd34r3ipfop0i25svofpu.apps.googleusercontent.com' ? '' : (cur.clientId||'')).replace(/"/g,'&quot;')}" spellcheck="false" autocomplete="off" style="font-size:11.5px;">
+          </div>
+        </details>
+
         <div class="scard-cta">
           ${driveOk ? '<button class="btn btn-out" onclick="showDriveEditor(false)">Annuler</button>' : ''}
-          <button class="btn btn-gold" onclick="saveDriveModal()">Enregistrer</button>
+          <button class="btn btn-gold" onclick="saveDriveModal()">${driveOk ? 'Enregistrer' : '\ud83d\udd17 Connecter Google Drive'}</button>
         </div>
       </div>
     </div>
@@ -2523,15 +2536,32 @@ function showDriveEditor(show){
   document.getElementById('driveEditor').style.display = show ? 'block' : 'none';
   if (show) setTimeout(() => document.getElementById('drvCid').focus(), 100);
 }
+function extractFolderId(input){
+  if (!input) return '';
+  // Match drive.google.com/drive/folders/{ID} or drive.google.com/folders/{ID}
+  const m = input.match(/(?:folders|file\/d|open\?id=)\/?([A-Za-z0-9_-]{15,})/);
+  if (m) return m[1];
+  // Or if user pasted just the ID
+  const clean = input.replace(/[?#].*$/, '').trim();
+  if (/^[A-Za-z0-9_-]{15,}$/.test(clean)) return clean;
+  return '';
+}
 async function saveDriveModal(){
   const m = await _loadCvBuilder();
-  const cid = document.getElementById('drvCid').value.trim();
-  const fid = document.getElementById('drvFid').value.trim();
-  if(!cid || !fid){ toast('Les deux champs sont requis'); haptic(40); return; }
-  m.setDriveCfg({ clientId:cid, folderId:fid });
+  let cid = document.getElementById('drvCid').value.trim();
+  const fidInput = document.getElementById('drvFid').value.trim();
+  const fid = extractFolderId(fidInput);
+  if (!fid) {
+    toast('URL ou ID de dossier invalide. Format attendu : https://drive.google.com/drive/folders/...');
+    haptic(40);
+    return;
+  }
+  // Empty client ID \u2192 fall back to default (handled in getDriveCfg)
+  if (!cid) cid = '671415882968-qiueaclokrqgd34r3ipfop0i25svofpu.apps.googleusercontent.com';
+  m.setDriveCfg({ clientId: cid, folderId: fid });
   haptic([20, 30, 20]);
   await renderSettings();
-  toast('Drive enregistr\u00e9 \u2713');
+  toast('\u2713 Drive configur\u00e9 \u2014 un test au prochain upload');
 }
 async function disconnectDrive(){
   if (!confirm('D\u00e9connecter Google Drive ? Tu pourras le reconfigurer \u00e0 tout moment.')) return;
@@ -3136,10 +3166,12 @@ function openViewSheet(){
   const src  = document.getElementById('srcFilter')?.value || '';
   document.querySelectorAll('#viewSheet .src-row[data-sort]').forEach(r => r.classList.toggle('active', r.dataset.sort === sort));
   document.querySelectorAll('#viewSheet .src-row[data-src]').forEach(r => r.classList.toggle('active', r.dataset.src === src));
+  document.body.classList.add('sheet-open');
   document.getElementById('viewSheetOv').classList.add('open');
   document.getElementById('viewSheet').classList.add('open');
 }
 function closeViewSheet(){
+  document.body.classList.remove('sheet-open');
   document.getElementById('viewSheetOv').classList.remove('open');
   document.getElementById('viewSheet').classList.remove('open');
   // visual hint that filter is active

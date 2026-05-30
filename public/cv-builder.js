@@ -198,8 +198,15 @@ export function downloadBlob(blob, filename) {
 // User stores their own Drive OAuth Client ID + target folder ID in localStorage.
 
 const DRIVE_KEY = 'jobradar.drive.v1';
+// Public default Client ID (PUBLIC by design — it identifies the app, not a secret).
+// User can override in advanced settings if they want their own.
+const DEFAULT_CLIENT_ID = '671415882968-qiueaclokrqgd34r3ipfop0i25svofpu.apps.googleusercontent.com';
 export function getDriveCfg() {
-  try { return JSON.parse(localStorage.getItem(DRIVE_KEY) || '{}'); } catch { return {}; }
+  try {
+    const cfg = JSON.parse(localStorage.getItem(DRIVE_KEY) || '{}');
+    if (!cfg.clientId) cfg.clientId = DEFAULT_CLIENT_ID;
+    return cfg;
+  } catch { return { clientId: DEFAULT_CLIENT_ID }; }
 }
 export function setDriveCfg(cfg) {
   localStorage.setItem(DRIVE_KEY, JSON.stringify({ ...getDriveCfg(), ...cfg }));
