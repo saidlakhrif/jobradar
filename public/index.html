@@ -372,6 +372,21 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
 .scan-source.err{border-color:rgba(248,113,113,.4);background:rgba(248,113,113,.07);}
 .scan-source.err .scan-source-st{color:#FCA5A5;}
 
+/* V4b: Skeleton cards shown during a scan to avoid empty grid jump */
+.jcard-sk{background:#fff;border:1.5px solid var(--bd);border-radius:var(--rl);padding:1rem 1.3rem;margin-bottom:8px;position:relative;overflow:hidden;}
+.jcard-sk::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 0,rgba(13,27,62,.05) 50%,transparent 100%);transform:translateX(-100%);animation:shimmer 1.4s infinite;}
+@keyframes shimmer{100%{transform:translateX(100%);}}
+.sk-line{height:11px;background:var(--cream2);border-radius:99px;margin-bottom:7px;}
+.sk-w-60{width:60%;}.sk-w-45{width:45%;}.sk-w-35{width:35%;}.sk-w-80{width:80%;}
+.sk-row{display:flex;justify-content:space-between;align-items:center;gap:1rem;}
+.sk-circle{width:40px;height:40px;border-radius:50%;background:var(--cream2);flex-shrink:0;}
+.sk-pills{display:flex;gap:6px;margin-top:9px;}
+.sk-pill{height:18px;background:var(--cream2);border-radius:99px;width:50px;}
+
+/* V4c: Empty state — subtle pulse on the welcome emoji */
+.empty-ico{animation:wave 3.5s ease-in-out infinite;transform-origin:70% 70%;}
+@keyframes wave{0%,12%,100%{transform:rotate(0deg);}3%{transform:rotate(14deg);}6%{transform:rotate(-8deg);}9%{transform:rotate(10deg);}}
+
 /* NEW badge — pinned to top-left corner as a ribbon, no overlap with score */
 .jcard.fresh{position:relative;border-color:rgba(201,168,76,.5);box-shadow:0 0 0 1px rgba(201,168,76,.18),var(--sh);}
 .jcard.fresh::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--gold),var(--gold2));border-radius:var(--rl) 0 0 var(--rl);}
@@ -982,6 +997,26 @@ function openScanOverlay(sources){
   ov.classList.add('open');
   document.getElementById('fabBtn')?.classList.add('scanning');
 }
+
+// V4b: Skeleton cards shown in the grid while scanning (only when list was empty)
+function showSkeletons(n = 4){
+  const g = document.getElementById('grid');
+  if (!g || JOBS.length > 0) return; // only show when no real jobs yet
+  const sk = Array.from({length:n}, () => `
+    <div class="jcard-sk">
+      <div class="sk-row">
+        <div style="flex:1;min-width:0;">
+          <div class="sk-line sk-w-80"></div>
+          <div class="sk-line sk-w-45"></div>
+          <div class="sk-line sk-w-35" style="margin-top:9px;"></div>
+        </div>
+        <div class="sk-circle"></div>
+      </div>
+      <div class="sk-pills"><div class="sk-pill"></div><div class="sk-pill" style="width:70px;"></div></div>
+    </div>
+  `).join('');
+  g.innerHTML = sk;
+}
 function closeScanOverlay(){
   document.getElementById('scanOv').classList.remove('open');
   document.getElementById('fabBtn')?.classList.remove('scanning');
@@ -995,6 +1030,7 @@ async function scan() {
   const enabledSources = Object.keys(CFG.src).filter(s=>CFG.src[s]);
   const startedAt = Date.now();
   openScanOverlay(enabledSources);
+  showSkeletons(5);
   log(`Scan lancé · ${CFG.kw.length} mots-clés × ${CFG.ci.length} villes × ${enabledSources.length} sources`);
   const w = document.getElementById('logLines');
   const row = document.createElement('div');
