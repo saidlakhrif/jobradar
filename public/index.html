@@ -679,8 +679,11 @@ body.sheet-open{overflow:hidden;}
   .bnav{display:grid;}                   /* show mobile bottom nav */
   .ftab-full{display:none;}              /* C2: short labels on small screens */
   .ftab-mob{display:inline;}
-  .main{padding:.85rem .85rem 100px;}
-  .main-head{position:static !important;background:transparent !important;padding-top:0 !important;padding-bottom:0 !important;}
+  .main{padding:.85rem .85rem 100px;overflow:visible;}
+  .main-head{position:sticky;top:calc(56px + env(safe-area-inset-top));background:var(--cream);padding-top:.7rem;padding-bottom:.5rem;margin-left:-.85rem;margin-right:-.85rem;padding-left:.85rem;padding-right:.85rem;z-index:20;}
+  :root[data-theme="dark"] .main-head{background:var(--cream);}
+  .main-head::after{content:'';position:absolute;left:0;right:0;bottom:-10px;height:10px;background:linear-gradient(to bottom,var(--cream),rgba(247,244,238,0));pointer-events:none;}
+  :root[data-theme="dark"] .main-head::after{background:linear-gradient(to bottom,var(--cream),rgba(10,18,38,0));}
   .metrics{grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:.9rem;}
   .metric{padding:.7rem .8rem;border-radius:11px;}
   .metric-v{font-size:21px;}
