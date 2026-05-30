@@ -2145,6 +2145,56 @@ function isMobile(){
   return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
 }
 
+function detectBrowser(){
+  const ua = navigator.userAgent;
+  if (/Edg\//.test(ua))                                   return 'edge';
+  if (/SamsungBrowser/.test(ua))                          return 'samsung';
+  if (/Firefox/.test(ua))                                 return 'firefox';
+  if (/Chrome/.test(ua) && /Mobile/.test(ua))             return 'chrome-android';
+  if (/Chrome/.test(ua))                                  return 'chrome';
+  if (/Safari/.test(ua) && /iPhone|iPad|iPod/.test(ua))   return 'safari-ios';
+  if (/Safari/.test(ua))                                  return 'safari';
+  return 'other';
+}
+
+function manualSteps(browser){
+  // Returns HTML steps for the user's browser
+  const steps = {
+    'chrome-android': [
+      'Appuie sur le menu <strong>⋮</strong> en haut à droite de Chrome',
+      'Choisis <strong>« Installer l\'application »</strong> (ou <strong>« Ajouter à l\'écran d\'accueil »</strong>)',
+      'Confirme avec <strong>Installer</strong>',
+    ],
+    'safari-ios': [
+      'Appuie sur le bouton <strong>Partager</strong> en bas de Safari (carré avec flèche ↑)',
+      'Fais défiler et choisis <strong>« Sur l\'écran d\'accueil »</strong>',
+      'Confirme avec <strong>Ajouter</strong> en haut à droite',
+    ],
+    'edge': [
+      'Menu <strong>⋯</strong> → <strong>« Apps »</strong> → <strong>« Installer Jobary »</strong>',
+      'Ou clique l\'icône installer (📥) à droite de la barre d\'adresse',
+    ],
+    'samsung': [
+      'Appuie sur le menu Samsung Internet',
+      'Choisis <strong>« Ajouter la page à »</strong> → <strong>« Écran d\'accueil »</strong>',
+    ],
+    'firefox': [
+      'Firefox ne supporte pas l\'installation directe. Ouvre Jobary dans <strong>Chrome</strong>, <strong>Edge</strong> ou <strong>Safari</strong> à la place.',
+    ],
+    'chrome': [
+      'Clique l\'icône <strong>📥 Installer</strong> à droite de la barre d\'adresse',
+      'Ou Menu <strong>⋮</strong> → <strong>« Installer Jobary… »</strong>',
+    ],
+    'safari': [
+      'Menu <strong>Fichier</strong> → <strong>« Ajouter au Dock »</strong> (macOS Sonoma+)',
+    ],
+    'other': [
+      'Ouvre Jobary dans <strong>Chrome</strong>, <strong>Edge</strong>, <strong>Samsung Internet</strong> ou <strong>Safari iOS</strong>',
+    ],
+  };
+  return (steps[browser] || steps['other']).map(s => `<li>${s}</li>`).join('');
+}
+
 async function renderInstallCard(){
   const card = document.getElementById('installCard');
   const body = document.getElementById('installBody');
@@ -2154,65 +2204,102 @@ async function renderInstallCard(){
 
   card.style.display = '';
 
+  // ── Already installed → confirmation only ────────────────────────────────
   if (isStandalone()) {
     status.textContent = '● Installée';
     status.className = 'scard-status ok';
     sub.textContent = 'Jobary tourne en mode app';
-    body.innerHTML = `<p style="font-size:11.5px;color:var(--ink3);line-height:1.5;margin:0;">Tu utilises déjà la version installée — elle peut fonctionner sans navigateur et accéder à l'écran d'accueil.</p>`;
+    body.innerHTML = `
+      <p style="font-size:11.5px;color:var(--ink3);line-height:1.5;margin:0;">Tu utilises déjà la version installée — elle peut fonctionner sans navigateur et accéder à l'écran d'accueil.</p>`;
     return;
   }
 
-  if (_installPrompt) {
-    // Android Chrome / Edge / Samsung Internet — direct install
+  // ── Not installed → ALWAYS render an actionable button + manual steps ────
+  const browser = detectBrowser();
+  const canDirectInstall = !!_installPrompt;
+
+  if (canDirectInstall) {
     status.textContent = '● Disponible';
     status.className = 'scard-status ok';
     sub.textContent = 'Installation en 1 tap';
-    body.innerHTML = `
-      <p style="font-size:11.5px;color:var(--ink3);line-height:1.5;margin-bottom:.7rem;">L'app s'installe sur ton écran d'accueil comme une vraie app native. Plus rapide, pas de barre d'adresse, accès offline aux offres déjà chargées.</p>
-      <button class="btn btn-gold" style="width:100%;justify-content:center;font-size:14px;font-weight:700;padding:.85rem;" onclick="installApp()">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24" style="margin-right:6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Installer Jobary
-      </button>`;
-    return;
-  }
-
-  if (isIOS() && isMobile()) {
-    // iOS Safari — manual instructions
+  } else if (browser === 'safari-ios') {
     status.textContent = '○ Manuelle';
     status.className = 'scard-status off';
-    sub.textContent = 'Via le menu Safari';
-    body.innerHTML = `
-      <p style="font-size:11.5px;color:var(--ink3);line-height:1.5;margin-bottom:.7rem;">Sur iPhone / iPad, l'installation se fait depuis le menu partage de Safari :</p>
-      <ol style="font-size:12.5px;color:var(--ink2);line-height:1.7;padding-left:1.2rem;margin-bottom:.5rem;">
-        <li>Appuie sur le bouton <strong>Partager</strong> en bas de Safari (carré avec flèche ↑)</li>
-        <li>Fais défiler et choisis <strong>« Sur l'écran d'accueil »</strong></li>
-        <li>Confirme avec <strong>Ajouter</strong> en haut à droite</li>
-      </ol>
-      <p style="font-size:10.5px;color:var(--ink3);font-style:italic;margin:0;">L'icône Jobary apparaîtra sur ton écran d'accueil comme une vraie app.</p>`;
-    return;
-  }
-
-  if (!isMobile()) {
-    // Desktop — encourage to open on phone
-    status.textContent = '○ Mobile only';
+    sub.textContent = 'Via le menu Partager Safari';
+  } else {
+    status.textContent = '○ Manuelle';
     status.className = 'scard-status off';
-    sub.textContent = 'Conçue pour le téléphone';
-    body.innerHTML = `
-      <p style="font-size:12px;color:var(--ink3);line-height:1.55;margin-bottom:.6rem;">Jobary est optimisée pour mobile. Pour l'installer comme une app sur ton écran d'accueil :</p>
-      <ol style="font-size:12px;color:var(--ink2);line-height:1.6;padding-left:1.2rem;margin-bottom:.5rem;">
-        <li>Ouvre <code style="background:var(--cream2);padding:1px 5px;border-radius:4px;font-size:11px;">jobradar-sepia.vercel.app</code> sur ton mobile (Chrome Android ou Safari iOS)</li>
-        <li>Reviens dans Réglages → cette carte</li>
-        <li>Suis l'instruction d'installation qui apparaît</li>
-      </ol>`;
-    return;
+    sub.textContent = 'Suis les étapes ci-dessous';
   }
 
-  // Android browser without install support
-  status.textContent = '○ Non disponible';
-  status.className = 'scard-status off';
-  sub.textContent = 'Ouvre dans Chrome';
-  body.innerHTML = `<p style="font-size:12px;color:var(--ink3);line-height:1.55;margin:0;">Pour installer Jobary, ouvre cette page dans <strong>Chrome</strong>, <strong>Edge</strong> ou <strong>Samsung Internet</strong> — l'option apparaîtra automatiquement.</p>`;
+  const ctaLabel = canDirectInstall ? 'Installer Jobary' : 'Forcer l\'installation';
+  const ctaAction = canDirectInstall ? 'installApp()' : 'forceInstallAttempt()';
+  const browserName = {
+    'chrome-android': 'Chrome Android',
+    'safari-ios': 'Safari iOS',
+    'edge': 'Microsoft Edge',
+    'samsung': 'Samsung Internet',
+    'firefox': 'Firefox',
+    'chrome': 'Google Chrome',
+    'safari': 'Safari macOS',
+    'other': 'ton navigateur',
+  }[browser];
+
+  body.innerHTML = `
+    <p style="font-size:11.5px;color:var(--ink3);line-height:1.5;margin-bottom:.85rem;">L'app s'installe sur ton écran d'accueil comme une vraie app native. Plus rapide, pas de barre d'adresse, notifications push.</p>
+
+    <button class="btn btn-gold" style="width:100%;justify-content:center;font-size:14px;font-weight:800;padding:.95rem;letter-spacing:-.1px;box-shadow:0 4px 14px rgba(201,168,76,.35);" onclick="${ctaAction}">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24" style="margin-right:7px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      ${ctaLabel}
+    </button>
+
+    <details style="margin-top:.85rem;background:var(--cream2);border-radius:10px;border:1px solid var(--bd);" ${canDirectInstall ? '' : 'open'}>
+      <summary style="cursor:pointer;list-style:none;padding:.7rem .9rem;font-size:12.5px;font-weight:700;color:var(--navy);display:flex;align-items:center;justify-content:space-between;">
+        <span>📖 Méthode manuelle (${browserName})</span>
+        <span style="font-size:13px;opacity:.6;">▾</span>
+      </summary>
+      <ol style="font-size:12.5px;color:var(--ink2);line-height:1.65;padding:0 1.2rem .9rem 2.2rem;margin:0;">${manualSteps(browser)}</ol>
+    </details>
+
+    <div style="display:flex;gap:6px;margin-top:.7rem;">
+      <button class="btn btn-out" style="flex:1;justify-content:center;font-size:12px;" onclick="resetInstallBanner()" title="Réafficher la bannière du haut">🔔 Réactiver la bannière</button>
+      <button class="btn btn-out" style="flex:1;justify-content:center;font-size:12px;" onclick="renderInstallCard()" title="Redétecter le navigateur">🔄 Redétecter</button>
+    </div>`;
 }
+
+// Try to force the install prompt to appear / fall back to instructions
+async function forceInstallAttempt(){
+  haptic(15);
+  // 1. If prompt arrived since last render, use it
+  if (_installPrompt) { installApp(); return; }
+
+  // 2. Force-refresh the SW so beforeinstallprompt has a fresh chance to fire
+  try {
+    const reg = await navigator.serviceWorker.getRegistration();
+    if (reg) await reg.update();
+  } catch {}
+
+  toast('Si rien ne se passe, applique les étapes manuelles ci-dessous ↓');
+
+  // 3. Re-render in case the prompt arrived during the update
+  setTimeout(() => {
+    renderInstallCard();
+    if (!_installPrompt) {
+      // Highlight the details accordion so user notices the manual steps
+      const det = document.querySelector('#installBody details');
+      if (det) { det.open = true; det.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    }
+  }, 600);
+}
+window.forceInstallAttempt = forceInstallAttempt;
+
+function resetInstallBanner(){
+  haptic(10);
+  localStorage.removeItem(INSTALL_DISMISS_KEY);
+  renderInstallBanner();
+  toast('Bannière réactivée — visible en haut');
+}
+window.resetInstallBanner = resetInstallBanner;
 
 async function installApp(){
   if (!_installPrompt) { toast('Installation non disponible'); return; }
