@@ -458,6 +458,23 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
 .sheet-close:hover{background:rgba(255,255,255,.15);}
 .sheet-close:active{transform:scale(.92);}
 
+/* Primary CTA button inside bottom sheets */
+.sheet-cta{width:100%;background:linear-gradient(135deg,#E8C97A 0%,#C9A84C 50%,#B8983C 100%);color:var(--navy);border:none;border-radius:14px;padding:1.05rem 1.3rem;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:800;letter-spacing:-.2px;cursor:pointer;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;margin-top:.9rem;box-shadow:0 10px 28px rgba(201,168,76,.4),inset 0 1px 0 rgba(255,255,255,.5),inset 0 -1px 0 rgba(0,0,0,.1);position:relative;overflow:hidden;transition:transform .12s,box-shadow .2s;}
+.sheet-cta::before{content:'';position:absolute;inset:0;background:linear-gradient(120deg,transparent 35%,rgba(255,255,255,.32) 50%,transparent 65%);transform:translateX(-100%);transition:transform 0s;pointer-events:none;}
+.sheet-cta:hover{box-shadow:0 12px 32px rgba(201,168,76,.55),inset 0 1px 0 rgba(255,255,255,.55),inset 0 -1px 0 rgba(0,0,0,.1);}
+.sheet-cta:hover::before{transform:translateX(100%);transition:transform .7s ease-out;}
+.sheet-cta:active{transform:scale(.985);box-shadow:0 4px 12px rgba(201,168,76,.4),inset 0 1px 0 rgba(255,255,255,.3);}
+.sheet-cta:disabled{cursor:not-allowed;background:rgba(255,255,255,.06);color:rgba(255,255,255,.4);box-shadow:none;}
+.sheet-cta:disabled .sheet-cta-ico,
+.sheet-cta:disabled .sheet-cta-arrow{background:rgba(255,255,255,.08);color:rgba(255,255,255,.4);}
+.sheet-cta-ico{width:38px;height:38px;background:rgba(13,27,62,.18);border-radius:11px;display:flex;align-items:center;justify-content:center;color:var(--navy);flex-shrink:0;}
+.sheet-cta-ico svg{width:20px;height:20px;}
+.sheet-cta-label{text-align:left;line-height:1.1;}
+.sheet-cta-label .sub{display:block;font-size:11.5px;font-weight:600;color:rgba(13,27,62,.65);letter-spacing:.02em;margin-top:3px;}
+.sheet-cta-arrow{width:30px;height:30px;background:rgba(13,27,62,.15);border-radius:9px;display:flex;align-items:center;justify-content:center;color:var(--navy);flex-shrink:0;transition:transform .2s;}
+.sheet-cta:hover .sheet-cta-arrow{transform:translateX(3px);}
+.sheet-cta-arrow svg{width:16px;height:16px;}
+
 @media(max-width:1024px){
   .app{display:block;}
   .sb{display:none;}                     /* hide sidebar on mobile + tablet */
@@ -810,8 +827,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
     <div class="sh-summary-meta" id="sumMeta">≈ 0 requêtes parallèles · 20-40 sec</div>
   </div>
 
-  <button class="sheet-cta" onclick="closeConfigSheet();scan();">🔍 Lancer le scan</button>
-  <button class="btn btn-out" style="width:100%;justify-content:center;margin-top:.6rem;background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12);color:rgba(255,255,255,.78);" onclick="closeConfigSheet()">← Retour aux offres</button>
+  <button class="sheet-cta" id="sheetScanCta" onclick="closeConfigSheet();scan();">
+    <span class="sheet-cta-ico">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="16.65" y2="16.65"/></svg>
+    </span>
+    <span class="sheet-cta-label">Lancer le scan<span class="sub" id="sheetScanSub">12 requêtes · ~25 sec</span></span>
+    <span class="sheet-cta-arrow">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </span>
+  </button>
+  <button class="btn btn-out" style="width:100%;justify-content:center;margin-top:.7rem;background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12);color:rgba(255,255,255,.78);padding:.75rem;" onclick="closeConfigSheet()">← Retour aux offres</button>
 </div>
 
 <!-- V3a: View options bottom sheet (mobile) — Tri + Source -->
@@ -968,8 +993,16 @@ function renderScanSummary(){
       sumMeta.textContent = `≈ ${requests} requêtes parallèles · ${low}-${low+15} sec`;
     }
   }
-  const cta = document.querySelector('#sheet .sheet-cta');
-  if (cta) { cta.disabled = requests === 0; cta.style.opacity = requests === 0 ? '.5' : ''; }
+  const cta = document.getElementById('sheetScanCta');
+  const ctaSub = document.getElementById('sheetScanSub');
+  if (cta) cta.disabled = requests === 0;
+  if (ctaSub) {
+    if (requests === 0) ctaSub.textContent = 'Config incomplète';
+    else {
+      const low = Math.max(15, Math.min(45, Math.round(15 + requests * 0.8)));
+      ctaSub.textContent = `${requests} requêtes · ~${Math.round((low + low + 15) / 2)} sec`;
+    }
+  }
 }
 function openConfigSheet(){
   document.getElementById('sheetOv').classList.add('open');
