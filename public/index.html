@@ -385,14 +385,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
 .mtop-act{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#fff;padding:.45rem .55rem;cursor:pointer;font-size:14px;}
 .mtop-act:active{background:rgba(255,255,255,.16);}
 
-/* Center FAB Scan button on mobile bottom nav */
+/* Center FAB Scan button — premium gold dome (matches .sheet-cta treatment) */
 .fab{display:flex;flex-direction:column;align-items:center;cursor:pointer;position:relative;}
-.fab-btn{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--gold) 0%,var(--gold2) 100%);border:4px solid var(--navy);display:flex;align-items:center;justify-content:center;color:var(--navy);box-shadow:0 8px 20px rgba(201,168,76,.45);transition:transform .15s;margin-top:-28px;}
-.fab-btn:active{transform:scale(.93);}
-.fab-btn svg{width:24px;height:24px;}
-.fab-btn.scanning{animation:pulse-fab 1.4s ease-in-out infinite;}
-@keyframes pulse-fab{0%,100%{box-shadow:0 8px 20px rgba(201,168,76,.45)}50%{box-shadow:0 8px 32px rgba(201,168,76,.7),0 0 0 6px rgba(201,168,76,.18)}}
-.fab-lbl{font-size:10.5px;font-weight:700;color:var(--gold);margin-top:3px;}
+.fab-btn{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#E8C97A 0%,#C9A84C 50%,#B8983C 100%);border:4px solid var(--navy);display:flex;align-items:center;justify-content:center;color:var(--navy);position:relative;overflow:hidden;transition:transform .15s,box-shadow .25s;margin-top:-32px;box-shadow:0 12px 28px rgba(201,168,76,.55),inset 0 2px 4px rgba(255,255,255,.55),inset 0 -2px 4px rgba(0,0,0,.15);animation:fab-breathe 3.5s ease-in-out infinite;}
+.fab-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(120deg,transparent 35%,rgba(255,255,255,.4) 50%,transparent 65%);transform:translateX(-100%);transition:transform 0s;border-radius:50%;pointer-events:none;}
+.fab-btn:hover::before{transform:translateX(100%);transition:transform .75s ease-out;}
+.fab-btn:active{transform:scale(.92);box-shadow:0 5px 14px rgba(201,168,76,.45),inset 0 1px 2px rgba(255,255,255,.4),inset 0 -1px 2px rgba(0,0,0,.15);animation:none;}
+.fab-btn svg{width:26px;height:26px;position:relative;z-index:1;}
+.fab-btn.scanning{animation:fab-scanning 1.2s ease-in-out infinite;}
+@keyframes fab-breathe{0%,100%{box-shadow:0 12px 28px rgba(201,168,76,.55),inset 0 2px 4px rgba(255,255,255,.55),inset 0 -2px 4px rgba(0,0,0,.15);}50%{box-shadow:0 14px 36px rgba(201,168,76,.72),inset 0 2px 4px rgba(255,255,255,.6),inset 0 -2px 4px rgba(0,0,0,.15);}}
+@keyframes fab-scanning{0%,100%{box-shadow:0 12px 28px rgba(201,168,76,.55),0 0 0 0 rgba(201,168,76,.45),inset 0 2px 4px rgba(255,255,255,.55);}50%{box-shadow:0 14px 38px rgba(201,168,76,.8),0 0 0 9px rgba(201,168,76,.22),inset 0 2px 4px rgba(255,255,255,.6);}}
+.fab-lbl{font-size:10.5px;font-weight:800;color:var(--gold);margin-top:4px;letter-spacing:.05em;}
 
 /* Scan progress overlay */
 .scan-ov{display:none;position:fixed;inset:0;background:rgba(13,27,62,.96);backdrop-filter:blur(8px);z-index:70;align-items:center;justify-content:center;padding:1.5rem;}
