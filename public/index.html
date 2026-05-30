@@ -183,17 +183,52 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
 .act-grp{display:flex;align-items:center;gap:5px;padding:5px 7px;border-radius:9px;background:var(--cream2);border:1px solid var(--bd);}
 .act-grp-lbl{font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-right:3px;}
 
-/* Modal */
-.mov{position:fixed;inset:0;background:rgba(13,27,62,.55);backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;z-index:90;opacity:0;pointer-events:none;transition:opacity .2s;}
+/* Modal — Settings panel */
+.mov{position:fixed;inset:0;background:rgba(13,27,62,.65);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:90;opacity:0;pointer-events:none;transition:opacity .25s;padding:1.5rem;}
 .mov.open{opacity:1;pointer-events:auto;}
-.modal{background:#fff;border-radius:14px;padding:1.4rem 1.6rem 1.2rem;width:min(440px,90vw);box-shadow:0 24px 48px rgba(13,27,62,.3);transform:translateY(10px);transition:transform .2s;}
+.modal{background:var(--cream);border-radius:18px;width:min(520px,100%);max-height:88vh;box-shadow:0 32px 64px rgba(13,27,62,.4);transform:translateY(12px) scale(.98);transition:transform .25s;overflow:hidden;display:flex;flex-direction:column;}
 .mov.open .modal{transform:none;}
-.modal h3{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:4px;}
-.modal p{font-size:12.5px;color:var(--ink3);line-height:1.55;margin-bottom:1rem;}
-.modal label{display:block;font-size:11px;font-weight:600;color:var(--ink2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px;margin-top:.8rem;}
-.modal input[type="text"]{width:100%;border:1.5px solid var(--bd2);border-radius:8px;padding:8px 11px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;color:var(--ink);}
-.modal input[type="text"]:focus{border-color:var(--gold);}
-.modal-acts{display:flex;gap:8px;justify-content:flex-end;margin-top:1.1rem;}
+
+.modal-hdr{background:var(--navy);color:#fff;padding:1.2rem 1.4rem;display:flex;align-items:center;justify-content:space-between;gap:.7rem;}
+.modal-hdr-l{display:flex;align-items:center;gap:11px;}
+.modal-hdr-ico{width:36px;height:36px;background:var(--gold);border-radius:9px;display:flex;align-items:center;justify-content:center;color:var(--navy);font-size:18px;font-weight:800;flex-shrink:0;}
+.modal-hdr h3{font-size:17px;font-weight:700;color:#fff;line-height:1.1;margin:0;}
+.modal-hdr-sub{font-size:11.5px;color:rgba(255,255,255,.55);margin-top:2px;}
+.modal-close{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#fff;width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;line-height:1;transition:background .15s;}
+.modal-close:hover{background:rgba(255,255,255,.18);}
+.modal-close:active{transform:scale(.92);}
+
+.modal-body{padding:1.2rem 1.4rem 1.4rem;overflow-y:auto;display:flex;flex-direction:column;gap:.9rem;}
+
+/* Settings card */
+.scard{background:#fff;border:1.5px solid var(--bd);border-radius:13px;padding:1rem 1.1rem;box-shadow:var(--sh);}
+.scard-hdr{display:flex;align-items:center;justify-content:space-between;gap:.7rem;margin-bottom:.7rem;}
+.scard-hdr-l{display:flex;align-items:center;gap:9px;}
+.scard-ico{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;background:var(--cream2);}
+.scard-title{font-size:14.5px;font-weight:700;color:var(--navy);line-height:1.1;}
+.scard-sub{font-size:11.5px;color:var(--ink3);margin-top:1px;}
+.scard-status{font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:99px;letter-spacing:.04em;text-transform:uppercase;display:inline-flex;align-items:center;gap:5px;}
+.scard-status::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor;}
+.scard-status.ok{background:var(--ok-bg);color:var(--ok);}
+.scard-status.warn{background:var(--warn-bg);color:var(--warn);}
+.scard-status.off{background:var(--cream2);color:var(--ink3);}
+
+.scard-row{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--ink2);padding:5px 0;border-top:1px solid var(--bd);min-height:30px;}
+.scard-row:first-child{border-top:none;}
+.scard-row-l{color:var(--ink3);font-size:12px;}
+.scard-row-v{color:var(--navy);font-weight:600;font-family:monospace;font-size:12px;max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+.scard label{display:block;font-size:10.5px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin:.7rem 0 5px;}
+.scard label:first-of-type{margin-top:0;}
+.scard input[type="text"]{width:100%;border:1.5px solid var(--bd2);border-radius:9px;padding:9px 12px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;color:var(--ink);background:#fff;transition:border-color .15s,box-shadow .15s;}
+.scard input[type="text"]:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.15);}
+.scard-cta{display:flex;gap:7px;margin-top:.8rem;flex-wrap:wrap;}
+.scard-cta .btn{flex:1;justify-content:center;font-size:12.5px;min-width:120px;}
+
+.scard-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:.4rem;}
+.scard-stat{text-align:center;padding:.6rem .4rem;background:var(--cream2);border-radius:9px;}
+.scard-stat-v{font-size:18px;font-weight:800;color:var(--navy);line-height:1;}
+.scard-stat-l{font-size:9.5px;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;font-weight:600;margin-top:3px;}
 
 /* Source progress chip */
 .src-pg{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:3px 9px;border-radius:99px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.65);margin-right:5px;}
@@ -568,22 +603,18 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
 <!-- Settings Modal -->
 <div class="mov" id="driveModal" onclick="if(event.target===this)closeDriveModal()">
   <div class="modal">
-    <h3>⚙ Réglages</h3>
-    <p style="margin-bottom:.6rem;">Configure Google Drive pour sauver tes CV/LM directement, ou teste le scan automatique quotidien.</p>
-
-    <div style="font-size:10.5px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-top:1rem;margin-bottom:.5rem;border-top:1px solid var(--bd);padding-top:.9rem;">Google Drive</div>
-    <label for="drvCid">OAuth Client ID</label>
-    <input type="text" id="drvCid" placeholder="123456-xxx.apps.googleusercontent.com" spellcheck="false">
-    <label for="drvFid">ID du dossier Drive</label>
-    <input type="text" id="drvFid" placeholder="1xYz...AbC" spellcheck="false">
-
-    <div style="font-size:10.5px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-top:1.1rem;margin-bottom:.5rem;border-top:1px solid var(--bd);padding-top:.9rem;">Scan automatique</div>
-    <p style="font-size:11.5px;color:var(--ink3);margin-bottom:.6rem;">Vercel Cron déclenche le scan tous les jours à 9h Casablanca et t'envoie un mail avec les offres ≥ 70%. Vérifie que <code>RESEND_API_KEY</code> est en env var Vercel, puis teste :</p>
-    <button class="btn btn-navy" style="width:100%;justify-content:center;" onclick="testCronScan()">▶ Lancer le scan auto maintenant (test)</button>
-
-    <div class="modal-acts">
-      <button class="btn btn-out" onclick="closeDriveModal()">Fermer</button>
-      <button class="btn btn-gold" onclick="saveDriveModal()">Enregistrer Drive</button>
+    <div class="modal-hdr">
+      <div class="modal-hdr-l">
+        <div class="modal-hdr-ico">⚙</div>
+        <div>
+          <h3>Réglages</h3>
+          <div class="modal-hdr-sub">Drive · Scan auto · Données</div>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeDriveModal()" aria-label="Fermer">×</button>
+    </div>
+    <div class="modal-body" id="settingsBody">
+      <!-- Populated by renderSettings() on open -->
     </div>
   </div>
 </div>
@@ -1335,24 +1366,164 @@ async function uploadLM(id){
   }catch(e){ console.error(e); log('✗ Drive LM : '+e.message,'warn'); toast(e.message); }
 }
 async function openDriveSettings(){
+  haptic(12);
+  await renderSettings();
+  document.getElementById('driveModal').classList.add('open');
+}
+function closeDriveModal(){ haptic(10); document.getElementById('driveModal').classList.remove('open'); }
+window.closeDriveModal = closeDriveModal;
+
+async function renderSettings(){
   const m = await _loadCvBuilder();
   const cur = m.getDriveCfg();
-  document.getElementById('drvCid').value = cur.clientId || '';
-  document.getElementById('drvFid').value = cur.folderId || '1_kXbANZVYfPyXpY9Z9Yj_x49BsJPTdzC';
-  document.getElementById('driveModal').classList.add('open');
-  setTimeout(() => document.getElementById('drvCid').focus(), 100);
+  const driveOk = !!(cur.clientId && cur.folderId);
+  const cidShort = cur.clientId ? cur.clientId.split('.')[0].slice(0,18) + '\u2026' : '\u2014';
+  const fidShort = cur.folderId ? cur.folderId.slice(0,12) + '\u2026' : '\u2014';
+
+  const stats = {
+    total: JOBS.length,
+    nouvelles: JOBS.filter(j=>j.status==='new').length,
+    cv: JOBS.filter(j=>j.cvFile).length,
+    lm: JOBS.filter(j=>j.lmContent).length,
+    postule: JOBS.filter(j=>j.status==='applied').length,
+    ignorees: JOBS.filter(j=>j.status==='dismissed').length,
+  };
+
+  const body = document.getElementById('settingsBody');
+  body.innerHTML = `
+    <!-- \u2500\u2500 Google Drive \u2500\u2500 -->
+    <div class="scard">
+      <div class="scard-hdr">
+        <div class="scard-hdr-l">
+          <div class="scard-ico" style="background:#E8F0FE;">\u2601</div>
+          <div>
+            <div class="scard-title">Google Drive</div>
+            <div class="scard-sub">${driveOk ? 'Sauvegarde des CV adapt\u00e9s' : 'Non configur\u00e9'}</div>
+          </div>
+        </div>
+        <span class="scard-status ${driveOk ? 'ok' : 'off'}">${driveOk ? 'Connect\u00e9' : 'Non config.'}</span>
+      </div>
+
+      <div id="driveView" style="display:${driveOk?'block':'none'};">
+        <div class="scard-row"><span class="scard-row-l">Client ID</span><span class="scard-row-v" title="${(cur.clientId||'').replace(/"/g,'&quot;')}">${cidShort}</span></div>
+        <div class="scard-row"><span class="scard-row-l">Dossier</span><span class="scard-row-v" title="${(cur.folderId||'').replace(/"/g,'&quot;')}">${fidShort}</span></div>
+        <div class="scard-cta">
+          <button class="btn btn-out" onclick="showDriveEditor(true)">\u270e Modifier</button>
+          <button class="btn btn-err" onclick="disconnectDrive()">D\u00e9connecter</button>
+        </div>
+      </div>
+
+      <div id="driveEditor" style="display:${driveOk?'none':'block'};">
+        <p style="font-size:11.5px;color:var(--ink3);margin-bottom:.5rem;line-height:1.5;">Lien le compte Google qui h\u00e9bergera tes CV/LM. Cr\u00e9e un OAuth Client ID sur <code>console.cloud.google.com</code>, puis colle-le ici.</p>
+        <label>OAuth Client ID</label>
+        <input type="text" id="drvCid" placeholder="123456-xxx.apps.googleusercontent.com" value="${(cur.clientId||'').replace(/"/g,'&quot;')}" spellcheck="false" autocomplete="off">
+        <label>ID du dossier Drive cible</label>
+        <input type="text" id="drvFid" placeholder="1xYz...AbC" value="${(cur.folderId||'1_kXbANZVYfPyXpY9Z9Yj_x49BsJPTdzC').replace(/"/g,'&quot;')}" spellcheck="false" autocomplete="off">
+        <div class="scard-cta">
+          ${driveOk ? '<button class="btn btn-out" onclick="showDriveEditor(false)">Annuler</button>' : ''}
+          <button class="btn btn-gold" onclick="saveDriveModal()">Enregistrer</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- \u2500\u2500 Scan automatique \u2500\u2500 -->
+    <div class="scard">
+      <div class="scard-hdr">
+        <div class="scard-hdr-l">
+          <div class="scard-ico" style="background:#FEF3C7;">\u23f0</div>
+          <div>
+            <div class="scard-title">Scan automatique</div>
+            <div class="scard-sub">Cron quotidien + digest email</div>
+          </div>
+        </div>
+        <span class="scard-status ok">Programm\u00e9</span>
+      </div>
+      <div class="scard-row"><span class="scard-row-l">Horaire</span><span class="scard-row-v" style="font-family:inherit;">tous les jours \u00e0 9h Casablanca</span></div>
+      <div class="scard-row"><span class="scard-row-l">Score minimum</span><span class="scard-row-v" style="font-family:inherit;">\u2265 70%</span></div>
+      <div class="scard-row"><span class="scard-row-l">Destinataire</span><span class="scard-row-v" style="font-family:inherit;">said.lakhrif@gmail.com</span></div>
+      <div class="scard-cta">
+        <button class="btn btn-navy" onclick="testCronScan()">\u25b6 Tester maintenant</button>
+      </div>
+    </div>
+
+    <!-- \u2500\u2500 Donn\u00e9es \u2500\u2500 -->
+    <div class="scard">
+      <div class="scard-hdr">
+        <div class="scard-hdr-l">
+          <div class="scard-ico" style="background:#DCFCE7;">\ud83d\udcbe</div>
+          <div>
+            <div class="scard-title">Donn\u00e9es locales</div>
+            <div class="scard-sub">Stockage navigateur</div>
+          </div>
+        </div>
+        <span class="scard-status ${stats.total>0?'ok':'off'}">${stats.total} offres</span>
+      </div>
+      <div class="scard-stats">
+        <div class="scard-stat"><div class="scard-stat-v">${stats.total}</div><div class="scard-stat-l">Offres</div></div>
+        <div class="scard-stat"><div class="scard-stat-v">${stats.cv}</div><div class="scard-stat-l">CV pr\u00eats</div></div>
+        <div class="scard-stat"><div class="scard-stat-v">${stats.postule}</div><div class="scard-stat-l">Postul\u00e9</div></div>
+      </div>
+      <div class="scard-cta" style="margin-top:.9rem;">
+        <button class="btn btn-out" onclick="exportData()">\ud83d\udce5 Exporter (JSON)</button>
+        <button class="btn btn-err" onclick="eraseJobs()">\ud83d\uddd1 Vider l'historique</button>
+      </div>
+    </div>
+
+    <!-- \u2500\u2500 \u00c0 propos \u2500\u2500 -->
+    <div class="scard">
+      <div class="scard-hdr">
+        <div class="scard-hdr-l">
+          <div class="scard-ico" style="background:rgba(201,168,76,.18);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--gold)"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="16.65" y2="16.65"/></svg></div>
+          <div>
+            <div class="scard-title">Jobary</div>
+            <div class="scard-sub">v3.0 \u00b7 Said Lakhrif \u00b7 Maroc</div>
+          </div>
+        </div>
+      </div>
+      <div class="scard-row"><span class="scard-row-l">Claude API</span><span class="scard-row-v" style="font-family:inherit;color:var(--ok);">\u2713 configur\u00e9e</span></div>
+      <div class="scard-row"><span class="scard-row-l">Sources</span><span class="scard-row-v" style="font-family:inherit;">LinkedIn \u00b7 Rekrute \u00b7 Emploi.ma</span></div>
+      <div class="scard-row"><span class="scard-row-l">Prod</span><span class="scard-row-v" style="font-family:inherit;font-size:11px;">jobradar-sepia.vercel.app</span></div>
+    </div>
+  `;
 }
-function closeDriveModal(){ document.getElementById('driveModal').classList.remove('open'); }
+function showDriveEditor(show){
+  document.getElementById('driveView').style.display = show ? 'none' : 'block';
+  document.getElementById('driveEditor').style.display = show ? 'block' : 'none';
+  if (show) setTimeout(() => document.getElementById('drvCid').focus(), 100);
+}
 async function saveDriveModal(){
   const m = await _loadCvBuilder();
   const cid = document.getElementById('drvCid').value.trim();
   const fid = document.getElementById('drvFid').value.trim();
-  if(!cid || !fid){ toast('Les deux champs sont requis'); return; }
+  if(!cid || !fid){ toast('Les deux champs sont requis'); haptic(40); return; }
   m.setDriveCfg({ clientId:cid, folderId:fid });
-  closeDriveModal();
-  toast('Config Drive enregistr\u00e9e \u2713');
+  haptic([20, 30, 20]);
+  await renderSettings();
+  toast('Drive enregistr\u00e9 \u2713');
 }
-window.closeDriveModal=closeDriveModal; window.saveDriveModal=saveDriveModal;
+async function disconnectDrive(){
+  if (!confirm('D\u00e9connecter Google Drive ? Tu pourras le reconfigurer \u00e0 tout moment.')) return;
+  const m = await _loadCvBuilder();
+  m.setDriveCfg({ clientId:'', folderId:'' });
+  haptic(30);
+  await renderSettings();
+  toast('Drive d\u00e9connect\u00e9');
+}
+function exportData(){
+  haptic(15);
+  const data = { jobs: JOBS, cfg: CFG, exported: new Date().toISOString(), version: '3.0' };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `jobary-export-${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
+  toast('Donn\u00e9es export\u00e9es');
+}
+window.showDriveEditor = showDriveEditor;
+window.saveDriveModal = saveDriveModal;
+window.disconnectDrive = disconnectDrive;
+window.exportData = exportData;
 
 async function testCronScan(){
   toast('Scan auto en cours… (peut prendre 30-60s)');
