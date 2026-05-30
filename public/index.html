@@ -414,6 +414,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
 .scan-source.err{border-color:rgba(248,113,113,.4);background:rgba(248,113,113,.07);}
 .scan-source.err .scan-source-st{color:#FCA5A5;}
 
+/* V7: Sticky footer for detail sheet — hidden on desktop (inline panel keeps existing layout) */
+.dp-foot{display:none;}
+.dp-body{}
+
 /* V5a: Swipe affordance hints on cards (mobile) */
 .jcard{position:relative;touch-action:pan-y;}  /* allow vertical scroll, capture horizontal */
 .jcard-bg{position:absolute;inset:0;border-radius:var(--rl);display:none;align-items:center;padding:0 1.5rem;font-weight:800;font-size:13px;letter-spacing:.05em;text-transform:uppercase;pointer-events:none;}
@@ -502,8 +506,26 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
   .jc-title{font-size:14.5px;}
   .toast-wrap{bottom:7.5rem;right:.85rem;left:.85rem;}
   .toast{font-size:13px;}
-  .dp{padding:1.1rem;border-radius:14px;}
-  .dp-back{display:inline-flex;}  /* V3b: back arrow shown only on mobile */
+  /* V7: Detail panel becomes a full-screen bottom sheet on mobile */
+  #dpWrap.open{position:fixed;inset:0;background:rgba(13,27,62,.65);backdrop-filter:blur(4px);z-index:80;display:flex;align-items:flex-end;animation:dpFadeIn .22s ease-out;}
+  @keyframes dpFadeIn{from{opacity:0;}to{opacity:1;}}
+  #dpWrap.open .dp{width:100%;max-height:92vh;margin:0;padding:0;border-radius:20px 20px 0 0;overflow-y:auto;-webkit-overflow-scrolling:touch;box-shadow:0 -12px 40px rgba(0,0,0,.3);animation:dpSlideUp .32s cubic-bezier(.4,0,.2,1);padding-bottom:96px;}
+  @keyframes dpSlideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+
+  /* Sticky header inside the sheet — back button */
+  .dp-back{display:flex;position:sticky;top:0;background:#fff;z-index:5;margin:0;padding:1rem 1.1rem .85rem;border-bottom:1px solid var(--bd);width:100%;box-sizing:border-box;}
+  .dp-back svg{width:20px;height:20px;}
+
+  /* Padding for body content within the sheet */
+  #dpWrap.open .dp > .dp-body{padding:1rem 1.1rem 0;}
+
+  /* Sticky footer with primary actions (mobile only) */
+  .dp-foot{display:flex !important;position:fixed;left:0;right:0;bottom:0;padding:11px 13px calc(11px + env(safe-area-inset-bottom));background:#fff;border-top:1px solid var(--bd);box-shadow:0 -6px 18px rgba(0,0,0,.08);gap:8px;z-index:81;}
+  .dp-foot .btn{flex:1;justify-content:center;padding:.85rem .5rem;font-size:13.5px;font-weight:700;border-radius:11px;}
+  /* Hide secondary actions row when inside the mobile sheet (handled by sticky footer) */
+  #dpWrap.open .dp .acts{flex-direction:column;align-items:stretch;}
+  #dpWrap.open .dp .acts .btn-gold,
+  #dpWrap.open .dp .acts .btn-li{display:none;}  /* primary CTAs only in sticky footer */
   .steps{padding:.5rem .7rem;}
   .step{font-size:10.5px;padding:2px 7px;}
   .act-grp{flex-wrap:wrap;}
@@ -1166,42 +1188,68 @@ function sel(id) {
       ${step('LM prête','lm')}<span class="step-arrow">→</span>
       ${step('Postulée','postule')}
     </div>`;
-  document.getElementById('dpWrap').innerHTML=`
-    <div class="dp">
+  // Primary CTAs (sticky footer on mobile, end of body on desktop)
+  const primaryAdapt = (j.status==='new'||j.status==='dismissed')
+    ? `<button class="btn btn-gold" onclick="adaptCV(${j.id})">✦ Adapter mon CV</button>` : '';
+  const primaryApply = j.status==='adapted'
+    ? `<button class="btn btn-gold" id="applyBtn-${j.id}" onclick="apply(${j.id})">→ Valider la candidature</button>` : '';
+  const primaryApplied = j.status==='applied'
+    ? `<button class="btn btn-out" disabled>✓ Candidature envoyée</button>` : '';
+  const primaryLi = `<a href="${j.url||'https://linkedin.com/jobs/search/?keywords='+encodeURIComponent(j.title)+'&location=Maroc'}" target="_blank" class="btn btn-li">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+    Voir l'offre
+  </a>`;
+
+  // Secondary actions stay in the body
+  const secondaryActs = `
+    ${j.adaptedContent?`<button class="btn btn-out" onclick="showAI(${j.id})">👁 Voir contenu adapté</button>`:''}
+    ${j.cvFile?`<button class="btn btn-out" onclick="showPDF(${j.id})">📄 Aperçu CV</button>`:''}
+    ${j.status!=='dismissed'&&j.status!=='applied'?`<button class="btn btn-err" onclick="dismiss(${j.id})">✕ Ignorer cette offre</button>`:''}
+  `;
+
+  const dpWrap = document.getElementById('dpWrap');
+  dpWrap.innerHTML = `
+    <div class="dp" onclick="event.stopPropagation()">
       <button class="dp-back" onclick="closeDetail()" aria-label="Retour aux offres">
         <svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
         Retour aux offres
       </button>
-      ${steps}
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;margin-bottom:1rem;">
-        <div>
-          <div class="dp-title">${j.title}</div>
-          <div class="dp-co">${j.company} · ${j.location} · ${j.type}${j.salary?' · 💰 '+j.salary:''}</div>
+      <div class="dp-body">
+        ${steps}
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;margin-bottom:1rem;">
+          <div>
+            <div class="dp-title">${j.title}</div>
+            <div class="dp-co">${j.company} · ${j.location} · ${j.type}${j.salary?' · 💰 '+j.salary:''}</div>
+          </div>
+          <span class="tag ${sCls(j.status)}" style="font-size:12px;padding:4px 11px;">${sLbl(j.status)}</span>
         </div>
-        <span class="tag ${sCls(j.status)}" style="font-size:12px;padding:4px 11px;">${sLbl(j.status)}</span>
-      </div>
-      <div class="dp-sec"><div class="dp-sec-lbl">Description</div><div class="dp-desc">${j.summary}</div></div>
-      <div class="dp-sec">
-        <div class="dp-sec-lbl">Correspondance profil</div>
-        <div class="kw-grid">
-          ${(j.matchKw||[]).map(k=>`<span class="kw kw-ok">✓ ${k}</span>`).join('')}
-          ${(j.missingKw||[]).map(k=>`<span class="kw kw-miss">⚠ ${k}</span>`).join('')}
+        <div class="dp-sec"><div class="dp-sec-lbl">Description</div><div class="dp-desc">${j.summary}</div></div>
+        <div class="dp-sec">
+          <div class="dp-sec-lbl">Correspondance profil</div>
+          <div class="kw-grid">
+            ${(j.matchKw||[]).map(k=>`<span class="kw kw-ok">✓ ${k}</span>`).join('')}
+            ${(j.missingKw||[]).map(k=>`<span class="kw kw-miss">⚠ ${k}</span>`).join('')}
+          </div>
+        </div>
+        <div class="acts" style="margin-top:1.2rem;">
+          ${primaryAdapt}${primaryApply}${primaryApplied}
+          ${secondaryActs}
+          ${primaryLi}
         </div>
       </div>
-      <div class="acts">
-        ${(j.status==='new'||j.status==='dismissed')?`<button class="btn btn-gold" onclick="adaptCV(${j.id})">✦ Adapter mon CV</button>`:''}
-        ${j.adaptedContent?`<button class="btn btn-out" onclick="showAI(${j.id})">👁 Voir contenu adapté</button>`:''}
-        ${j.cvFile?`<button class="btn btn-out" onclick="showPDF(${j.id})">📄 Aperçu CV</button>`:''}
-        ${j.status==='adapted'?`<button class="btn btn-gold" id="applyBtn-${j.id}" onclick="apply(${j.id})">→ Valider la candidature</button>`:''}
-        ${j.status==='applied'?`<button class="btn btn-out" disabled>✓ Candidature envoyée</button>`:''}
-        <a href="${j.url||'https://linkedin.com/jobs/search/?keywords='+encodeURIComponent(j.title)+'&location=Maroc'}" target="_blank" class="btn btn-li">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
-          Voir sur LinkedIn
-        </a>
-        ${j.status!=='dismissed'&&j.status!=='applied'?`<button class="btn btn-err" onclick="dismiss(${j.id})">✕ Ignorer</button>`:''}
+      <div class="dp-foot">
+        ${primaryAdapt || primaryApply || primaryApplied || `<button class="btn btn-out" disabled style="flex:1;">Aucune action</button>`}
+        ${primaryLi}
       </div>
     </div>`;
-  document.getElementById('dpWrap').scrollIntoView({behavior:'smooth',block:'nearest'});
+
+  // V7: on mobile, make the wrapper a fullscreen sheet (overlay closes on outside tap)
+  dpWrap.classList.add('open');
+  dpWrap.onclick = (e) => { if (e.target === dpWrap) closeDetail(); };
+  // Desktop keeps existing inline-scroll behaviour
+  if (window.matchMedia('(min-width:1025px)').matches) {
+    dpWrap.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
 }
 
 // ── Scan ───────────────────────────────────────────────────────────────────────
@@ -1919,10 +1967,12 @@ window.setViewSrc = setViewSrc;
 function closeDetail(){
   haptic(12);
   selId = null; saveUi();
-  document.getElementById('dpWrap').innerHTML = '';
+  const w = document.getElementById('dpWrap');
+  w.classList.remove('open');
+  w.innerHTML = '';
+  w.onclick = null;
   closeAI(); closePDF();
   render();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 window.closeDetail = closeDetail;
 
