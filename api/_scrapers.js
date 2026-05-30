@@ -3,7 +3,7 @@ import * as cheerio from 'cheerio';
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36';
 const TIMEOUT_MS = 12000;
 
-async function fetchHtml(url, extra = {}) {
+export async function fetchHtml(url, extra = {}) {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
   try {

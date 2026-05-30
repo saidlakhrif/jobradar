@@ -291,6 +291,22 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
 .dp-sec-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);margin-bottom:6px;display:flex;align-items:center;gap:5px;}
 .dp-sec-lbl::after{content:'';flex:1;height:1px;background:var(--bd);}
 .dp-desc{font-size:13.5px;color:var(--ink2);line-height:1.75;}
+
+/* V8: Voir la description complète — fetch button + expandable section */
+.dp-fetch{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;background:#fff;border:1.5px dashed var(--bd2);border-radius:11px;padding:.85rem 1.05rem;margin-top:.85rem;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--navy);cursor:pointer;transition:border-color .15s,background .15s,transform .1s;}
+.dp-fetch:hover{border-color:var(--gold);background:var(--cream2);border-style:solid;}
+.dp-fetch:active{transform:scale(.99);}
+.dp-fetch:disabled{cursor:default;opacity:.7;background:var(--cream2);}
+.dp-fetch svg{flex-shrink:0;}
+
+.dp-full{margin-top:.85rem;border:1px solid var(--bd);border-radius:11px;background:var(--cream);overflow:hidden;}
+.dp-full-toggle{cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem;background:var(--cream2);color:var(--navy);font-size:12.5px;font-weight:700;letter-spacing:.02em;}
+.dp-full-toggle::-webkit-details-marker{display:none;}
+.dp-full-chevron{transition:transform .2s;font-size:13px;color:var(--ink3);}
+.dp-full[open] .dp-full-chevron{transform:rotate(180deg);}
+.dp-full-body{padding:1rem 1.05rem;font-size:13px;color:var(--ink2);line-height:1.7;max-height:420px;overflow-y:auto;}
+.dp-full-body p{margin-bottom:.6rem;}
+.dp-full-body p:last-child{margin-bottom:0;}
 .kw-grid{display:flex;flex-wrap:wrap;gap:5px;}
 .kw{font-size:11px;font-weight:500;padding:3px 10px;border-radius:99px;}
 .kw-ok{background:var(--ok-bg);color:var(--ok);}
@@ -1170,6 +1186,7 @@ function mF(f,el){
 }
 
 // ── Select ─────────────────────────────────────────────────────────────────────
+function esc(s){ return (s||'').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
 function sel(id) {
   selId=id; saveUi();
   const j=JOBS.find(x=>x.id===id); if(!j) return;
@@ -1223,7 +1240,19 @@ function sel(id) {
           </div>
           <span class="tag ${sCls(j.status)}" style="font-size:12px;padding:4px 11px;">${sLbl(j.status)}</span>
         </div>
-        <div class="dp-sec"><div class="dp-sec-lbl">Description</div><div class="dp-desc">${j.summary}</div></div>
+        <div class="dp-sec">
+          <div class="dp-sec-lbl">Description</div>
+          <div class="dp-desc">${j.summary || '<em style="color:var(--ink3);">Pas de résumé · clique sur "Description complète" ci-dessous</em>'}</div>
+          ${j.fullDescription ? `
+            <details class="dp-full" id="dpFull-${j.id}" open>
+              <summary class="dp-full-toggle"><span>📄 Description complète</span><span class="dp-full-chevron">▾</span></summary>
+              <div class="dp-full-body">${j.fullDescription.split('\n\n').map(p => `<p>${esc(p).replace(/\n/g,'<br>')}</p>`).join('')}</div>
+            </details>` :
+            `<button class="dp-fetch" id="dpFetch-${j.id}" onclick="loadFullDescription(${j.id})">
+              <span>📄 Voir la description complète</span>
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>`}
+        </div>
         <div class="dp-sec">
           <div class="dp-sec-lbl">Correspondance profil</div>
           <div class="kw-grid">
@@ -1380,6 +1409,44 @@ async function scan() {
 }
 
 // ── Adapt CV ───────────────────────────────────────────────────────────────────
+async function loadFullDescription(id){
+  const j = JOBS.find(x => x.id === id);
+  if (!j || !j.url) { toast('URL source manquante'); return; }
+  haptic(15);
+  const btn = document.getElementById('dpFetch-'+id);
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spin" style="border-top-color:var(--navy);width:14px;height:14px;"></span> Récupération en cours…';
+  }
+  try {
+    const r = await fetch(`${BASE}/api/fetch-detail`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ url: j.url })
+    });
+    const data = await r.json();
+    if (data.description) {
+      j.fullDescription = data.description;
+      saveJobs();
+      sel(id);
+      haptic([15, 25]);
+      toast('✓ Description chargée');
+    } else {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<span>📄 Voir la description complète</span><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>';
+      }
+      toast(data.error || 'Description introuvable — clique sur "Voir l\'offre"');
+    }
+  } catch (e) {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<span>📄 Voir la description complète</span><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>';
+    }
+    toast('Erreur : ' + e.message);
+  }
+}
+window.loadFullDescription = loadFullDescription;
+
 async function adaptCV(id) {
   const j=JOBS.find(x=>x.id===id);
   const panel=document.getElementById('aiPanel');
