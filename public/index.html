@@ -153,6 +153,24 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
 .sort-bar{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink2);font-weight:500;}
 .sort-sel{background:#fff;border:1.5px solid var(--bd2);border-radius:8px;padding:6px 10px;font-size:13px;color:var(--ink);font-family:'DM Sans',sans-serif;outline:none;cursor:pointer;font-weight:500;}
 
+/* V3a: mobile-only "View options" button */
+.mview-btn{display:none;background:#fff;border:1.5px solid var(--bd2);border-radius:9px;padding:.45rem .7rem;font-size:13px;color:var(--ink2);font-weight:600;cursor:pointer;align-items:center;gap:5px;box-shadow:var(--sh);}
+.mview-btn:active{background:var(--cream);}
+.mview-btn .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--gold);opacity:0;transition:opacity .15s;}
+.mview-btn.active .dot{opacity:1;}
+
+/* V3b: back-to-list button (mobile only, in detail panel) */
+.dp-back{display:none;align-items:center;gap:7px;background:none;border:none;color:var(--ink2);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;padding:0 0 .8rem;}
+.dp-back svg{width:18px;height:18px;}
+.dp-back:active{color:var(--navy);}
+
+/* V3c: Pull-to-refresh indicator */
+.ptr{position:fixed;left:50%;transform:translateX(-50%) translateY(-60px);top:0;background:var(--navy);color:var(--gold);padding:.55rem 1rem;border-radius:99px;font-size:12.5px;font-weight:600;z-index:65;display:flex;align-items:center;gap:8px;box-shadow:0 6px 24px rgba(13,27,62,.35);transition:transform .25s,opacity .2s;opacity:0;pointer-events:none;}
+.ptr.visible{opacity:1;}
+.ptr.armed{background:var(--gold);color:var(--navy);}
+.ptr .ico{display:inline-block;transition:transform .2s;}
+.ptr.armed .ico{transform:rotate(180deg);}
+
 /* Step indicator (funnel) */
 .steps{display:flex;align-items:center;gap:6px;margin-bottom:1rem;padding:.7rem 1rem;background:var(--cream2);border-radius:11px;border:1px solid var(--bd);overflow-x:auto;}
 .step{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ink3);font-weight:500;white-space:nowrap;padding:3px 9px;border-radius:99px;background:rgba(255,255,255,.6);}
@@ -351,12 +369,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
   .mhdr{flex-direction:column;align-items:stretch;margin-bottom:.5rem;}
   .mhdr > div:last-child{gap:7px !important;}
   .search-bar{flex:1;min-width:0;}
-  .sort-bar{display:none;}  /* C5: hide sort + source filters on mobile to declutter; defaults are Score↓ / Toutes */
+  .sort-bar{display:none;}  /* C5: hide sort + source filters on mobile to declutter */
+  .mview-btn{display:inline-flex !important;}  /* V3a: replacement icon button */
   .jcard{padding:.95rem 1.05rem;border-radius:13px;}
   .jc-title{font-size:14.5px;}
   .toast-wrap{bottom:7.5rem;right:.85rem;left:.85rem;}
   .toast{font-size:13px;}
   .dp{padding:1.1rem;border-radius:14px;}
+  .dp-back{display:inline-flex;}  /* V3b: back arrow shown only on mobile */
   .steps{padding:.5rem .7rem;}
   .step{font-size:10.5px;padding:2px 7px;}
   .act-grp{flex-wrap:wrap;}
@@ -493,6 +513,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
           <svg width="13" height="13" fill="none" stroke="#9CA3AF" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
           <input type="text" placeholder="Rechercher..." id="searchQ" oninput="render()">
         </div>
+        <button class="mview-btn" id="viewBtn" onclick="openViewSheet()" aria-label="Tri et source">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="6" y1="12" x2="18" y2="12"/><line x1="10" y1="18" x2="14" y2="18"/></svg>
+          <span class="dot"></span>
+        </button>
       </div>
     </div>
   </div>
@@ -625,6 +649,38 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
   </div>
 </div>
 
+<!-- V3a: View options bottom sheet (mobile) — Tri + Source -->
+<div class="sheet-ov" id="viewSheetOv" onclick="closeViewSheet()"></div>
+<div class="sheet" id="viewSheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-title">Affichage</div>
+  <div class="sheet-sub">Trier ou filtrer les offres affichées (n'affecte pas la prochaine recherche).</div>
+
+  <div style="margin-bottom:1rem;">
+    <div class="sb-sec-lbl">Trier par</div>
+    <div style="display:flex;flex-direction:column;gap:6px;">
+      <button class="src-row" data-sort="score" onclick="setViewSort('score')"><div class="src-l">📊 Score (élevé → bas)</div></button>
+      <button class="src-row" data-sort="date"  onclick="setViewSort('date')"><div class="src-l">🕒 Plus récentes d'abord</div></button>
+      <button class="src-row" data-sort="title" onclick="setViewSort('title')"><div class="src-l">🔤 Titre A → Z</div></button>
+    </div>
+  </div>
+
+  <div style="margin-bottom:.5rem;">
+    <div class="sb-sec-lbl">Source</div>
+    <div style="display:flex;flex-direction:column;gap:6px;">
+      <button class="src-row" data-src="" onclick="setViewSrc('')"><div class="src-l">🌐 Toutes les sources</div></button>
+      <button class="src-row" data-src="LinkedIn"  onclick="setViewSrc('LinkedIn')"><div class="src-l">💼 LinkedIn</div></button>
+      <button class="src-row" data-src="Rekrute"   onclick="setViewSrc('Rekrute')"><div class="src-l">🇲🇦 Rekrute</div></button>
+      <button class="src-row" data-src="Emploi.ma" onclick="setViewSrc('Emploi.ma')"><div class="src-l">🇲🇦 Emploi.ma</div></button>
+    </div>
+  </div>
+
+  <button class="sheet-cta" onclick="closeViewSheet()" style="margin-top:.6rem;">OK</button>
+</div>
+
+<!-- V3c: Pull-to-refresh indicator -->
+<div class="ptr" id="ptr"><span class="ico">↓</span><span id="ptrText">Tire pour rafraîchir</span></div>
+
 <div class="toast-wrap" id="toasts"></div>
 
 <script>
@@ -688,7 +744,7 @@ function renderChips() {
   ['ciChips','shCiChips'].forEach(id => { const el=document.getElementById(id); if(el) el.innerHTML = ciHtml; });
   ['kwCount','shKwCount'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent = CFG.kw.length; });
   ['ciCount','shCiCount'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent = CFG.ci.length; });
-  document.querySelectorAll('.src-row').forEach(r => r.classList.toggle('off', !CFG.src[r.dataset.src]));
+  document.querySelectorAll('#srcList .src-row, #shSrcList .src-row').forEach(r => r.classList.toggle('off', !CFG.src[r.dataset.src]));
 }
 function openConfigSheet(){
   document.getElementById('sheetOv').classList.add('open');
@@ -849,6 +905,10 @@ function sel(id) {
     </div>`;
   document.getElementById('dpWrap').innerHTML=`
     <div class="dp">
+      <button class="dp-back" onclick="closeDetail()" aria-label="Retour aux offres">
+        <svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Retour aux offres
+      </button>
       ${steps}
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;margin-bottom:1rem;">
         <div>
@@ -897,6 +957,7 @@ function closeScanOverlay(){
 }
 
 async function scan() {
+  haptic(20);
   const btn=document.getElementById('scanBtn');
   if (btn) { btn.disabled=true; btn.innerHTML='<span class="spin" style="border-top-color:var(--navy)"></span> Recherche…'; }
   showLog();
@@ -973,6 +1034,7 @@ async function scan() {
     updateTopBarMeta();
     stats(); render();
     setTimeout(closeScanOverlay, 800);
+    haptic(added ? [30, 60, 30] : 25); // success buzz
     toast(added ? `${added} nouvelles offres trouvées !` : `${refreshed} offres mises à jour`);
   } catch(err) {
     log('✗ '+err.message,'warn');
@@ -1110,6 +1172,7 @@ function showPDF(id){
 // ── Apply ──────────────────────────────────────────────────────────────────────
 function _save(){ saveJobs(); saveUi(); }
 function apply(id){
+  haptic([20, 30, 20]);
   const j=JOBS.find(x=>x.id===id);
   setTimeout(()=>{
     j.status='applied'; j.appliedAt = Date.now();
@@ -1119,6 +1182,7 @@ function apply(id){
   },600);
 }
 function dismiss(id){
+  haptic(25);
   const j=JOBS.find(x=>x.id===id);
   j.status='dismissed'; j.dismissedAt = Date.now(); selId=null;
   saveJobs(); saveUi();
@@ -1339,6 +1403,101 @@ function formatRelativeTime(ts){
   if (d < 7) return `il y a ${d}j`;
   return `il y a ${Math.floor(d/7)} sem.`;
 }
+// V3d: Haptic feedback (Android supports, iOS partial via PWA)
+function haptic(pattern = 18) {
+  try { if (navigator.vibrate) navigator.vibrate(pattern); } catch {}
+}
+
+// V3a: View options sheet
+function openViewSheet(){
+  haptic(12);
+  // sync selected state into rows
+  const sort = document.getElementById('sortBy')?.value || 'score';
+  const src  = document.getElementById('srcFilter')?.value || '';
+  document.querySelectorAll('#viewSheet .src-row[data-sort]').forEach(r => r.classList.toggle('active', r.dataset.sort === sort));
+  document.querySelectorAll('#viewSheet .src-row[data-src]').forEach(r => r.classList.toggle('active', r.dataset.src === src));
+  document.getElementById('viewSheetOv').classList.add('open');
+  document.getElementById('viewSheet').classList.add('open');
+}
+function closeViewSheet(){
+  document.getElementById('viewSheetOv').classList.remove('open');
+  document.getElementById('viewSheet').classList.remove('open');
+  // visual hint that filter is active
+  const sort = document.getElementById('sortBy')?.value || 'score';
+  const src  = document.getElementById('srcFilter')?.value || '';
+  document.getElementById('viewBtn')?.classList.toggle('active', sort !== 'score' || !!src);
+}
+function setViewSort(v){
+  haptic(10);
+  const el = document.getElementById('sortBy'); if (el) { el.value = v; render(); }
+  document.querySelectorAll('#viewSheet .src-row[data-sort]').forEach(r => r.classList.toggle('active', r.dataset.sort === v));
+}
+function setViewSrc(v){
+  haptic(10);
+  const el = document.getElementById('srcFilter'); if (el) { el.value = v; render(); }
+  document.querySelectorAll('#viewSheet .src-row[data-src]').forEach(r => r.classList.toggle('active', r.dataset.src === v));
+}
+window.openViewSheet = openViewSheet;
+window.closeViewSheet = closeViewSheet;
+window.setViewSort = setViewSort;
+window.setViewSrc = setViewSrc;
+
+// V3b: close detail (used by back arrow)
+function closeDetail(){
+  haptic(12);
+  selId = null; saveUi();
+  document.getElementById('dpWrap').innerHTML = '';
+  closeAI(); closePDF();
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+window.closeDetail = closeDetail;
+
+// V3c: Pull-to-refresh (mobile only)
+(function setupPullToRefresh(){
+  let startY = 0, currentY = 0, pulling = false, armed = false;
+  const ptr = document.getElementById('ptr');
+  const txt = document.getElementById('ptrText');
+  const THRESHOLD = 80;
+  const MAX = 140;
+  function pos(t){ return t.touches?.[0]?.clientY ?? t.clientY ?? 0; }
+  document.addEventListener('touchstart', e => {
+    if (window.scrollY > 4) return;
+    if (document.querySelector('.sheet.open, .scan-ov.open, .mov.open')) return;
+    startY = pos(e); pulling = true; armed = false;
+  }, { passive: true });
+  document.addEventListener('touchmove', e => {
+    if (!pulling) return;
+    currentY = pos(e);
+    const delta = Math.min(MAX, Math.max(0, currentY - startY));
+    if (delta > 20) {
+      ptr.classList.add('visible');
+      ptr.style.transform = `translateX(-50%) translateY(${Math.min(delta, MAX) - 50}px)`;
+      const wasArmed = armed;
+      armed = delta >= THRESHOLD;
+      ptr.classList.toggle('armed', armed);
+      txt.textContent = armed ? 'Lâche pour scanner' : 'Tire pour rafraîchir';
+      if (armed && !wasArmed) haptic(15);
+    }
+  }, { passive: true });
+  document.addEventListener('touchend', () => {
+    if (!pulling) return;
+    pulling = false;
+    if (armed) {
+      ptr.classList.remove('armed');
+      txt.textContent = 'Recherche…';
+      ptr.style.transform = `translateX(-50%) translateY(${THRESHOLD - 50}px)`;
+      haptic([12, 20, 12]);
+      setTimeout(() => { scan(); }, 100);
+      setTimeout(() => { ptr.classList.remove('visible'); ptr.style.transform = 'translateX(-50%) translateY(-60px)'; }, 600);
+    } else {
+      ptr.classList.remove('visible');
+      ptr.style.transform = 'translateX(-50%) translateY(-60px)';
+    }
+    armed = false;
+  });
+})();
+
 function updateTopBarMeta(){
   const meta = document.getElementById('mtopMeta');
   if (!meta) return;
