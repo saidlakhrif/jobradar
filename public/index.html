@@ -119,6 +119,71 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
 .chip-input::placeholder{color:rgba(255,255,255,.4);}
 .chip-input:focus{border-color:var(--gold);background:rgba(255,255,255,.14);box-shadow:0 0 0 3px rgba(201,168,76,.2);}
 
+/* V11b: Dashboard — entry button + bar charts inside the modal */
+.dash-link{display:inline-flex;align-items:center;gap:6px;background:none;border:none;font-family:'DM Sans',sans-serif;font-size:12.5px;font-weight:700;color:var(--navy);cursor:pointer;padding:6px 12px 6px 9px;border-radius:9px;background:linear-gradient(135deg,rgba(201,168,76,.18),rgba(232,201,122,.08));border:1px solid rgba(201,168,76,.32);margin-bottom:.85rem;transition:background .15s;}
+.dash-link:hover{background:linear-gradient(135deg,rgba(201,168,76,.28),rgba(232,201,122,.14));}
+.dash-link svg{width:14px;height:14px;}
+:root[data-theme="dark"] .dash-link{color:var(--gold2);}
+
+.dash-section{margin-bottom:1rem;}
+.dash-section-l{font-size:10.5px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.55rem;}
+
+.dash-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1rem;}
+.dash-kpi{background:var(--card);border:1.5px solid var(--bd);border-radius:11px;padding:.7rem .6rem;text-align:center;}
+.dash-kpi-v{font-size:22px;font-weight:800;color:var(--navy);line-height:1;letter-spacing:-.5px;}
+:root[data-theme="dark"] .dash-kpi-v{color:var(--ink);}
+.dash-kpi-l{font-size:9.5px;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-top:5px;font-weight:600;}
+
+.dash-funnel{display:flex;flex-direction:column;gap:7px;}
+.dash-funnel-row{display:flex;align-items:center;gap:11px;font-size:12.5px;color:var(--ink2);}
+.dash-funnel-name{width:90px;font-weight:600;color:var(--ink);flex-shrink:0;}
+.dash-funnel-bar{flex:1;height:22px;background:var(--cream2);border-radius:6px;overflow:hidden;position:relative;}
+.dash-funnel-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:6px;transition:width .4s;}
+.dash-funnel-val{font-size:12px;font-weight:700;color:var(--navy);width:60px;text-align:right;flex-shrink:0;font-variant-numeric:tabular-nums;}
+:root[data-theme="dark"] .dash-funnel-val{color:var(--ink);}
+
+.dash-bars{display:flex;flex-direction:column;gap:8px;}
+.dash-bar-row{display:flex;align-items:center;gap:10px;font-size:12.5px;}
+.dash-bar-name{width:100px;flex-shrink:0;font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.dash-bar-track{flex:1;height:8px;background:var(--cream2);border-radius:99px;overflow:hidden;}
+.dash-bar-fill{height:100%;background:var(--blue);border-radius:99px;transition:width .4s;}
+.dash-bar-fill.linkedin{background:#0A66C2;}
+.dash-bar-fill.rekrute{background:#16A34A;}
+.dash-bar-fill.emploima{background:#9333EA;}
+.dash-bar-val{width:42px;text-align:right;font-size:11.5px;font-weight:700;color:var(--ink2);flex-shrink:0;font-variant-numeric:tabular-nums;}
+
+.dash-histo{display:flex;align-items:flex-end;gap:3px;height:64px;padding:0 2px;}
+.dash-histo-bar{flex:1;background:var(--gold);border-radius:3px 3px 0 0;transition:height .4s;min-height:3px;position:relative;}
+.dash-histo-bar.low{background:var(--ink3);opacity:.5;}
+.dash-histo-bar.mid{background:#D97706;}
+.dash-histo-bar.high{background:#16A34A;}
+.dash-histo-x{display:flex;justify-content:space-between;font-size:9.5px;color:var(--ink3);margin-top:5px;font-family:monospace;}
+
+.dash-timeline{display:flex;align-items:flex-end;gap:2px;height:60px;}
+.dash-timeline-bar{flex:1;background:var(--gold);border-radius:2px 2px 0 0;min-height:2px;transition:height .4s;}
+.dash-timeline-bar:hover{background:var(--gold2);}
+
+.dash-list{display:flex;flex-direction:column;gap:4px;}
+.dash-list-row{display:flex;align-items:center;gap:10px;font-size:12.5px;padding:6px 8px;border-radius:7px;background:var(--cream2);}
+.dash-list-rank{font-size:11px;font-weight:800;color:var(--ink3);width:18px;text-align:center;font-variant-numeric:tabular-nums;}
+.dash-list-name{flex:1;color:var(--ink);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.dash-list-val{font-size:11.5px;font-weight:700;color:var(--gold);background:rgba(201,168,76,.18);padding:2px 8px;border-radius:99px;}
+
+/* V11: Saved searches strip — horizontal scroll inside the Recherche sheet */
+.saved-list{display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:2px 0 6px;scrollbar-width:none;margin:0 -1.05rem;padding-left:1.05rem;padding-right:1.05rem;}
+.saved-list::-webkit-scrollbar{display:none;}
+.saved-card{flex-shrink:0;min-width:170px;max-width:200px;padding:11px 12px 10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:11px;cursor:pointer;position:relative;transition:background .15s,border-color .15s;}
+.saved-card:hover{background:rgba(255,255,255,.1);border-color:rgba(201,168,76,.35);}
+.saved-card:active{transform:scale(.98);}
+.saved-card.add{background:linear-gradient(135deg,rgba(201,168,76,.18),rgba(232,201,122,.06));border:1.5px dashed rgba(201,168,76,.45);color:var(--gold);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:78px;}
+.saved-card.add svg{width:20px;height:20px;margin-bottom:4px;}
+.saved-card-name{font-size:13px;font-weight:700;color:#fff;line-height:1.2;margin-bottom:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.saved-card-meta{font-size:10.5px;color:rgba(255,255,255,.55);line-height:1.35;}
+.saved-card-acts{display:flex;gap:4px;margin-top:7px;}
+.saved-card-acts button{font-size:11px;background:rgba(255,255,255,.08);border:none;color:rgba(255,255,255,.7);padding:3px 7px;border-radius:5px;cursor:pointer;flex:1;font-family:'DM Sans',sans-serif;font-weight:600;}
+.saved-card-acts button:hover{background:rgba(255,255,255,.15);color:#fff;}
+.saved-card-acts .del{color:#FCA5A5;}
+
 /* Recherche sheet — section cards (mission control style) */
 .sh-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:.95rem 1.05rem;margin-bottom:.85rem;}
 .sh-card-hdr{display:flex;align-items:center;gap:11px;margin-bottom:.7rem;}
@@ -716,6 +781,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
  <div class="main-inner">
 
   <div id="installBanner"></div>
+  <div style="display:flex;justify-content:flex-end;">
+    <button class="dash-link" onclick="openDashboard()">
+      <svg fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Tableau de bord détaillé
+    </button>
+  </div>
   <div class="main-head">
     <div class="metrics">
       <div class="metric"><div class="metric-v" id="sT">0</div><div class="metric-l">Offres actives</div></div>
@@ -808,6 +879,23 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
 </main>
 </div>
 
+<!-- Dashboard Modal -->
+<div class="mov" id="dashboardModal" onclick="if(event.target===this)closeDashboard()">
+  <div class="modal" style="max-width:620px;">
+    <div class="modal-hdr">
+      <div class="modal-hdr-l">
+        <div class="modal-hdr-ico">📊</div>
+        <div>
+          <h3>Tableau de bord</h3>
+          <div class="modal-hdr-sub">Vue d'ensemble · Stats · Insights</div>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeDashboard()" aria-label="Fermer">×</button>
+    </div>
+    <div class="modal-body" id="dashboardBody"></div>
+  </div>
+</div>
+
 <!-- Settings Modal -->
 <div class="mov" id="driveModal" onclick="if(event.target===this)closeDriveModal()">
   <div class="modal">
@@ -862,6 +950,19 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
       <div class="sheet-sub">Quoi chercher, où, et sur quels sites</div>
     </div>
     <button class="sheet-close" onclick="closeConfigSheet()" aria-label="Fermer">×</button>
+  </div>
+
+  <!-- Recherches enregistrées (presets) -->
+  <div class="sh-card" id="savedCard">
+    <div class="sh-card-hdr">
+      <div class="sh-card-ico" style="background:rgba(196,140,255,.22);">💾</div>
+      <div>
+        <div class="sh-card-title">Mes recherches</div>
+        <div class="sh-card-sub">Charge ou enregistre un preset</div>
+      </div>
+      <span class="sh-card-count" id="savedCount">0</span>
+    </div>
+    <div class="saved-list" id="savedList"></div>
   </div>
 
   <!-- Postes recherchés -->
@@ -1127,7 +1228,104 @@ function openConfigSheet(){
   document.getElementById('sheetOv').classList.add('open');
   document.getElementById('sheet').classList.add('open');
   renderChips();
+  renderSavedSearches();
 }
+
+// V11: Saved searches (presets)
+const SAVED_KEY = 'jobary.savedSearches';
+function loadSaved(){ try { return JSON.parse(localStorage.getItem(SAVED_KEY) || '[]'); } catch { return []; } }
+function persistSaved(list){ localStorage.setItem(SAVED_KEY, JSON.stringify(list)); }
+
+function renderSavedSearches(){
+  const list = loadSaved();
+  const wrap = document.getElementById('savedList');
+  const count = document.getElementById('savedCount');
+  if (!wrap) return;
+  if (count) count.textContent = list.length;
+  // Sort by lastUsedAt desc (most recent first), then createdAt
+  list.sort((a,b) => (b.lastUsedAt||b.createdAt) - (a.lastUsedAt||a.createdAt));
+  const esc = s => (s||'').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+  wrap.innerHTML = list.map(s => {
+    const srcCount = Object.values(s.src||{}).filter(Boolean).length;
+    return `
+      <div class="saved-card" onclick="loadSavedSearch('${s.id}')">
+        <div class="saved-card-name">${esc(s.name)}</div>
+        <div class="saved-card-meta">${s.kw.length} postes · ${s.ci.length} villes · ${srcCount} sources</div>
+        <div class="saved-card-acts">
+          <button onclick="event.stopPropagation();renameSaved('${s.id}')">✎ Renommer</button>
+          <button class="del" onclick="event.stopPropagation();deleteSaved('${s.id}')">🗑</button>
+        </div>
+      </div>`;
+  }).join('') + `
+    <div class="saved-card add" onclick="saveCurrentSearch()">
+      <svg fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><polyline points="19 21 19 13 5 13 5 21"/><polyline points="7 3 7 8 15 8"/><path d="M21 8v13H3V3h13z"/></svg>
+      <div style="font-size:11.5px;font-weight:700;line-height:1.2;">Enregistrer<br>l'actuelle</div>
+    </div>`;
+}
+
+function saveCurrentSearch(){
+  haptic(15);
+  if (CFG.kw.length === 0 && CFG.ci.length === 0) {
+    toast('Ajoute d\'abord au moins un mot-clé');
+    return;
+  }
+  const defaultName = `${CFG.kw[0] || 'Recherche'} · ${CFG.ci[0] || 'Maroc'}`;
+  const name = prompt('Nom de cette recherche :', defaultName);
+  if (!name) return;
+  const list = loadSaved();
+  list.push({
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2,6),
+    name: name.trim().slice(0,40),
+    kw: [...CFG.kw], ci: [...CFG.ci], src: { ...CFG.src },
+    createdAt: Date.now(), lastUsedAt: null
+  });
+  persistSaved(list);
+  renderSavedSearches();
+  haptic([15,25,15]);
+  toast(`✓ "${name}" enregistrée`);
+}
+
+function loadSavedSearch(id){
+  haptic(15);
+  const list = loadSaved();
+  const s = list.find(x => x.id === id);
+  if (!s) return;
+  CFG.kw = [...s.kw];
+  CFG.ci = [...s.ci];
+  CFG.src = { ...CFG.src, ...s.src };
+  s.lastUsedAt = Date.now();
+  persistSaved(list);
+  saveCfgLs();
+  renderChips();
+  toast(`"${s.name}" chargée — tap Lancer le scan`);
+}
+
+function renameSaved(id){
+  const list = loadSaved();
+  const s = list.find(x => x.id === id);
+  if (!s) return;
+  const n = prompt('Nouveau nom :', s.name);
+  if (!n) return;
+  s.name = n.trim().slice(0,40);
+  persistSaved(list);
+  renderSavedSearches();
+}
+
+function deleteSaved(id){
+  const list = loadSaved();
+  const s = list.find(x => x.id === id);
+  if (!s) return;
+  if (!confirm(`Supprimer "${s.name}" ?`)) return;
+  haptic(20);
+  persistSaved(list.filter(x => x.id !== id));
+  renderSavedSearches();
+}
+
+window.saveCurrentSearch = saveCurrentSearch;
+window.loadSavedSearch = loadSavedSearch;
+window.renameSaved = renameSaved;
+window.deleteSaved = deleteSaved;
+window.renderSavedSearches = renderSavedSearches;
 function closeConfigSheet(){
   document.getElementById('sheetOv').classList.remove('open');
   document.getElementById('sheet').classList.remove('open');
@@ -1811,6 +2009,191 @@ async function uploadLM(id){
     if(res.webViewLink) window.open(res.webViewLink,'_blank');
   }catch(e){ console.error(e); log('✗ Drive LM : '+e.message,'warn'); toast(e.message); }
 }
+// V11b: Dashboard — open / close / render
+function openDashboard(){
+  haptic(12);
+  renderDashboard();
+  document.getElementById('dashboardModal').classList.add('open');
+}
+function closeDashboard(){
+  haptic(10);
+  document.getElementById('dashboardModal').classList.remove('open');
+}
+window.openDashboard = openDashboard;
+window.closeDashboard = closeDashboard;
+
+function computeDashboardStats(){
+  const total = JOBS.length;
+  const repe = JOBS.length;
+  const adapted = JOBS.filter(j => j.cvFile || j.status === 'adapted' || j.adaptedContent).length;
+  const lm = JOBS.filter(j => j.lmContent).length;
+  const post = JOBS.filter(j => j.status === 'applied').length;
+  const ign = JOBS.filter(j => j.status === 'dismissed').length;
+
+  // Sources breakdown
+  const sources = {};
+  JOBS.forEach(j => { const s = (j.source||'Inconnu').replace(/\s\(via.*\)/,''); sources[s] = (sources[s]||0) + 1; });
+
+  // Score buckets (0-9, 10-19, …, 90-100)
+  const buckets = Array(10).fill(0);
+  JOBS.forEach(j => { const b = Math.min(9, Math.floor((j.score||0) / 10)); buckets[b]++; });
+
+  // Top companies
+  const compCount = {};
+  JOBS.forEach(j => { if (j.company) compCount[j.company] = (compCount[j.company]||0) + 1; });
+  const topCompanies = Object.entries(compCount).sort((a,b) => b[1]-a[1]).slice(0, 5);
+
+  // Top matched keywords (across all matchKw arrays)
+  const kwCount = {};
+  JOBS.forEach(j => (j.matchKw||[]).forEach(k => { if (k) kwCount[k] = (kwCount[k]||0) + 1; }));
+  const topKw = Object.entries(kwCount).sort((a,b) => b[1]-a[1]).slice(0, 8);
+
+  // Average score
+  const avgScore = JOBS.length ? Math.round(JOBS.reduce((s,j) => s + (j.score||0), 0) / JOBS.length) : 0;
+
+  // Salary spread (parse "40-60k" -> midpoint 50k)
+  const salaries = JOBS.map(j => {
+    const m = (j.salary||'').match(/(\d+)\s*[-–]\s*(\d+)/);
+    if (m) return (parseInt(m[1]) + parseInt(m[2])) / 2;
+    const s = (j.salary||'').match(/(\d+)/);
+    return s ? parseInt(s[1]) : null;
+  }).filter(Boolean);
+  const avgSalary = salaries.length ? Math.round(salaries.reduce((s,n) => s+n, 0) / salaries.length) : null;
+
+  // Daily activity over last 30 days
+  const today = new Date(); today.setHours(0,0,0,0);
+  const timeline = Array(30).fill(0);
+  JOBS.forEach(j => {
+    const t = j.firstSeen || j.lastSeen || 0;
+    if (!t) return;
+    const dayDiff = Math.floor((today.getTime() - t) / (24*3600*1000));
+    if (dayDiff >= 0 && dayDiff < 30) timeline[29 - dayDiff]++;
+  });
+
+  // Last scan
+  const lastSeen = JOBS.length ? Math.max(...JOBS.map(j => j.lastSeen || j.firstSeen || 0)) : 0;
+
+  return { total, repe, adapted, lm, post, ign, sources, buckets, topCompanies, topKw, avgScore, avgSalary, timeline, lastSeen };
+}
+
+function renderDashboard(){
+  const s = computeDashboardStats();
+  const body = document.getElementById('dashboardBody');
+  if (!body) return;
+
+  const esc = str => (str||'').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+
+  if (s.total === 0) {
+    body.innerHTML = `<div class="empty" style="margin:1rem 0;"><div class="empty-ico">📊</div><div class="empty-title">Pas encore de données</div><div class="empty-sub">Lance un scan d'abord — le tableau de bord affichera tes stats dès que tu auras quelques offres.</div></div>`;
+    return;
+  }
+
+  // Source bars
+  const srcMax = Math.max(...Object.values(s.sources), 1);
+  const srcBars = Object.entries(s.sources).sort((a,b) => b[1]-a[1]).map(([name, n]) => {
+    const cls = name.toLowerCase().includes('linkedin') ? 'linkedin' : name.toLowerCase().includes('rekrute') ? 'rekrute' : name.toLowerCase().includes('emploi') ? 'emploima' : '';
+    const pct = (n / s.total * 100).toFixed(0);
+    return `<div class="dash-bar-row"><div class="dash-bar-name">${esc(name)}</div><div class="dash-bar-track"><div class="dash-bar-fill ${cls}" style="width:${(n/srcMax*100).toFixed(0)}%;"></div></div><div class="dash-bar-val">${n} · ${pct}%</div></div>`;
+  }).join('');
+
+  // Histogram bars
+  const bucketMax = Math.max(...s.buckets, 1);
+  const histoBars = s.buckets.map((n, i) => {
+    const h = (n / bucketMax * 100).toFixed(0);
+    const cls = i < 5 ? 'low' : i < 7 ? 'mid' : 'high';
+    return `<div class="dash-histo-bar ${cls}" style="height:${h}%;" title="${i*10}-${i*10+9}: ${n} offres"></div>`;
+  }).join('');
+
+  // Funnel: bars proportional to repe (the largest)
+  const funnelRows = [
+    ['Repérées', s.repe, '#6B7280'],
+    ['CV adapté', s.adapted, '#D97706'],
+    ['LM prête', s.lm, '#7C3AED'],
+    ['Postulé', s.post, '#16A34A'],
+    ['Ignoré', s.ign, '#DC2626'],
+  ].map(([name, n, color]) => {
+    const pct = s.repe ? (n / s.repe * 100).toFixed(0) : 0;
+    return `<div class="dash-funnel-row"><div class="dash-funnel-name">${name}</div><div class="dash-funnel-bar"><div class="dash-funnel-fill" style="width:${pct}%;background:${color};"></div></div><div class="dash-funnel-val">${n} · ${pct}%</div></div>`;
+  }).join('');
+
+  // Timeline
+  const tlMax = Math.max(...s.timeline, 1);
+  const tlBars = s.timeline.map((n, i) => {
+    const h = (n / tlMax * 100).toFixed(0);
+    const dayOffset = 29 - i;
+    return `<div class="dash-timeline-bar" style="height:${h}%;" title="J-${dayOffset}: ${n} offres"></div>`;
+  }).join('');
+
+  // Top companies
+  const compMax = s.topCompanies[0]?.[1] || 1;
+  const compRows = s.topCompanies.map(([name, n], i) =>
+    `<div class="dash-list-row"><div class="dash-list-rank">${i+1}</div><div class="dash-list-name">${esc(name)}</div><div class="dash-list-val">${n}</div></div>`
+  ).join('') || `<p style="font-size:12px;color:var(--ink3);margin:0;text-align:center;padding:1rem;">Pas assez de données</p>`;
+
+  // Top keywords
+  const kwRows = s.topKw.map(([name, n], i) =>
+    `<div class="dash-list-row"><div class="dash-list-rank">${i+1}</div><div class="dash-list-name">${esc(name)}</div><div class="dash-list-val">${n}</div></div>`
+  ).join('') || `<p style="font-size:12px;color:var(--ink3);margin:0;text-align:center;padding:1rem;">Pas encore de matches</p>`;
+
+  const lastSeenStr = s.lastSeen ? formatRelativeTime(s.lastSeen) : '—';
+
+  body.innerHTML = `
+    <!-- KPIs -->
+    <div class="dash-kpis">
+      <div class="dash-kpi"><div class="dash-kpi-v">${s.total}</div><div class="dash-kpi-l">Offres</div></div>
+      <div class="dash-kpi"><div class="dash-kpi-v">${s.avgScore}%</div><div class="dash-kpi-l">Score moyen</div></div>
+      <div class="dash-kpi"><div class="dash-kpi-v">${s.adapted}</div><div class="dash-kpi-l">CV prêts</div></div>
+      <div class="dash-kpi"><div class="dash-kpi-v">${s.post}</div><div class="dash-kpi-l">Postulé</div></div>
+    </div>
+
+    <!-- Funnel -->
+    <div class="scard">
+      <div class="dash-section-l">Entonnoir candidatures</div>
+      <div class="dash-funnel">${funnelRows}</div>
+    </div>
+
+    <!-- Sources -->
+    <div class="scard">
+      <div class="dash-section-l">Répartition par source</div>
+      <div class="dash-bars">${srcBars}</div>
+    </div>
+
+    <!-- Score histogram -->
+    <div class="scard">
+      <div class="dash-section-l">Distribution des scores</div>
+      <div class="dash-histo">${histoBars}</div>
+      <div class="dash-histo-x">${[0,10,20,30,40,50,60,70,80,90].map(n => `<span>${n}</span>`).join('')}<span>100</span></div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="scard">
+      <div class="dash-section-l">Activité 30 derniers jours</div>
+      <div class="dash-timeline">${tlBars}</div>
+      <div style="font-size:10.5px;color:var(--ink3);margin-top:6px;display:flex;justify-content:space-between;"><span>il y a 30j</span><span>aujourd'hui</span></div>
+    </div>
+
+    <!-- Top companies -->
+    <div class="scard">
+      <div class="dash-section-l">Entreprises les plus présentes</div>
+      <div class="dash-list">${compRows}</div>
+    </div>
+
+    <!-- Top matched keywords -->
+    <div class="scard">
+      <div class="dash-section-l">Mots-clés les plus matchés</div>
+      <div class="dash-list">${kwRows}</div>
+    </div>
+
+    <!-- Footer info -->
+    <div class="scard">
+      <div class="dash-section-l">Infos</div>
+      <div class="scard-row"><span class="scard-row-l">Dernière mise à jour</span><span class="scard-row-v" style="font-family:inherit;">${esc(lastSeenStr)}</span></div>
+      ${s.avgSalary ? `<div class="scard-row"><span class="scard-row-l">Salaire moyen estimé</span><span class="scard-row-v" style="font-family:inherit;color:var(--ok);">≈ ${s.avgSalary}k MAD/mois</span></div>` : ''}
+      <div class="scard-row"><span class="scard-row-l">Taux de conversion</span><span class="scard-row-v" style="font-family:inherit;">${s.total ? Math.round(s.post / s.total * 100) : 0}% postulé / vu</span></div>
+    </div>
+  `;
+}
+
 async function openDriveSettings(){
   haptic(12);
   await renderSettings();
