@@ -454,6 +454,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
 .dp-sec-lbl::after{content:'';flex:1;height:1px;background:var(--bd);}
 .dp-desc{font-size:13.5px;color:var(--ink2);line-height:1.75;}
 
+/* V14: Inline CV adapted + LM sections inside the detail panel */
+.dp-inline-box{background:var(--cream);border:1px solid var(--bd);border-radius:11px;padding:.95rem 1.05rem;font-size:12.5px;line-height:1.65;color:var(--ink2);max-height:280px;overflow-y:auto;-webkit-overflow-scrolling:touch;white-space:pre-wrap;font-family:'DM Sans',sans-serif;}
+:root[data-theme="dark"] .dp-inline-box{background:var(--cream2);color:var(--ink);border-color:var(--bd);}
+.dp-inline-acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:.7rem;}
+.dp-inline-acts .btn{flex:1 1 auto;min-width:90px;justify-content:center;font-size:12.5px;padding:.55rem .8rem;}
+.dp-inline-acts .btn-out{flex:0 0 auto;min-width:50px;}
+
 /* V8: Voir la description complète — fetch button + expandable section */
 .dp-fetch{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;background:#fff;border:1.5px dashed var(--bd2);border-radius:11px;padding:.85rem 1.05rem;margin-top:.85rem;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--navy);cursor:pointer;transition:border-color .15s,background .15s,transform .1s;}
 .dp-fetch:hover{border-color:var(--gold);background:var(--cream2);border-style:solid;}
@@ -1557,10 +1564,39 @@ function sel(id) {
     Voir l'offre
   </a>`;
 
-  // Secondary actions stay in the body
+  // Inline sections: adapted CV + LM, with streaming support
+  const escA = s => (s||'').replace(/[&<>]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[c]));
+  const adaptedSection = (j._streamingAdapt || j.adaptedContent) ? `
+    <div class="dp-sec">
+      <div class="dp-sec-lbl">📝 CV adapté ${j._streamingAdapt?'<span style="color:var(--gold);font-weight:700;text-transform:none;letter-spacing:0;margin-left:6px;">en cours…</span>':''}</div>
+      <div class="dp-inline-box" id="streamAdapt">${j._streamingAdapt ? '<span class="cursor"></span>' : escA(j.adaptedContent).replace(/\n/g,'<br>')}</div>
+      ${!j._streamingAdapt ? `
+        <div class="dp-inline-acts">
+          <button class="btn btn-gold" onclick="downloadCV(${j.id},'design')">⬇ CV Design</button>
+          <button class="btn btn-gold" onclick="downloadCV(${j.id},'ats')">⬇ CV ATS</button>
+          <button class="btn btn-out" onclick="uploadCV(${j.id},'design')" title="Sauver Drive">☁</button>
+          <button class="btn btn-out" onclick="adaptCV(${j.id})" title="Re-générer">🔄</button>
+        </div>` : ''}
+    </div>` : '';
+
+  const lmSection = (j._streamingLM || j.lmContent) ? `
+    <div class="dp-sec">
+      <div class="dp-sec-lbl">✍ Lettre de motivation ${j._streamingLM?'<span style="color:var(--gold);font-weight:700;text-transform:none;letter-spacing:0;margin-left:6px;">en cours…</span>':''}</div>
+      <div class="dp-inline-box" id="streamLM">${j._streamingLM ? '<span class="cursor"></span>' : escA(j.lmContent).replace(/\n/g,'<br>')}</div>
+      ${!j._streamingLM ? `
+        <div class="dp-inline-acts">
+          <button class="btn btn-gold" onclick="downloadLM(${j.id})">⬇ Télécharger LM</button>
+          <button class="btn btn-out" onclick="uploadLM(${j.id})" title="Sauver Drive">☁</button>
+          <button class="btn btn-out" onclick="generateLM(${j.id})" title="Re-générer">🔄</button>
+        </div>` : ''}
+    </div>` : (j.adaptedContent ? `
+    <div class="dp-sec">
+      <div class="dp-sec-lbl">✍ Lettre de motivation</div>
+      <p style="font-size:12.5px;color:var(--ink3);margin-bottom:.7rem;line-height:1.5;">Texte naturel et factuel · pas de jargon corporate · focus sur l'adéquation poste / parcours.</p>
+      <button class="btn btn-navy" onclick="generateLM(${j.id})" style="width:100%;justify-content:center;">✍ Générer la lettre de motivation</button>
+    </div>` : '');
+
   const secondaryActs = `
-    ${j.adaptedContent?`<button class="btn btn-out" onclick="showAI(${j.id})">👁 Voir contenu adapté</button>`:''}
-    ${j.cvFile?`<button class="btn btn-out" onclick="showPDF(${j.id})">📄 Aperçu CV</button>`:''}
     ${j.status!=='dismissed'&&j.status!=='applied'?`<button class="btn btn-err" onclick="dismiss(${j.id})">✕ Ignorer cette offre</button>`:''}
   `;
 
@@ -1600,6 +1636,8 @@ function sel(id) {
             ${(j.missingKw||[]).map(k=>`<span class="kw kw-miss">⚠ ${k}</span>`).join('')}
           </div>
         </div>
+        ${adaptedSection}
+        ${lmSection}
         <div class="acts" style="margin-top:1.2rem;">
           ${primaryAdapt}${primaryApply}${primaryApplied}
           ${secondaryActs}
@@ -1788,58 +1826,51 @@ async function loadFullDescription(id){
 window.loadFullDescription = loadFullDescription;
 
 async function adaptCV(id) {
-  const j=JOBS.find(x=>x.id===id);
-  const panel=document.getElementById('aiPanel');
-  const body=document.getElementById('aiBody');
-  panel.classList.add('open');
-  body.innerHTML='<span class="cursor"></span>';
-  document.getElementById('aiActs').innerHTML='';
-  panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+  haptic(20);
+  const j = JOBS.find(x => x.id === id); if (!j) return;
+  // Switch the dp into "streaming" mode and re-render — the inline section appears
+  j._streamingAdapt = true;
+  sel(id);
   log('Adaptation CV pour "'+j.title+'" @ '+j.company+'...');
+  setTimeout(() => document.getElementById('streamAdapt')?.scrollIntoView({behavior:'smooth',block:'nearest'}), 100);
 
   try {
     const res = await fetch(`${BASE}/api/adapt`, {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({job:j})
+      body: JSON.stringify({job:j})
     });
-    const reader=res.body.getReader(), dec=new TextDecoder();
-    let text='';
-    body.innerHTML='<span class="cursor"></span>';
-    while(true){
-      const {done,value}=await reader.read(); if(done) break;
-      const lines=dec.decode(value).split('\n').filter(l=>l.startsWith('data: '));
-      for(const line of lines){
-        const d=line.slice(6); if(d==='[DONE]') continue;
-        try{ const p=JSON.parse(d); if(p.text){ text+=p.text; body.innerHTML=text.replace(/\n/g,'<br>')+' <span class="cursor"></span>'; } }catch{}
+    const reader = res.body.getReader(), dec = new TextDecoder();
+    let text = '';
+    while (true) {
+      const { done, value } = await reader.read(); if (done) break;
+      const lines = dec.decode(value).split('\n').filter(l => l.startsWith('data: '));
+      for (const line of lines) {
+        const d = line.slice(6); if (d === '[DONE]') continue;
+        try {
+          const p = JSON.parse(d);
+          if (p.text) {
+            text += p.text;
+            const target = document.getElementById('streamAdapt');
+            if (target) target.innerHTML = text.replace(/[&<>]/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;' }[c])).replace(/\n/g, '<br>') + ' <span class="cursor"></span>';
+          }
+        } catch {}
       }
     }
-    body.innerHTML=text.replace(/\n/g,'<br>');
-    j.adaptedContent=text;
-    j.status='adapted';
+    j.adaptedContent = text;
+    j.status = 'adapted';
     j.adaptedAt = Date.now();
-    // Extraire le nom du fichier depuis la réponse
-    const fnMatch=text.match(/CV_SAID_LAKHRIF_[A-Z0-9_]+/);
-    j.cvFile=fnMatch?fnMatch[0]:`CV_SAID_LAKHRIF_${clean(j.title)}_${clean(j.company)}`;
+    j._streamingAdapt = false;
+    const fnMatch = text.match(/CV_SAID_LAKHRIF_[A-Z0-9_]+/);
+    j.cvFile = fnMatch ? fnMatch[0] : `CV_SAID_LAKHRIF_${clean(j.title)}_${clean(j.company)}`;
     saveJobs(); stats(); render(); sel(id);
+    haptic([20, 30, 20]);
     log('✓ CV adapté pour '+j.company,'ok');
-    toast('CV adapté pour '+j.title+' !');
-    document.getElementById('aiActs').innerHTML=`
-      <div class="act-grp">
-        <span class="act-grp-lbl">CV</span>
-        <button class="btn btn-gold" onclick="downloadCV(${j.id},'design')">⬇ Design</button>
-        <button class="btn btn-gold" onclick="downloadCV(${j.id},'ats')" title="Version optimisée ATS (Workday, Taleo…)">⬇ ATS</button>
-        <button class="btn btn-out" onclick="uploadCV(${j.id},'design')" title="Sauver le CV Design sur Drive">☁</button>
-        <button class="btn btn-out" onclick="uploadCV(${j.id},'ats')" title="Sauver le CV ATS sur Drive">☁</button>
-      </div>
-      <div class="act-grp">
-        <span class="act-grp-lbl">LM</span>
-        <button class="btn btn-navy" onclick="generateLM(${j.id})">✍ Générer</button>
-        ${j.lmContent?`<button class="btn btn-out" onclick="downloadLM(${j.id})">⬇</button><button class="btn btn-out" onclick="uploadLM(${j.id})" title="Sauver la LM sur Drive">☁</button>`:''}
-      </div>
-      <button class="btn btn-out" onclick="closeAI()">Fermer</button>`;
-  } catch(err){
-    body.innerHTML='<span style="color:var(--err)">Erreur : '+err.message+'</span>';
+    toast('✓ CV adapté · scroll pour télécharger / générer la LM');
+  } catch (err) {
+    j._streamingAdapt = false;
+    sel(id);
     log('✗ '+err.message,'warn');
+    toast('Erreur : '+err.message);
   }
 }
 
@@ -2008,44 +2039,47 @@ async function uploadCV(id, variant){
 }
 // ── Cover letter (LM) ─────────────────────────────────────────────────────────
 async function generateLM(id){
-  const j=JOBS.find(x=>x.id===id); if(!j) return toast('Offre introuvable');
-  const panel=document.getElementById('aiPanel');
-  const body=document.getElementById('aiBody');
-  panel.classList.add('open');
-  body.innerHTML='<div style="color:var(--ink3);font-size:11px;margin-bottom:8px;">✍ Génération de la lettre de motivation…</div><span class="cursor"></span>';
-  document.getElementById('aiActs').innerHTML='';
-  panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+  haptic(20);
+  const j = JOBS.find(x => x.id === id); if (!j) return toast('Offre introuvable');
+  j._streamingLM = true;
+  sel(id);
   log('Lettre de motivation pour "'+j.title+'" @ '+j.company);
+  setTimeout(() => document.getElementById('streamLM')?.scrollIntoView({behavior:'smooth',block:'nearest'}), 100);
 
   try {
     const res = await fetch(`${BASE}/api/cover-letter`, {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({ job:j })
+      body: JSON.stringify({ job:j })
     });
-    const reader=res.body.getReader(), dec=new TextDecoder();
-    let text='';
-    body.innerHTML='<div style="color:var(--ink3);font-size:11px;margin-bottom:8px;">✍ Lettre de motivation</div><span class="cursor"></span>';
-    while(true){
-      const {done,value}=await reader.read(); if(done) break;
-      const lines=dec.decode(value).split('\n').filter(l=>l.startsWith('data: '));
-      for(const line of lines){
-        const d=line.slice(6); if(d==='[DONE]') continue;
-        try{ const p=JSON.parse(d); if(p.text){ text+=p.text; body.innerHTML='<div style="color:var(--ink3);font-size:11px;margin-bottom:8px;">✍ Lettre de motivation</div>'+text.replace(/\n/g,'<br>')+' <span class="cursor"></span>'; } }catch{}
+    const reader = res.body.getReader(), dec = new TextDecoder();
+    let text = '';
+    while (true) {
+      const { done, value } = await reader.read(); if (done) break;
+      const lines = dec.decode(value).split('\n').filter(l => l.startsWith('data: '));
+      for (const line of lines) {
+        const d = line.slice(6); if (d === '[DONE]') continue;
+        try {
+          const p = JSON.parse(d);
+          if (p.text) {
+            text += p.text;
+            const target = document.getElementById('streamLM');
+            if (target) target.innerHTML = text.replace(/[&<>]/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;' }[c])).replace(/\n/g, '<br>') + ' <span class="cursor"></span>';
+          }
+        } catch {}
       }
     }
-    body.innerHTML='<div style="color:var(--ink3);font-size:11px;margin-bottom:8px;">✍ Lettre de motivation</div>'+text.replace(/\n/g,'<br>');
-    j.lmContent=text; j.lmGeneratedAt=Date.now();
-    _save();
+    j.lmContent = text;
+    j.lmGeneratedAt = Date.now();
+    j._streamingLM = false;
+    _save(); sel(id);
+    haptic([20, 30, 20]);
     log('✓ LM générée pour '+j.company,'ok');
-    toast('Lettre prête !');
-    document.getElementById('aiActs').innerHTML=`
-      <button class="btn btn-gold" onclick="downloadLM(${j.id})">⬇ Télécharger la LM (PDF)</button>
-      <button class="btn btn-navy" onclick="uploadLM(${j.id})">☁ Drive</button>
-      <button class="btn btn-out" onclick="showAI(${j.id})">↩ Revenir au CV</button>
-      <button class="btn btn-out" onclick="closeAI()">Fermer</button>`;
-  } catch(err){
-    body.innerHTML='<span style="color:var(--err)">Erreur : '+err.message+'</span>';
+    toast('✓ Lettre prête');
+  } catch (err) {
+    j._streamingLM = false;
+    sel(id);
     log('✗ LM : '+err.message,'warn');
+    toast('Erreur : '+err.message);
   }
 }
 async function downloadLM(id){

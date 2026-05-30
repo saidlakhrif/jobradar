@@ -12,7 +12,7 @@ export default async function handler(req, res) {
   }
   if (!job) return res.status(400).json({ error: 'Job requis' });
 
-  const prompt = `Tu es expert en lettres de motivation pour le marché de l'emploi marocain et francophone. Rédige une LM pour ce candidat ciblant cette offre.
+  const prompt = `Tu rédiges une lettre de motivation pour un manager senior marocain. Cible : ton sobre, factuel, naturel, comme l'écrirait un cadre expérimenté de 40 ans. PAS de jargon corporate. PAS de flatterie envers l'entreprise. PAS de phrases creuses du type "votre prestigieuse entreprise", "votre rayonnement", "votre culture d'excellence", "j'admire votre vision". Le lecteur est un DRH expérimenté qui voit passer 100 LM par semaine — il déteste les lèche-bottes.
 
 PROFIL DU CANDIDAT :
 ${PROFILE}
@@ -25,31 +25,34 @@ Description : ${job.summary}
 Mots-clés présents : ${(job.matchKw || []).join(', ')}
 Mots-clés manquants à intégrer : ${(job.missingKw || []).join(', ')}
 
-Génère une lettre de motivation structurée en 4 blocs nommés EXACTEMENT comme ci-dessous, dans cet ordre, avec ces titres en majuscules entre triples crochets. RIEN d'autre : pas de notes, pas de compteurs, pas de "[Vérification...]", pas d'annotations.
+Génère la LM en 4 blocs, dans cet ordre, sans rien autour. Aucune annotation, aucune note de relecture.
 
 [[OBJET]]
-Candidature au poste de [intitulé exact du poste cible, sans le nom de l'entreprise]
+Candidature au poste de [intitulé exact du poste, sans le nom de l'entreprise]
 
 [[ACCROCHE]]
-[2-3 phrases percutantes. Montre que tu connais ${job.company} (secteur, contexte au Maroc, défi métier que l'offre suggère). Pas de "Je vous écris pour postuler" — accroche directe et engagée.]
+[2 phrases maximum. Tu commences DIRECTEMENT par parler de la fonction et du contexte métier, pas par "votre entreprise". Exemple de ton : "Le poste de Customer Success Manager que vous ouvrez chez ${job.company} cible exactement le périmètre que je pilote depuis dix ans : portefeuille stratégique, gouvernance SLA et conduite d'équipes offshore." INTERDIT : "Je suis honoré", "Votre entreprise est leader", "Forte de sa réputation".]
 
 [[POURQUOI MOI]]
-[4-5 phrases denses. Cite 2 à 3 réalisations CHIFFRÉES issues du parcours (TESSI 4 CSMs, FedEx Hub Worldwide, CGI 250 agents, Crédit Mutuel 350 agents, YNNA 1M clients) qui correspondent EXACTEMENT aux exigences de l'offre. Utilise les mots-clés de l'offre. Évite "je pense que" / "il me semble" — sois affirmatif.]
+[3-4 phrases denses qui ALIGNENT le parcours sur l'offre. Tu cites des FAITS chiffrés du candidat (TESSI : équipe de 4 CSMs · FedEx : pilotage CX Maroc B2B/B2C · CGI : 5 comptes, 250 agents · Crédit Mutuel : démarrage plateforme 11 activités 350 agents · YNNA : 1 M clients programme fidélité). Pour chaque fait, montres pourquoi c'est pertinent pour l'offre. Utilise au moins 3 mots-clés exacts de l'offre. INTERDIT : "Je pense", "Il me semble", "Je suis convaincu que" — tu affirmes directement.]
 
 [[MOTIVATION]]
-[2-3 phrases : pourquoi ${job.company} maintenant, ce que tu veux y construire / apporter, quel impact à 6-12 mois. Doit sonner spécifique à cette entreprise, pas générique.]
+[2 phrases max. Tu expliques pragmatiquement ce que tu veux faire dans ce poste — pas pourquoi l'entreprise est géniale. Exemple de ton : "Rejoindre ${job.company} sur ce poste correspond à mon prochain palier : transposer mon expérience BPO/ESN à un produit SaaS B2B, et accompagner la structuration d'une équipe CSM dans un contexte de croissance." INTERDIT : "J'admire", "Votre projet ambitieux", "Votre engagement".]
 
 [[FORMULE]]
-[1 phrase courte de clôture pro : "Je serai ravi d'échanger plus en détail lors d'un entretien. [Formule]." Pas plus.]
+[1 phrase de clôture sobre. Exemple : "Je reste disponible pour échanger sur la façon dont mon parcours peut contribuer à vos enjeux. Cordialement," Pas de "Espérant que ma candidature retiendra toute votre attention".]
 
 CONTRAINTES GLOBALES :
-- Français impeccable, accents complets (é, è, à, ç, ù, ô…)
-- Ton : confiant, factuel, sans complaisance, sans flagornerie
-- Aucun bullet point, aucune liste — uniquement de la prose fluide
-- Total cible : 280-340 mots (ce qui fait ~1 page A4 standard)
-- INTERDIT : nom du candidat, adresse, téléphone, email (ils sont déjà dans l'en-tête généré)
-- INTERDIT : "[Vérification]", "= NN ✓", "(NN mots)" ou toute annotation
-- INTERDIT : nom de l'entreprise dans l'OBJET (l'objet doit être générique : juste le poste)`;
+- Français professionnel marocain, accents complets (é, è, à, ç, ù, ô…)
+- TON : direct, sobre, comme parle un manager expérimenté, pas un junior qui supplie
+- Phrases courtes (15-25 mots max). Pas de phrases-fleuves.
+- Prose fluide, aucun bullet point, aucune liste
+- Total : 220-280 mots (LM courte = LM lue)
+- INTERDIT ABSOLU : "votre entreprise", "votre groupe", "votre établissement" plus de 2 fois. "Vous" sans superlatif.
+- INTERDIT : mots flatteurs (prestigieux, rayonnement, excellence, leader, dynamique, ambitieux, innovant) sauf si chiffrés/contextualisés.
+- INTERDIT : nom du candidat, contact (déjà dans l'en-tête)
+- INTERDIT : "[Vérification]", compteurs, métadonnées entre crochets
+- INTERDIT : nom de l'entreprise dans l'OBJET`;
 
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache, no-transform');
