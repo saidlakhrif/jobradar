@@ -19,6 +19,7 @@
   --cream:#F7F4EE;--cream2:#EDE8DC;
   --ink:#0D1117;--ink2:#3A3F4B;--ink3:#6B7280;
   --white:#fff;
+  --card:#fff;
   --ok:#16A34A;--ok-bg:#DCFCE7;
   --warn:#D97706;--warn-bg:#FEF3C7;
   --err:#DC2626;--err-bg:#FEE2E2;
@@ -28,6 +29,63 @@
   --sh2:0 8px 32px rgba(13,27,62,.14);
   --r:10px;--rl:16px;
 }
+
+/* V9: Dark mode — flip background and surface colors, keep gold/score accents */
+:root[data-theme="dark"]{
+  --cream:#0A1226;        /* page bg becomes deep navy */
+  --cream2:#16213D;       /* secondary bg/cards interior */
+  --card:#142039;         /* card surface */
+  --ink:#F3F4F6;          /* primary text */
+  --ink2:#CBD5E1;         /* secondary text */
+  --ink3:#94A3B8;         /* tertiary/muted text */
+  --bd:rgba(255,255,255,.08);
+  --bd2:rgba(255,255,255,.15);
+  --sh:0 2px 12px rgba(0,0,0,.35);
+  --sh2:0 8px 32px rgba(0,0,0,.45);
+  --ok-bg:rgba(74,222,128,.15);
+  --warn-bg:rgba(252,211,77,.15);
+  --err-bg:rgba(248,113,113,.15);
+  --info-bg:rgba(96,165,250,.15);
+}
+:root[data-theme="dark"] body{background:var(--cream);color:var(--ink);}
+:root[data-theme="dark"] .metric,
+:root[data-theme="dark"] .jcard,
+:root[data-theme="dark"] .dp,
+:root[data-theme="dark"] .scard,
+:root[data-theme="dark"] .empty,
+:root[data-theme="dark"] .search-bar,
+:root[data-theme="dark"] .sort-sel,
+:root[data-theme="dark"] .mview-btn{background:var(--card);color:var(--ink);}
+:root[data-theme="dark"] .mtitle,
+:root[data-theme="dark"] .jc-title,
+:root[data-theme="dark"] .dp-title,
+:root[data-theme="dark"] .metric-v,
+:root[data-theme="dark"] .scard-title,
+:root[data-theme="dark"] .empty-title,
+:root[data-theme="dark"] .scard-row-v{color:var(--ink);}
+:root[data-theme="dark"] .ftab{color:var(--ink3);}
+:root[data-theme="dark"] .ftab.active{color:var(--ink);}
+:root[data-theme="dark"] .ftab-c{background:var(--cream2);color:var(--ink2);}
+:root[data-theme="dark"] .salary{background:rgba(74,222,128,.1);color:#86EFAC;border-color:rgba(74,222,128,.25);}
+:root[data-theme="dark"] .tag.ttype{background:var(--cream2);color:var(--ink2);border-color:var(--bd);}
+:root[data-theme="dark"] .tsrc-linkedin{background:rgba(56,182,255,.12);color:#7DD3FC;border-color:rgba(56,182,255,.25);}
+:root[data-theme="dark"] .tsrc-rekrute{background:rgba(74,222,128,.12);color:#86EFAC;border-color:rgba(74,222,128,.25);}
+:root[data-theme="dark"] .tsrc-emploima{background:rgba(196,140,255,.14);color:#D8B4FE;border-color:rgba(196,140,255,.3);}
+:root[data-theme="dark"] .dp-fetch{background:var(--card);color:var(--ink);}
+:root[data-theme="dark"] .dp-full{background:var(--cream2);}
+:root[data-theme="dark"] .dp-full-toggle{background:rgba(255,255,255,.04);color:var(--ink);}
+:root[data-theme="dark"] .dp-full-body p{color:var(--ink2);}
+:root[data-theme="dark"] .dp-back,
+:root[data-theme="dark"] .dp-foot{background:var(--card);border-color:var(--bd);}
+:root[data-theme="dark"] .dp-back{color:var(--ink2);}
+:root[data-theme="dark"] .btn-out{color:var(--ink2);border-color:var(--bd2);}
+:root[data-theme="dark"] .btn-out:hover{background:var(--cream2);}
+:root[data-theme="dark"] .modal{background:var(--cream);}
+:root[data-theme="dark"] .scard input[type="text"]{background:var(--cream2);color:var(--ink);border-color:var(--bd2);}
+:root[data-theme="dark"] .scard-stat{background:var(--cream2);}
+:root[data-theme="dark"] .empty{border-color:var(--bd2);}
+:root[data-theme="dark"] .undo .undo-msg{color:#fff;}
+:root[data-theme="dark"] code{background:var(--cream2);color:var(--ink);}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;font-size:15px;line-height:1.5;}
 
@@ -265,6 +323,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
 .scard-cta .btn{flex:1;justify-content:center;font-size:12.5px;min-width:120px;}
 
 .scard-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:.4rem;}
+
+/* V9: Theme 3-segment switcher */
+.theme-seg{display:grid;grid-template-columns:repeat(3,1fr);background:var(--cream2);border:1px solid var(--bd);border-radius:11px;padding:4px;gap:3px;}
+.theme-opt{background:transparent;border:none;padding:.6rem .4rem;font-family:'DM Sans',sans-serif;font-size:12.5px;font-weight:700;color:var(--ink3);cursor:pointer;border-radius:8px;transition:background .15s,color .15s;}
+.theme-opt:hover{color:var(--ink2);}
+.theme-opt.active{background:var(--card);color:var(--navy);box-shadow:0 1px 4px rgba(0,0,0,.08);}
 .scard-stat{text-align:center;padding:.6rem .4rem;background:var(--cream2);border-radius:9px;}
 .scard-stat-v{font-size:18px;font-weight:800;color:var(--navy);line-height:1;}
 .scard-stat-l{font-size:9.5px;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;font-weight:600;margin-top:3px;}
@@ -1739,6 +1803,7 @@ async function openDriveSettings(){
   document.getElementById('driveModal').classList.add('open');
   updatePushStatusUI().catch(()=>{});
   renderInstallCard().catch(()=>{});
+  applyTheme(); // refresh active segment on the theme switcher
 }
 function closeDriveModal(){ haptic(10); document.getElementById('driveModal').classList.remove('open'); }
 window.closeDriveModal = closeDriveModal;
@@ -1814,6 +1879,25 @@ async function renderSettings(){
       <div class="scard-cta">
         <button class="btn btn-navy" onclick="testCronScan()">\u25b6 Tester maintenant</button>
       </div>
+    </div>
+
+    <!-- \u2500\u2500 Apparence \u2500\u2500 -->
+    <div class="scard">
+      <div class="scard-hdr">
+        <div class="scard-hdr-l">
+          <div class="scard-ico" style="background:linear-gradient(135deg,#FEF3C7,#1B3A6B);">\ud83c\udf13</div>
+          <div>
+            <div class="scard-title">Apparence</div>
+            <div class="scard-sub">Th\u00e8me de l'interface</div>
+          </div>
+        </div>
+      </div>
+      <div class="theme-seg" id="themeSeg" role="radiogroup" aria-label="Choix du th\u00e8me">
+        <button class="theme-opt" data-theme-opt="auto"  onclick="setTheme('auto')">\ud83c\udf17 Auto</button>
+        <button class="theme-opt" data-theme-opt="light" onclick="setTheme('light')">\u2600 Clair</button>
+        <button class="theme-opt" data-theme-opt="dark"  onclick="setTheme('dark')">\ud83c\udf19 Sombre</button>
+      </div>
+      <p style="font-size:11px;color:var(--ink3);margin-top:.6rem;margin-bottom:0;line-height:1.5;">Auto suit le mode syst\u00e8me (R\u00e9glages \u2192 Apparence sur ton appareil).</p>
     </div>
 
     <!-- \u2500\u2500 Installer l'app \u2500\u2500 -->
@@ -1961,6 +2045,32 @@ function importData(ev){
   reader.readAsText(file);
 }
 window.importData = importData;
+
+// ── V9: Theme switcher (auto / light / dark) ────────────────────────────────
+const THEME_KEY = 'jobary.theme';
+function getThemePref(){ return localStorage.getItem(THEME_KEY) || 'auto'; }
+function applyTheme(){
+  const pref = getThemePref();
+  const sys  = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const dark = pref === 'dark' || (pref === 'auto' && sys);
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  // Update theme-color meta so browser chrome matches
+  const tc = document.querySelector('meta[name="theme-color"]');
+  if (tc) tc.setAttribute('content', dark ? '#0A1226' : '#0D1B3E');
+  // Update active segment
+  document.querySelectorAll('.theme-opt').forEach(b => b.classList.toggle('active', b.dataset.themeOpt === pref));
+}
+function setTheme(pref){
+  haptic(10);
+  localStorage.setItem(THEME_KEY, pref);
+  applyTheme();
+}
+window.setTheme = setTheme;
+// Apply at startup + listen to system change
+applyTheme();
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+  if (getThemePref() === 'auto') applyTheme();
+});
 
 // ── V8b: PWA install ────────────────────────────────────────────────────────
 let _installPrompt = null;
