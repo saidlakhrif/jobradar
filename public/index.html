@@ -1818,7 +1818,35 @@ async function openDriveSettings(){
   updatePushStatusUI().catch(()=>{});
   renderInstallCard().catch(()=>{});
   applyTheme(); // refresh active segment on the theme switcher
+  fillSwVersion();
 }
+
+async function fillSwVersion(){
+  const el = document.getElementById('swVersion');
+  if (!el) return;
+  try {
+    const reg = await navigator.serviceWorker.getRegistration();
+    const cacheNames = await caches.keys();
+    const jobary = cacheNames.find(n => n.startsWith('jobary-')) || cacheNames.find(n => n.startsWith('jobradar-')) || '—';
+    el.textContent = jobary.replace(/^jobary-/, '').replace(/^jobradar-/, '');
+  } catch { el.textContent = '—'; }
+}
+async function checkUpdate(){
+  haptic(12);
+  toast('Vérification…');
+  try {
+    const reg = await navigator.serviceWorker.getRegistration();
+    if (!reg) { toast('Service Worker non actif'); return; }
+    await reg.update();
+    if (reg.waiting) {
+      reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+      toast('Mise à jour en cours…');
+    } else {
+      toast('✓ Tu es sur la dernière version');
+    }
+  } catch (e) { toast('Erreur : ' + e.message); }
+}
+window.checkUpdate = checkUpdate;
 function closeDriveModal(){ haptic(10); document.getElementById('driveModal').classList.remove('open'); }
 window.closeDriveModal = closeDriveModal;
 
@@ -1987,6 +2015,10 @@ async function renderSettings(){
       <div class="scard-row"><span class="scard-row-l">Claude API</span><span class="scard-row-v" style="font-family:inherit;color:var(--ok);">\u2713 configur\u00e9e</span></div>
       <div class="scard-row"><span class="scard-row-l">Sources</span><span class="scard-row-v" style="font-family:inherit;">LinkedIn \u00b7 Rekrute \u00b7 Emploi.ma</span></div>
       <div class="scard-row"><span class="scard-row-l">Prod</span><span class="scard-row-v" style="font-family:inherit;font-size:11px;">jobradar-sepia.vercel.app</span></div>
+      <div class="scard-row"><span class="scard-row-l">Cache (SW)</span><span class="scard-row-v" style="font-family:inherit;font-size:11px;" id="swVersion">\u2026</span></div>
+      <div class="scard-cta" style="margin-top:.7rem;">
+        <button class="btn btn-out" onclick="checkUpdate()">\ud83d\udd04 V\u00e9rifier les mises \u00e0 jour</button>
+      </div>
     </div>
   `;
 }
@@ -2406,7 +2438,54 @@ window.testCronScan = testCronScan;
 
 // ── SW ─────────────────────────────────────────────────────────────────────────
 if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+  window.addEventListener('load', async () => {
+    try {
+      const reg = await navigator.serviceWorker.register('sw.js');
+
+      // V10: detect when a NEW service worker is installed waiting to activate.
+      // Show a toast inviting the user to refresh — taps SKIP_WAITING then reloads.
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        if (!newWorker) return;
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            showUpdateToast(newWorker);
+          }
+        });
+      });
+
+      // If the active worker changes (after SKIP_WAITING), reload to pick up new code
+      let _reloading = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (_reloading) return;
+        _reloading = true;
+        window.location.reload();
+      });
+
+      // On focus/return to the app, ask the SW to check for updates
+      const checkUpdates = () => reg.update().catch(()=>{});
+      window.addEventListener('focus', checkUpdates);
+      document.addEventListener('visibilitychange', () => { if (!document.hidden) checkUpdates(); });
+      // Also check periodically (every 30 min while the app is open)
+      setInterval(checkUpdates, 30 * 60 * 1000);
+    } catch {}
+  });
+
+  function showUpdateToast(worker){
+    const w = document.getElementById('toasts');
+    if (!w) return;
+    const t = document.createElement('div');
+    t.className = 'toast undo';
+    t.innerHTML = `<div class="undo-msg">✨ Mise à jour disponible</div><button class="undo-btn">Recharger</button>`;
+    w.appendChild(t);
+    requestAnimationFrame(() => t.classList.add('show'));
+    t.querySelector('.undo-btn').onclick = () => {
+      worker.postMessage({ type: 'SKIP_WAITING' });
+      // controllerchange listener will reload
+    };
+    // Auto-dismiss after 30s — user can pull it back next time they focus
+    setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 250); }, 30000);
+  }
 }
 
 // ── Init ───────────────────────────────────────────────────────────────────────
