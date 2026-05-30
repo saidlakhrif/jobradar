@@ -1738,6 +1738,7 @@ async function openDriveSettings(){
   await renderSettings();
   document.getElementById('driveModal').classList.add('open');
   updatePushStatusUI().catch(()=>{});
+  renderInstallCard().catch(()=>{});
 }
 function closeDriveModal(){ haptic(10); document.getElementById('driveModal').classList.remove('open'); }
 window.closeDriveModal = closeDriveModal;
@@ -1813,6 +1814,21 @@ async function renderSettings(){
       <div class="scard-cta">
         <button class="btn btn-navy" onclick="testCronScan()">\u25b6 Tester maintenant</button>
       </div>
+    </div>
+
+    <!-- \u2500\u2500 Installer l'app \u2500\u2500 -->
+    <div class="scard" id="installCard" style="display:none;">
+      <div class="scard-hdr">
+        <div class="scard-hdr-l">
+          <div class="scard-ico" style="background:linear-gradient(135deg,rgba(201,168,76,.25),rgba(232,201,122,.15));">\ud83d\udcf1</div>
+          <div>
+            <div class="scard-title">Installer Jobary</div>
+            <div class="scard-sub" id="installSub">App native sur ton \u00e9cran d'accueil</div>
+          </div>
+        </div>
+        <span class="scard-status" id="installStatus">\u2026</span>
+      </div>
+      <div id="installBody"></div>
     </div>
 
     <!-- \u2500\u2500 Notifications push \u2500\u2500 -->
@@ -1945,6 +1961,116 @@ function importData(ev){
   reader.readAsText(file);
 }
 window.importData = importData;
+
+// ── V8b: PWA install ────────────────────────────────────────────────────────
+let _installPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  _installPrompt = e;
+  // Refresh settings card if it's open
+  renderInstallCard().catch(()=>{});
+});
+window.addEventListener('appinstalled', () => {
+  _installPrompt = null;
+  toast('🎉 Jobary installé');
+  haptic([20, 30, 20]);
+  renderInstallCard().catch(()=>{});
+});
+
+function isStandalone(){
+  return window.matchMedia('(display-mode: standalone)').matches
+      || window.navigator.standalone === true;
+}
+function isIOS(){
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+}
+function isMobile(){
+  return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+}
+
+async function renderInstallCard(){
+  const card = document.getElementById('installCard');
+  const body = document.getElementById('installBody');
+  const sub  = document.getElementById('installSub');
+  const status = document.getElementById('installStatus');
+  if (!card || !body) return;
+
+  card.style.display = '';
+
+  if (isStandalone()) {
+    status.textContent = '● Installée';
+    status.className = 'scard-status ok';
+    sub.textContent = 'Jobary tourne en mode app';
+    body.innerHTML = `<p style="font-size:11.5px;color:var(--ink3);line-height:1.5;margin:0;">Tu utilises déjà la version installée — elle peut fonctionner sans navigateur et accéder à l'écran d'accueil.</p>`;
+    return;
+  }
+
+  if (_installPrompt) {
+    // Android Chrome / Edge / Samsung Internet — direct install
+    status.textContent = '● Disponible';
+    status.className = 'scard-status ok';
+    sub.textContent = 'Installation en 1 tap';
+    body.innerHTML = `
+      <p style="font-size:11.5px;color:var(--ink3);line-height:1.5;margin-bottom:.7rem;">L'app s'installe sur ton écran d'accueil comme une vraie app native. Plus rapide, pas de barre d'adresse, accès offline aux offres déjà chargées.</p>
+      <button class="btn btn-gold" style="width:100%;justify-content:center;font-size:14px;font-weight:700;padding:.85rem;" onclick="installApp()">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24" style="margin-right:6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Installer Jobary
+      </button>`;
+    return;
+  }
+
+  if (isIOS() && isMobile()) {
+    // iOS Safari — manual instructions
+    status.textContent = '○ Manuelle';
+    status.className = 'scard-status off';
+    sub.textContent = 'Via le menu Safari';
+    body.innerHTML = `
+      <p style="font-size:11.5px;color:var(--ink3);line-height:1.5;margin-bottom:.7rem;">Sur iPhone / iPad, l'installation se fait depuis le menu partage de Safari :</p>
+      <ol style="font-size:12.5px;color:var(--ink2);line-height:1.7;padding-left:1.2rem;margin-bottom:.5rem;">
+        <li>Appuie sur le bouton <strong>Partager</strong> en bas de Safari (carré avec flèche ↑)</li>
+        <li>Fais défiler et choisis <strong>« Sur l'écran d'accueil »</strong></li>
+        <li>Confirme avec <strong>Ajouter</strong> en haut à droite</li>
+      </ol>
+      <p style="font-size:10.5px;color:var(--ink3);font-style:italic;margin:0;">L'icône Jobary apparaîtra sur ton écran d'accueil comme une vraie app.</p>`;
+    return;
+  }
+
+  if (!isMobile()) {
+    // Desktop — encourage to open on phone
+    status.textContent = '○ Mobile only';
+    status.className = 'scard-status off';
+    sub.textContent = 'Conçue pour le téléphone';
+    body.innerHTML = `
+      <p style="font-size:12px;color:var(--ink3);line-height:1.55;margin-bottom:.6rem;">Jobary est optimisée pour mobile. Pour l'installer comme une app sur ton écran d'accueil :</p>
+      <ol style="font-size:12px;color:var(--ink2);line-height:1.6;padding-left:1.2rem;margin-bottom:.5rem;">
+        <li>Ouvre <code style="background:var(--cream2);padding:1px 5px;border-radius:4px;font-size:11px;">jobradar-sepia.vercel.app</code> sur ton mobile (Chrome Android ou Safari iOS)</li>
+        <li>Reviens dans Réglages → cette carte</li>
+        <li>Suis l'instruction d'installation qui apparaît</li>
+      </ol>`;
+    return;
+  }
+
+  // Android browser without install support
+  status.textContent = '○ Non disponible';
+  status.className = 'scard-status off';
+  sub.textContent = 'Ouvre dans Chrome';
+  body.innerHTML = `<p style="font-size:12px;color:var(--ink3);line-height:1.55;margin:0;">Pour installer Jobary, ouvre cette page dans <strong>Chrome</strong>, <strong>Edge</strong> ou <strong>Samsung Internet</strong> — l'option apparaîtra automatiquement.</p>`;
+}
+
+async function installApp(){
+  if (!_installPrompt) { toast('Installation non disponible'); return; }
+  haptic(20);
+  _installPrompt.prompt();
+  const choice = await _installPrompt.userChoice;
+  if (choice.outcome === 'accepted') {
+    toast('Installation lancée…');
+  } else {
+    toast('Installation annulée');
+  }
+  _installPrompt = null;
+  renderInstallCard().catch(()=>{});
+}
+window.installApp = installApp;
 
 // ── V8: Push notifications ──────────────────────────────────────────────────
 function urlBase64ToUint8Array(base64String) {
