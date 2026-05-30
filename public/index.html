@@ -324,6 +324,19 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
 
 .scard-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:.4rem;}
 
+/* V9b: Install banner — visible at top of main content */
+.install-banner{display:flex;align-items:center;gap:11px;padding:11px 13px 11px 12px;background:linear-gradient(135deg,rgba(201,168,76,.13),rgba(232,201,122,.06));border:1px solid rgba(201,168,76,.35);border-radius:13px;margin-bottom:14px;position:relative;animation:bannerSlide .3s cubic-bezier(.4,0,.2,1);}
+@keyframes bannerSlide{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:none;}}
+.install-banner-ico{width:38px;height:38px;background:var(--gold);color:var(--navy);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 12px rgba(201,168,76,.35);}
+.install-banner-text{flex:1;min-width:0;}
+.install-banner-title{font-size:13.5px;font-weight:800;color:var(--ink);line-height:1.15;}
+.install-banner-sub{font-size:11.5px;color:var(--ink3);margin-top:2px;line-height:1.3;}
+.install-banner-cta{background:var(--gold);color:var(--navy);border:none;padding:8px 14px;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:12.5px;font-weight:800;cursor:pointer;flex-shrink:0;letter-spacing:-.1px;transition:transform .1s,box-shadow .15s;box-shadow:0 3px 10px rgba(201,168,76,.35);}
+.install-banner-cta:active{transform:scale(.96);}
+.install-banner-close{position:absolute;top:4px;right:4px;background:none;border:none;color:var(--ink3);font-size:18px;cursor:pointer;padding:4px 9px;line-height:1;border-radius:6px;}
+.install-banner-close:hover{background:var(--cream2);color:var(--ink2);}
+:root[data-theme="dark"] .install-banner{background:linear-gradient(135deg,rgba(201,168,76,.18),rgba(232,201,122,.08));border-color:rgba(201,168,76,.45);}
+
 /* V9: Theme 3-segment switcher */
 .theme-seg{display:grid;grid-template-columns:repeat(3,1fr);background:var(--cream2);border:1px solid var(--bd);border-radius:11px;padding:4px;gap:3px;}
 .theme-opt{background:transparent;border:none;padding:.6rem .4rem;font-family:'DM Sans',sans-serif;font-size:12.5px;font-weight:700;color:var(--ink3);cursor:pointer;border-radius:8px;transition:background .15s,color .15s;}
@@ -702,6 +715,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
 <main class="main">
  <div class="main-inner">
 
+  <div id="installBanner"></div>
   <div class="main-head">
     <div class="metrics">
       <div class="metric"><div class="metric-v" id="sT">0</div><div class="metric-l">Offres actives</div></div>
@@ -2077,14 +2091,15 @@ let _installPrompt = null;
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   _installPrompt = e;
-  // Refresh settings card if it's open
   renderInstallCard().catch(()=>{});
+  if (typeof renderInstallBanner === 'function') renderInstallBanner();
 });
 window.addEventListener('appinstalled', () => {
   _installPrompt = null;
   toast('🎉 Jobary installé');
   haptic([20, 30, 20]);
   renderInstallCard().catch(()=>{});
+  if (typeof renderInstallBanner === 'function') renderInstallBanner();
 });
 
 function isStandalone(){
@@ -2179,8 +2194,59 @@ async function installApp(){
   }
   _installPrompt = null;
   renderInstallCard().catch(()=>{});
+  renderInstallBanner();
 }
 window.installApp = installApp;
+
+// V9b: Install banner — visible affordance at top of main content
+const INSTALL_DISMISS_KEY = 'jobary.install.dismissed';
+function renderInstallBanner(){
+  const c = document.getElementById('installBanner');
+  if (!c) return;
+
+  // Already installed → no banner
+  if (isStandalone()) { c.innerHTML = ''; return; }
+
+  // Recently dismissed (< 5 days) → no banner
+  const dismissed = parseInt(localStorage.getItem(INSTALL_DISMISS_KEY) || '0', 10);
+  if (dismissed && (Date.now() - dismissed) < 5 * 24 * 3600 * 1000) {
+    c.innerHTML = ''; return;
+  }
+
+  const canInstall = !!_installPrompt;
+  const ios = isIOS() && isMobile();
+
+  // Nothing actionable on this browser → no banner
+  if (!canInstall && !ios) { c.innerHTML = ''; return; }
+
+  const title = canInstall ? 'Installer Jobary' : 'Ajouter à l\'écran d\'accueil';
+  const sub   = canInstall ? 'Plus rapide · Notifs push · Sans navigateur' : 'Disponible depuis le menu Partager de Safari';
+  const cta   = canInstall ? 'Installer' : 'Voir comment';
+  const action = canInstall ? 'installApp()' : 'openDriveSettings();setTimeout(()=>document.getElementById(\'installCard\')?.scrollIntoView({behavior:\'smooth\',block:\'center\'}),300)';
+
+  c.innerHTML = `
+    <div class="install-banner">
+      <div class="install-banner-ico">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      </div>
+      <div class="install-banner-text">
+        <div class="install-banner-title">${title}</div>
+        <div class="install-banner-sub">${sub}</div>
+      </div>
+      <button class="install-banner-cta" onclick="${action}">${cta}</button>
+      <button class="install-banner-close" onclick="dismissInstallBanner()" aria-label="Masquer pendant 5 jours">×</button>
+    </div>`;
+}
+function dismissInstallBanner(){
+  haptic(10);
+  localStorage.setItem(INSTALL_DISMISS_KEY, Date.now().toString());
+  renderInstallBanner();
+}
+window.dismissInstallBanner = dismissInstallBanner;
+
+// Render banner on page load + when install state changes
+window.addEventListener('load', () => setTimeout(renderInstallBanner, 100));
+renderInstallBanner();
 
 // ── V8: Push notifications ──────────────────────────────────────────────────
 function urlBase64ToUint8Array(base64String) {
