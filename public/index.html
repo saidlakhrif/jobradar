@@ -1737,6 +1737,7 @@ async function openDriveSettings(){
   haptic(12);
   await renderSettings();
   document.getElementById('driveModal').classList.add('open');
+  updatePushStatusUI().catch(()=>{});
 }
 function closeDriveModal(){ haptic(10); document.getElementById('driveModal').classList.remove('open'); }
 window.closeDriveModal = closeDriveModal;
@@ -1811,6 +1812,25 @@ async function renderSettings(){
       <div class="scard-row"><span class="scard-row-l">Destinataire</span><span class="scard-row-v" style="font-family:inherit;">said.lakhrif@gmail.com</span></div>
       <div class="scard-cta">
         <button class="btn btn-navy" onclick="testCronScan()">\u25b6 Tester maintenant</button>
+      </div>
+    </div>
+
+    <!-- \u2500\u2500 Notifications push \u2500\u2500 -->
+    <div class="scard">
+      <div class="scard-hdr">
+        <div class="scard-hdr-l">
+          <div class="scard-ico" style="background:rgba(216,180,254,.25);">\ud83d\udd14</div>
+          <div>
+            <div class="scard-title">Notifications push</div>
+            <div class="scard-sub">Alerte sur les offres \u2265 85%</div>
+          </div>
+        </div>
+        <span class="scard-status" id="pushStatus">\u2026</span>
+      </div>
+      <p style="font-size:11.5px;color:var(--ink3);margin-bottom:.6rem;line-height:1.5;">Re\u00e7ois une notification imm\u00e9diate sur ton t\u00e9l\u00e9phone ou ordinateur quand le scan auto trouve une offre qui matche fortement ton profil (score \u2265 85%).</p>
+      <div class="scard-cta">
+        <button class="btn btn-navy" id="pushToggleBtn" onclick="togglePush()">Activer les notifications</button>
+        <button class="btn btn-out" onclick="testPush()" title="Envoie une notification de test \u00e0 tous les abonn\u00e9s">\u25b6 Tester</button>
       </div>
     </div>
 
@@ -1925,6 +1945,130 @@ function importData(ev){
   reader.readAsText(file);
 }
 window.importData = importData;
+
+// ── V8: Push notifications ──────────────────────────────────────────────────
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const raw = atob(base64);
+  const arr = new Uint8Array(raw.length);
+  for (let i = 0; i < raw.length; ++i) arr[i] = raw.charCodeAt(i);
+  return arr;
+}
+
+async function getPushStatus() {
+  if (!('Notification' in window) || !('serviceWorker' in navigator) || !('PushManager' in window)) {
+    return { state: 'unsupported', label: '⚠ Non supporté', sub: null };
+  }
+  const perm = Notification.permission;
+  let sub = null;
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    sub = await reg.pushManager.getSubscription();
+  } catch {}
+  if (perm === 'denied') return { state: 'denied', label: '🚫 Refusé', sub: null };
+  if (sub) return { state: 'on', label: '● Activé', sub };
+  return { state: 'off', label: '○ Désactivé', sub: null };
+}
+
+async function updatePushStatusUI() {
+  const st = await getPushStatus();
+  const badge = document.getElementById('pushStatus');
+  const btn = document.getElementById('pushToggleBtn');
+  if (badge) {
+    badge.textContent = st.label;
+    badge.className = 'scard-status ' + (st.state === 'on' ? 'ok' : st.state === 'denied' ? 'warn' : 'off');
+  }
+  if (btn) {
+    if (st.state === 'on') {
+      btn.textContent = '🔕 Désactiver les notifications';
+      btn.className = 'btn btn-out';
+    } else if (st.state === 'denied') {
+      btn.textContent = '⚠ Bloqué dans le navigateur';
+      btn.className = 'btn btn-out';
+      btn.disabled = true;
+    } else if (st.state === 'unsupported') {
+      btn.textContent = 'Non supporté par ce navigateur';
+      btn.className = 'btn btn-out';
+      btn.disabled = true;
+    } else {
+      btn.textContent = '🔔 Activer les notifications';
+      btn.className = 'btn btn-navy';
+      btn.disabled = false;
+    }
+  }
+}
+
+async function togglePush() {
+  haptic(15);
+  const st = await getPushStatus();
+
+  if (st.state === 'on') {
+    // Unsubscribe
+    try {
+      await st.sub.unsubscribe();
+      await fetch(`${BASE}/api/subscribe-push`, {
+        method: 'DELETE', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ endpoint: st.sub.endpoint })
+      });
+      toast('Notifications désactivées');
+    } catch (e) { toast('Erreur : ' + e.message); }
+    await updatePushStatusUI();
+    return;
+  }
+
+  if (st.state === 'denied') {
+    toast('Bloqué — autorise les notifications dans les réglages du navigateur');
+    return;
+  }
+
+  // Ask permission + subscribe
+  try {
+    const perm = await Notification.requestPermission();
+    if (perm !== 'granted') { toast('Permission refusée'); await updatePushStatusUI(); return; }
+    const reg = await navigator.serviceWorker.ready;
+    const keyResp = await fetch(`${BASE}/api/subscribe-push`);
+    const { publicKey } = await keyResp.json();
+    const sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(publicKey),
+    });
+    const r = await fetch(`${BASE}/api/subscribe-push`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ subscription: sub })
+    });
+    if (!r.ok) throw new Error('Server rejected subscription');
+    toast('🔔 Notifications activées');
+    haptic([20, 30, 20]);
+  } catch (e) {
+    console.error(e); toast('Erreur : ' + e.message);
+  }
+  await updatePushStatusUI();
+}
+window.togglePush = togglePush;
+
+async function testPush() {
+  haptic(15);
+  toast('Envoi d\'une notification de test…');
+  try {
+    const r = await fetch(`${BASE}/api/send-test-push`, { method: 'POST' });
+    const d = await r.json();
+    if (d.sent) toast(`✓ Envoyée à ${d.sent} appareil(s)`);
+    else toast(d.error || 'Aucun abonné — active les notifications d\'abord');
+  } catch (e) { toast('Erreur : ' + e.message); }
+}
+window.testPush = testPush;
+
+// Listen for push-click messages from the service worker (focus the right offer)
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.addEventListener('message', (e) => {
+    if (e.data?.type === 'push-click' && e.data.url) {
+      // If it's an internal offer URL, find the matching job and open it
+      const match = JOBS.find(j => j.url === e.data.url);
+      if (match) sel(match.id);
+    }
+  });
+}
 
 function exportData(){
   haptic(15);

@@ -4,6 +4,7 @@
 import { PROFILE, callClaude } from './_profile.js';
 import { scrapeAll } from './_scrapers.js';
 import { sendDigestEmail } from './_email.js';
+import { sendToAll } from './_push.js';
 
 const MIN_SCORE = parseInt(process.env.MIN_SCORE || '70', 10);
 
@@ -121,6 +122,22 @@ Pas de markdown, pas de texte hors JSON.`;
       sourcesCount,
     });
 
+    // 5b) Push notifications for the top match (≥ 85%)
+    let pushResult = { sent: 0 };
+    const topMatch = scoredJobs.find(j => j.score >= 85);
+    if (topMatch) {
+      try {
+        const extras = scoredJobs.filter(j => j.score >= 85).length - 1;
+        pushResult = await sendToAll({
+          title: `🎯 ${topMatch.score}% — ${topMatch.title}`,
+          body: `${topMatch.company} · ${topMatch.location}${extras > 0 ? ` (+${extras} autres ≥ 85%)` : ''}`,
+          url: '/',
+          jobUrl: topMatch.url,
+          tag: 'jobary-high-match',
+        });
+      } catch (e) { console.error('[push]', e.message); }
+    }
+
     // 6) Persist seen URLs (include ALL scraped, not just emailed, to avoid re-emails)
     if (process.env.KV_REST_API_URL) {
       offers.forEach(o => seen.add(o.url));
@@ -136,6 +153,7 @@ Pas de markdown, pas de texte hors JSON.`;
       scoredAboveThreshold: scoredJobs.length,
       sourcesCount,
       email: emailResult,
+      push: pushResult,
     });
   } catch (err) {
     console.error('[cron] FAIL:', err);

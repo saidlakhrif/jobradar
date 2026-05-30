@@ -23,6 +23,49 @@ self.addEventListener('activate', e => {
   );
 });
 
+// V8: Web Push handlers — show notification when cron finds matching offers
+self.addEventListener('push', e => {
+  let data = {};
+  try { data = e.data ? e.data.json() : {}; } catch { data = { body: e.data?.text() || '' }; }
+  const title = data.title || 'Jobary';
+  const body  = data.body  || 'Nouvelle offre détectée';
+  const url   = data.url   || '/';
+  const tag   = data.tag   || 'jobary-default';
+  e.waitUntil(
+    self.registration.showNotification(title, {
+      body,
+      icon: '/icons/icon-192.png',
+      badge: '/icons/icon-192.png',
+      tag,                          // collapses multiple notifs of same tag
+      data: { url, jobUrl: data.jobUrl },
+      vibrate: [80, 30, 80],
+      actions: data.jobUrl ? [
+        { action: 'view', title: 'Voir l\'offre' },
+        { action: 'open', title: 'Ouvrir Jobary' },
+      ] : [],
+    })
+  );
+});
+
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  const data = e.notification.data || {};
+  const target = e.action === 'view' && data.jobUrl ? data.jobUrl : (data.url || '/');
+  e.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+      // Focus an existing Jobary window if open
+      for (const c of list) {
+        if (c.url.includes(self.registration.scope) && 'focus' in c) {
+          c.postMessage({ type: 'push-click', url: target });
+          return c.focus();
+        }
+      }
+      // Otherwise open new tab
+      if (self.clients.openWindow) return self.clients.openWindow(target);
+    })
+  );
+});
+
 self.addEventListener('fetch', e => {
   // Always network-first for API calls
   if (e.request.url.includes('api.anthropic.com') ||
