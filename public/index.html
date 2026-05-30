@@ -411,8 +411,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
 .sheet-ov.open{display:block;}
 .sheet{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--navy);border-radius:18px 18px 0 0;padding:1.2rem 1.2rem calc(1.2rem + env(safe-area-inset-bottom));z-index:60;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);}
 .sheet.open{display:block;transform:translateY(0);}
-.sheet-handle{width:36px;height:4px;background:rgba(255,255,255,.2);border-radius:2px;margin:0 auto 1.1rem;}
-.sheet-title{font-size:14px;font-weight:700;color:#fff;margin-bottom:.9rem;}
+.sheet-handle{width:42px;height:4.5px;background:rgba(255,255,255,.25);border-radius:99px;margin:0 auto .9rem;}
+.sheet-hdr{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:.8rem;}
+.sheet-hdr-l{flex:1;min-width:0;}
+.sheet-title{font-size:18px;font-weight:700;color:#fff;line-height:1.15;margin:0;}
+.sheet-close{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#fff;width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;line-height:1;flex-shrink:0;transition:background .15s;}
+.sheet-close:hover{background:rgba(255,255,255,.15);}
+.sheet-close:active{transform:scale(.92);}
 
 @media(max-width:1024px){
   .app{display:block;}
@@ -455,7 +460,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
     <div class="mtop-title">Jobary</div>
     <div class="mtop-meta" id="mtopMeta">Aucun scan pour l'instant</div>
   </div>
-  <button class="mtop-act" onclick="openConfigSheet()" aria-label="Configuration">⚙</button>
+  <button class="mtop-act" onclick="openDriveSettings()" aria-label="Réglages">⚙</button>
 </header>
 
 <!-- Scan progress overlay -->
@@ -676,8 +681,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
 <div class="sheet-ov" id="sheetOv" onclick="closeConfigSheet()"></div>
 <div class="sheet" id="sheet">
   <div class="sheet-handle"></div>
-  <div class="sheet-title">Recherche</div>
-  <div class="sheet-sub">Choisis tes mots-clés, villes et sources. Le scan se lance après.</div>
+  <div class="sheet-hdr">
+    <div class="sheet-hdr-l">
+      <div class="sheet-title">Recherche</div>
+      <div class="sheet-sub">Mots-clés, villes & sources</div>
+    </div>
+    <button class="sheet-close" onclick="closeConfigSheet()" aria-label="Fermer">×</button>
+  </div>
 
   <div style="margin-bottom:1rem;">
     <div class="sb-sec-lbl">Mots-clés <span class="count" id="shKwCount">0</span></div>
@@ -702,18 +712,20 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
 
   <button class="sheet-cta" onclick="closeConfigSheet();scan();">🔍 Scanner maintenant</button>
 
-  <div style="display:flex;gap:6px;margin-top:.7rem;">
-    <button class="btn btn-out" style="flex:1;background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15);color:#fff;" onclick="openDriveSettings();closeConfigSheet();">⚙ Réglages avancés</button>
-    <button class="btn btn-err" style="background:rgba(220,38,38,.12);border-color:rgba(220,38,38,.3);color:#FCA5A5;" onclick="closeConfigSheet();eraseJobs();">🗑 Vider</button>
-  </div>
+  <button class="btn btn-out" style="width:100%;justify-content:center;margin-top:.7rem;background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12);color:rgba(255,255,255,.85);" onclick="closeConfigSheet()">← Retour aux offres</button>
 </div>
 
 <!-- V3a: View options bottom sheet (mobile) — Tri + Source -->
 <div class="sheet-ov" id="viewSheetOv" onclick="closeViewSheet()"></div>
 <div class="sheet" id="viewSheet">
   <div class="sheet-handle"></div>
-  <div class="sheet-title">Affichage</div>
-  <div class="sheet-sub">Trier ou filtrer les offres affichées (n'affecte pas la prochaine recherche).</div>
+  <div class="sheet-hdr">
+    <div class="sheet-hdr-l">
+      <div class="sheet-title">Affichage</div>
+      <div class="sheet-sub">Tri & filtre des offres</div>
+    </div>
+    <button class="sheet-close" onclick="closeViewSheet()" aria-label="Fermer">×</button>
+  </div>
 
   <div style="margin-bottom:1rem;">
     <div class="sb-sec-lbl">Trier par</div>
