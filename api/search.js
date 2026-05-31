@@ -75,17 +75,18 @@ Pas de markdown, pas de backtick, pas de texte avant/après.`;
       if (ref) {
         salary = ref.formatted;
         salaryMeta = {
-          source: 'estimated',
-          provider: 'Rekrute/Michael Page',
+          source: ref.source,           // 'approximated' or 'custom'
+          provider: ref.provider,
           studyYear: ref.studyYear,
           inflationPct: ref.inflationPct,
           sector: ref.sector,
           level: ref.level,
           label: ref.label,
+          basis: ref.basis,
         };
       } else if (s.salary) {
         salary = s.salary;
-        salaryMeta = { source: 'estimated', provider: 'Claude (rôle non référencé)' };
+        salaryMeta = { source: 'approximated', provider: 'Approximation modèle (rôle non référencé)' };
       }
       return {
         title: o.title,

@@ -1,20 +1,32 @@
-// Référence salaires Maroc — sources publiques :
-//   Rekrute Étude de Rémunération 2024-2025
-//   Michael Page Maroc Étude de Rémunération 2024
-//   Hays Morocco Salary Guide 2024
-//   Glassdoor Morocco (cross-check)
+// ─────────────────────────────────────────────────────────────────────────────
+// SALAIRES MAROC — APPROXIMATION ALGORITHMIQUE
 //
-// IMPORTANT : tous les chiffres sont en k MAD BRUT mensuel (salaire de base hors variable)
-// Le NET représente environ 75-80% du brut au Maroc (IR + CNSS + AMO + retraite).
+// ⚠ HONNÊTETÉ : ces chiffres NE VIENNENT PAS d'un scraping direct de Rekrute,
+// Michael Page ou Hays. Ce sont des estimations basées sur la connaissance
+// générale du marché marocain dans le training data du modèle.
 //
-// Le code ajuste automatiquement selon :
-//   - Année actuelle vs année de l'étude (inflation Maroc ~4%/an composé)
-//   - Secteur de l'entreprise (multiplicateur appliqué sur le base range)
-//   - Niveau d'expérience détecté depuis le titre + description
+// Les vraies études de rémunération sont GATED derrière des formulaires ou
+// téléchargeables manuellement en PDF — pas accessibles par API.
+//
+// → POUR DES CHIFFRES VÉRIFIÉS :
+//   1. Le salaire annoncé dans la description (parsé par fetch-detail) — fiable
+//   2. Override manuel via api/_salaries-custom.js (tes propres données)
+//   3. Téléchargement annuel manuel des PDF Rekrute/Michael Page pour
+//      reconstruire la table
+//
+// Le NET au Maroc ≈ 75-80% du BRUT (IR progressif + CNSS + AMO + retraite).
+// Inflation Maroc : ~4%/an (source vérifiée : HCP).
+// ─────────────────────────────────────────────────────────────────────────────
 
 export const SALARY_STUDY_YEAR = 2024;
-export const YEARLY_INFLATION = 0.04; // 4% par an au Maroc (HCP 2020-2024 moyenne)
-export const SALARY_BASIS = 'BRUT mensuel (hors variable et primes)';
+export const YEARLY_INFLATION = 0.04; // 4% par an — HCP Maroc (source réelle)
+export const SALARY_BASIS = 'BRUT mensuel (estimation approx., hors variable)';
+export const SALARY_PROVIDER_LABEL = 'Approximation modèle (non vérifiée vs source officielle)';
+
+// ── Override personnel : si l'utilisateur publie un api/_salaries-custom.js
+// exportant un objet `CUSTOM_RANGES`, il sera fusionné par-dessus le défaut.
+let CUSTOM_RANGES = null;
+try { CUSTOM_RANGES = (await import('./_salaries-custom.js')).CUSTOM_RANGES; } catch {}
 
 // ── Base ranges by role (BRUT k MAD/mois — Rekrute 2024 + Michael Page) ────
 // Valeurs conservatrices, vérifiées vs Glassdoor Morocco
@@ -194,7 +206,9 @@ export function estimateSalary({ title, company, description, currentYear }) {
   if (!ref) return null;
 
   const level = detectLevel(title, description);
-  const range = ref.ranges[level] || ref.ranges.confirme;
+  // Custom user override takes precedence if defined for this label+level
+  const customRange = CUSTOM_RANGES?.[ref.label]?.[level];
+  const range = customRange || ref.ranges[level] || ref.ranges.confirme;
   const sector = detectSector(company);
   const sectorMult = SECTOR_MULT[sector] || 1;
 
@@ -214,7 +228,9 @@ export function estimateSalary({ title, company, description, currentYear }) {
     inflationPct: Math.round((inflationMult - 1) * 100),
     sectorMult,
     basis: SALARY_BASIS,
-    source: 'estimated',
+    isCustom: !!customRange,
+    source: customRange ? 'custom' : 'approximated',
+    provider: customRange ? 'Ta table perso' : SALARY_PROVIDER_LABEL,
     formatted: `${min}-${max}k MAD brut/mois`,
   };
 }

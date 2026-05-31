@@ -1545,28 +1545,27 @@ function esc(s){ return (s||'').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt
 function salaryTooltip(j){
   if (!j.salaryMeta) return j.salary || '';
   const m = j.salaryMeta;
-  if (m.source === 'announced') return `Salaire annoncé dans la description de l'offre : ${j.salary}`;
-  if (m.provider) {
-    const parts = [`Estimation ${m.provider}`];
-    if (m.label) parts.push(`Poste type : ${m.label}`);
-    if (m.level) parts.push(`Niveau : ${m.level}`);
-    if (m.sector && m.sector !== 'default') parts.push(`Secteur : ${m.sector}`);
-    if (m.studyYear) parts.push(`Étude : ${m.studyYear}`);
-    if (m.inflationPct > 0) parts.push(`Inflation +${m.inflationPct}%`);
-    return parts.join(' · ');
-  }
-  return j.salary;
+  if (m.source === 'announced') return `Salaire ANNONCÉ dans la description de l'offre : ${j.salary}`;
+  if (m.source === 'custom')    return `Ta table personnelle · ${m.label||''} · niveau ${m.level||'?'} · secteur ${m.sector||'?'} (+${m.inflationPct||0}% inflation)`;
+  // approximated (default)
+  const parts = ['⚠ Approximation algorithmique — pas une donnée vérifiée'];
+  if (m.label) parts.push(`Poste type : ${m.label}`);
+  if (m.level) parts.push(`Niveau : ${m.level}`);
+  if (m.sector && m.sector !== 'default') parts.push(`Secteur : ${m.sector}`);
+  if (m.inflationPct > 0) parts.push(`Inflation +${m.inflationPct}%`);
+  parts.push('Pour un chiffre exact, vérifie la description complète ou consulte Rekrute/Michael Page.');
+  return parts.join('\n· ');
 }
 function salaryMetaLine(j){
   const m = j.salaryMeta;
   if (!m) return '';
-  if (m.source === 'announced') return `<span style="color:var(--ok);">✓ Annoncé</span> dans la description de l'offre`;
-  const provider = m.provider || 'Claude';
-  const sectorTxt = m.sector && m.sector !== 'default' ? ` · secteur ${m.sector}` : '';
+  if (m.source === 'announced') return `<span style="color:var(--ok);font-weight:700;">✓ Annoncé</span> dans la description de l'offre`;
+  if (m.source === 'custom')    return `<span style="color:var(--gold);font-weight:700;">★ Ta table perso</span> · ${m.label||''} niveau ${m.level||'?'}`;
+  // approximated
   const levelTxt  = m.level ? ` · niveau ${m.level}` : '';
-  const studyTxt  = m.studyYear ? ` · étude ${m.studyYear}` : '';
-  const inflTxt   = m.inflationPct > 0 ? ` (+${m.inflationPct}% inflation)` : '';
-  return `≈ Estimation ${provider}${levelTxt}${sectorTxt}${studyTxt}${inflTxt}`;
+  const sectorTxt = m.sector && m.sector !== 'default' ? ` · secteur ${m.sector}` : '';
+  const inflTxt   = m.inflationPct > 0 ? ` (+${m.inflationPct}% infl.)` : '';
+  return `<span style="color:var(--ink3);">≈ Approximation modèle${levelTxt}${sectorTxt}${inflTxt}</span> · <em>non vérifiée</em>`;
 }
 function sel(id) {
   selId=id; saveUi();
