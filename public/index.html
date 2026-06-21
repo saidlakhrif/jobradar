@@ -817,7 +817,11 @@ body.sheet-open{overflow:hidden;}
 
   <div id="installBanner"></div>
   <div id="homeSaved"></div>
-  <div style="display:flex;justify-content:flex-end;">
+  <div style="display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;">
+    <button class="dash-link" onclick="openImportSheet()" title="Coller le lien d'une offre pour adapter CV + LM">
+      <svg fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+      Importer une offre
+    </button>
     <button class="dash-link" onclick="openDashboard()">
       <svg fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
       Tableau de bord détaillé
@@ -929,6 +933,44 @@ body.sheet-open{overflow:hidden;}
       <button class="modal-close" onclick="closeDashboard()" aria-label="Fermer">×</button>
     </div>
     <div class="modal-body" id="dashboardBody"></div>
+  </div>
+</div>
+
+<!-- Import URL Modal -->
+<div class="mov" id="importModal" onclick="if(event.target===this)closeImportSheet()">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-hdr">
+      <div class="modal-hdr-l">
+        <div class="modal-hdr-ico">📎</div>
+        <div>
+          <h3>Importer une offre</h3>
+          <div class="modal-hdr-sub">Colle le lien d'une annonce — on adapte CV + LM</div>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeImportSheet()" aria-label="Fermer">×</button>
+    </div>
+    <div class="modal-body">
+      <label style="font-size:12px;font-weight:600;color:var(--ink2);display:block;margin-bottom:6px;">URL de l'offre</label>
+      <div style="display:flex;gap:6px;margin-bottom:10px;">
+        <input id="importUrlInput" type="url" placeholder="https://linkedin.com/jobs/view/…"
+               style="flex:1;padding:11px 12px;border:1.5px solid var(--bd);border-radius:9px;background:var(--card);color:var(--ink);font-size:14px;"
+               onkeydown="if(event.key==='Enter')runImport()">
+        <button class="btn btn-out" onclick="pasteImportUrl()" title="Coller depuis le presse-papier" style="padding:0 12px;">📋</button>
+      </div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink2);margin-bottom:14px;cursor:pointer;">
+        <input type="checkbox" id="importAutoAdapt" checked>
+        <span>Adapter automatiquement le CV après import</span>
+      </label>
+      <div id="importStatus" style="font-size:13px;color:var(--ink2);min-height:18px;margin-bottom:10px;"></div>
+      <button class="sheet-cta" onclick="runImport()" id="importGoBtn">
+        <span class="sheet-cta-ico">⚡</span>
+        <span class="sheet-cta-label">Analyser cette offre<span class="sub">~15-25 sec · scraping + scoring</span></span>
+        <span class="sheet-cta-arrow">→</span>
+      </button>
+      <p style="font-size:11.5px;color:var(--ink3);margin-top:10px;line-height:1.5;">
+        Hôtes supportés nativement : LinkedIn, Rekrute, Emploi.ma. Autres sites : extraction générique via IA.
+      </p>
+    </div>
   </div>
 </div>
 
@@ -2160,6 +2202,89 @@ function closeDashboard(){
 }
 window.openDashboard = openDashboard;
 window.closeDashboard = closeDashboard;
+
+// ─── Import by URL ──────────────────────────────────────────────────────────
+function openImportSheet(){
+  haptic(12);
+  const m = document.getElementById('importModal');
+  m.classList.add('open');
+  document.getElementById('importStatus').textContent = '';
+  document.getElementById('importGoBtn').disabled = false;
+  setTimeout(()=>document.getElementById('importUrlInput')?.focus(), 100);
+}
+function closeImportSheet(){
+  haptic(10);
+  document.getElementById('importModal').classList.remove('open');
+}
+async function pasteImportUrl(){
+  try {
+    const txt = await navigator.clipboard.readText();
+    if (txt && /^https?:\/\//.test(txt.trim())) {
+      document.getElementById('importUrlInput').value = txt.trim();
+      haptic(10);
+    } else {
+      toast('Aucune URL valide dans le presse-papier');
+    }
+  } catch { toast("Impossible d'accéder au presse-papier"); }
+}
+async function runImport(){
+  const url = (document.getElementById('importUrlInput').value || '').trim();
+  if (!/^https?:\/\//.test(url)) {
+    document.getElementById('importStatus').innerHTML = '<span style="color:var(--rose);">URL invalide — doit commencer par http:// ou https://</span>';
+    return;
+  }
+  // Duplicate check
+  const dup = JOBS.find(j => j.url === url);
+  if (dup) {
+    closeImportSheet();
+    toast('Offre déjà importée');
+    sel(dup.id);
+    return;
+  }
+  const btn = document.getElementById('importGoBtn');
+  const status = document.getElementById('importStatus');
+  btn.disabled = true;
+  status.innerHTML = '⏳ Téléchargement de la page…';
+  try {
+    const r = await fetch('/api/import-url', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ url })
+    });
+    const data = await r.json();
+    if (!r.ok || !data.success) throw new Error(data.error || 'Échec import');
+    status.innerHTML = '✓ Offre extraite, ajout en cours…';
+    const maxId = (JOBS.reduce((m,j)=>Math.max(m, j.id||0), 0)) + 1;
+    const job = {
+      ...data.job,
+      id: maxId,
+      status: 'new',
+      cvFile: null,
+      adaptedContent: null,
+      lmContent: null,
+      firstSeen: Date.now(),
+      lastSeen: Date.now(),
+      isNew: true,
+      manual: true,
+    };
+    JOBS.unshift(job);
+    saveJobs(); stats(); render();
+    const autoAdapt = document.getElementById('importAutoAdapt').checked;
+    closeImportSheet();
+    toast(`Offre importée · score ${job.score}/100`);
+    sel(maxId);
+    if (autoAdapt) {
+      setTimeout(()=>adaptCV(maxId), 400);
+    }
+  } catch (e) {
+    console.error('[import]', e);
+    status.innerHTML = `<span style="color:var(--rose);">✗ ${esc(e.message)}</span>`;
+    btn.disabled = false;
+  }
+}
+window.openImportSheet = openImportSheet;
+window.closeImportSheet = closeImportSheet;
+window.pasteImportUrl = pasteImportUrl;
+window.runImport = runImport;
 
 function computeDashboardStats(){
   const total = JOBS.length;
