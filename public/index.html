@@ -311,6 +311,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);m
 .jc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;}
 .jc-title{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:4px;line-height:1.3;}
 .jc-co{font-size:13.5px;color:var(--ink2);font-weight:500;}
+.jc-when{font-size:11.5px;color:var(--ink3);font-weight:500;margin-top:3px;display:flex;align-items:center;gap:5px;}
+.jc-when::before{content:'🕐';font-size:11px;}
 .jc-r{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;}
 .ring{width:46px;height:46px;position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .ring svg{position:absolute;top:0;left:0;width:100%;height:100%;transform:rotate(-90deg);}
@@ -1523,7 +1525,8 @@ function render() {
           ${j.isNew?'<span class="fresh-pill">Nouveau</span>':''}
           <div class="jc-title">${j.title}</div>
           <div class="jc-co">${j.company} · ${j.location}</div>
-          ${j.salary?`<div class="salary ${j.salaryMeta?.source==='announced'?'salary-announced':''}" title="${salaryTooltip(j)}">💰 ${j.salaryMeta?.source==='announced'?'':'≈ '}${j.salary}${j.salaryMeta?.source==='announced'?' · ✓':''}</div>`:''}
+          <div class="jc-when">${postedLabel(j)}</div>
+          ${(j.salary && j.salaryMeta?.source==='announced')?`<div class="salary salary-announced" title="${salaryTooltip(j)}">💰 ${j.salary} · ✓</div>`:''}
         </div>
         <div class="jc-r">
           <div class="ring">
@@ -1583,6 +1586,24 @@ function mF(f,el){
 
 // ── Select ─────────────────────────────────────────────────────────────────────
 function esc(s){ return (s||'').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
+
+function postedLabel(j){
+  const ts = j.postedAt || j.firstSeen;
+  if (!ts) return 'Date inconnue';
+  const diff = Date.now() - ts;
+  const min = Math.floor(diff / 60000);
+  const h = Math.floor(diff / 3600000);
+  const d = Math.floor(diff / 86400000);
+  const prefix = j.postedAt ? 'Publiée' : 'Vue';
+  if (min < 1) return `${prefix} à l'instant`;
+  if (min < 60) return `${prefix} il y a ${min} min`;
+  if (h < 24) return `${prefix} il y a ${h}h`;
+  if (d === 1) return `${prefix} hier`;
+  if (d < 7) return `${prefix} il y a ${d}j`;
+  if (d < 30) return `${prefix} il y a ${Math.floor(d/7)} sem`;
+  if (d < 365) return `${prefix} il y a ${Math.floor(d/30)} mois`;
+  return `${prefix} il y a ${Math.floor(d/365)} an${d>=730?'s':''}`;
+}
 
 function salaryTooltip(j){
   if (!j.salaryMeta) return j.salary || '';

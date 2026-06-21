@@ -7,6 +7,25 @@ import { estimateSalary, parseSalaryFromDescription } from './_salaries.js';
 
 const norm = (s) => (s || '').replace(/\s+/g, ' ').trim();
 
+// Parse "il y a 2 jours" / "2 weeks ago" / "Publiée le 15/06/2026" → timestamp
+function parseRelativeDate(txt) {
+  if (!txt) return null;
+  const t = txt.toLowerCase().trim();
+  // DD/MM/YYYY or YYYY-MM-DD
+  let m = t.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if (m) return new Date(+m[3], +m[2]-1, +m[1]).getTime();
+  m = t.match(/(\d{4})-(\d{2})-(\d{2})/);
+  if (m) return new Date(+m[1], +m[2]-1, +m[3]).getTime();
+  // "il y a N unité" / "N unit ago"
+  m = t.match(/(\d+)\s*(minute|heure|hour|jour|day|semaine|week|mois|month|an|year)/);
+  if (!m) return null;
+  const n = +m[1], unit = m[2];
+  const ms = { minute:60e3, heure:3600e3, hour:3600e3, jour:86400e3, day:86400e3,
+               semaine:7*86400e3, week:7*86400e3, mois:30*86400e3, month:30*86400e3,
+               an:365*86400e3, year:365*86400e3 }[unit];
+  return Date.now() - n * ms;
+}
+
 function detectSource(url) {
   if (/linkedin\.com/i.test(url))   return 'LinkedIn';
   if (/rekrute\.com/i.test(url))    return 'Rekrute';
@@ -29,7 +48,11 @@ function extractLinkedIn($, html) {
     $('.show-more-less-html__markup, .description__text, .description__text--rich').first().text()
   );
   const type = norm($('.description__job-criteria-text, li.description__job-criteria-item .description__job-criteria-text').first().text()) || 'CDI';
-  return { title, company, location, description, type };
+  // posted date: <time datetime="2026-06-10"> or relative text "il y a 2 semaines"
+  const dt = $('time[datetime]').first().attr('datetime');
+  let postedAt = dt ? Date.parse(dt) : null;
+  if (!postedAt) postedAt = parseRelativeDate($('.posted-time-ago__text, time').first().text());
+  return { title, company, location, description, type, postedAt: postedAt || null };
 }
 
 function extractRekrute($, html) {
@@ -56,7 +79,9 @@ function extractRekrute($, html) {
   });
   const description = parts.length ? parts.join('\n\n') : norm($('.info-offre, .col-md-9, article, main').first().text());
   const type = norm($(':contains("Type de contrat"):not(:has(*))').first().text().replace(/.*:\s*/, '')) || 'CDI';
-  return { title, company, location, description, type };
+  const dateTxt = norm($('body').text().match(/Publi[ée]e?\s+le\s+(\d{1,2}\/\d{1,2}\/\d{4})/i)?.[1] || '');
+  const postedAt = parseRelativeDate(dateTxt);
+  return { title, company, location, description, type, postedAt };
 }
 
 function extractEmploiMa($, html) {
@@ -67,7 +92,10 @@ function extractEmploiMa($, html) {
     $('.field-name-body, .job-description, .field--name-body, article .field').first().text()
   );
   const type = norm($('.field-name-field-contract-type, .contract-type').first().text()) || 'CDI';
-  return { title, company, location, description, type };
+  const dt = $('time[datetime], meta[property="article:published_time"]').first().attr('datetime')
+          || $('meta[property="article:published_time"]').attr('content');
+  const postedAt = dt ? Date.parse(dt) : null;
+  return { title, company, location, description, type, postedAt };
 }
 
 function extractGeneric($, html) {
@@ -207,6 +235,7 @@ export default async function handler(req, res) {
       summary,
       fullDescription: base.description,
       salary, salaryMeta,
+      postedAt: base.postedAt || null,
       ...scored,
     };
 
